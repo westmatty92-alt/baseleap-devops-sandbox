@@ -39,6 +39,7 @@ update public.team_members set is_active = false where id = '00000000-0000-4000-
 
 -- ---------- Tech A ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b2","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b2', true);  -- older auth.uid() reads only this
 set local role authenticated;
 
 select is((select count(*) from public.jobs), 3::bigint, 'Tech A reads every job in the org, including Tech B''s');
@@ -62,6 +63,7 @@ reset role;
 
 -- ---------- Owner ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b1","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b1', true);
 set local role authenticated;
 
 select lives_ok($$update public.jobs set title = 'Water heater (tank)', start_time = '11:30' where id = '00000000-0000-4000-8000-0000000000d2'$$, 'Owner edits any field');
@@ -88,6 +90,7 @@ select is((select count(*) from public.events where name = 'job_updated' and pro
 
 -- ---------- E2E test org owner ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b5","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b5', true);
 set local role authenticated;
 
 select is((select count(*) from public.jobs), 1::bigint, 'the test org sees only its own job (AC-006.6)');
@@ -101,12 +104,14 @@ reset role;
 
 -- ---------- Removed Tech C ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b4","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b4', true);
 set local role authenticated;
 select is((select count(*) from public.jobs), 0::bigint, 'a removed technician reads no jobs (FR-2, FR-13)');
 reset role;
 
 -- ---------- Signed out ----------
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
+select set_config('request.jwt.claim.sub', '', true);
 set local role anon;
 select throws_ok($$select * from public.jobs$$, '42501', null, 'signed-out users read nothing (AC-001.7)');
 reset role;

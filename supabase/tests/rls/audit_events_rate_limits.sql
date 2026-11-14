@@ -21,6 +21,7 @@ insert into public.team_members (id, org_id, user_id, name, email, role, is_acti
 
 -- ---------- Owner (the most privileged client role) ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b1","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b1', true);  -- older auth.uid() reads only this
 set local role authenticated;
 select throws_ok($$select * from public.audit_log$$, '42501', null, 'owner cannot read the audit log directly');
 select throws_ok($$insert into public.events (name, source) values ('job_created', 'client')$$, '42501', null, 'owner cannot write events directly');
@@ -31,6 +32,7 @@ reset role;
 
 -- ---------- Tech A sends client events ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b2","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b2', true);
 set local role authenticated;
 select lives_ok($$select public.record_client_event('board_viewed', '{"board_date":"2026-11-12","is_today":true,"job_count":3,"load_ms":850,"user_id":"00000000-0000-4000-8000-0000000000c1"}')$$,
                 'Tech A records board_viewed');
@@ -45,6 +47,7 @@ select is((select properties ->> 'user_id' from public.events where name = 'boar
 
 -- ---------- Removed Tech C ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b4","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b4', true);
 set local role authenticated;
 select throws_ok($$select public.record_client_event('board_viewed', '{"board_date":"2026-11-12","is_today":true,"job_count":0,"load_ms":10}')$$,
                  '42501', null, 'a removed member cannot record events');

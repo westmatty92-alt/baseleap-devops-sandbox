@@ -28,6 +28,7 @@ insert into public.team_members (id, org_id, user_id, name, email, role) values
 
 -- ---------- Tech A ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b2","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b2', true);  -- older auth.uid() reads only this
 set local role authenticated;
 
 select is((select count(*) from public.organizations), 1::bigint, 'Tech A reads only their own org');
@@ -42,6 +43,7 @@ reset role;
 
 -- ---------- Owner ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b1","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b1', true);
 set local role authenticated;
 
 select lives_ok($$insert into public.team_members (id, org_id, user_id, name, email, role)
@@ -71,6 +73,7 @@ select is((select count(*) from public.events where name = 'team_member_added' a
 
 -- ---------- E2E test org owner ----------
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b5","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b5', true);
 set local role authenticated;
 select is((select count(*) from public.team_members where org_id = '00000000-0000-4000-8000-0000000000a1'), 0::bigint, 'another org cannot read this team list');
 reset role;
@@ -78,6 +81,7 @@ reset role;
 -- ---------- Removed member ----------
 update public.team_members set is_active = false where id = '00000000-0000-4000-8000-0000000000c3';
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b3","role":"authenticated"}', true);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-0000000000b3', true);
 set local role authenticated;
 select is((select count(*) from public.team_members), 0::bigint, 'a removed member reads no team data');
 select is((select count(*) from public.organizations), 0::bigint, 'a removed member reads no org data');

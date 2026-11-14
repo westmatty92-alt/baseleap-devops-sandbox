@@ -1,0 +1,11 @@
+/* Global stylesheet. Tailwind v4 reads the brand tokens from theme.css, which is GENERATED from
+   DESIGN.md by bl-designer: never edit theme.css by hand; change DESIGN.md and regenerate. */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./theme.css";
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-text-on-light);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
