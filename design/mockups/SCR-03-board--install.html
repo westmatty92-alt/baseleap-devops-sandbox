@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Board with install tip · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the jobs</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board.html" aria-current="page">Board</a></nav>
+  <p class="who">Signed in: Tech A · Technician</p>
+</header>
+<main id="main" class="main">
+<section class="card stack" aria-labelledby="tip" style="margin-bottom: var(--spacing-md)">
+  <h2 class="t-h4 t-strong" id="tip">Add the job board to your home screen</h2>
+  <p>Open it in one tap, like an app.</p>
+  <details open class="stack">
+    <summary class="t-strong">How to add it</summary>
+    <p><span class="t-strong">iPhone:</span> in Safari, tap <span class="ic ic-share" aria-hidden="true"></span> <span class="t-strong">Share</span>, then <span class="t-strong">Add to Home Screen</span>.</p>
+    <p><span class="t-strong">Android:</span> tap the browser menu, then <span class="t-strong">Install app</span> or <span class="t-strong">Add to Home screen</span>.</p>
+  </details>
+  <button class="btn btn--ghost" type="button">Not now</button>
+</section>
+<section class="daybar" aria-label="Day">
+  <div>
+    <h1 class="t-h2">Today</h1>
+    <p class="t-lg t-2nd">Thursday, November 12, 2026</p>
+  </div>
+  <div class="daynav" role="group" aria-label="Choose a day">
+    <button class="btn btn--ghost" type="button" aria-label="Previous day"><span class="ic ic-left" aria-hidden="true"></span></button>
+    <button class="btn btn--ghost pick" type="button"><span class="ic ic-cal" aria-hidden="true"></span><span>Nov 12<span class="sr"> — pick a date</span></span></button>
+    <button class="btn btn--ghost" type="button" aria-label="Next day"><span class="ic ic-right" aria-hidden="true"></span></button>
+    <button class="btn btn--ghost" type="button" aria-label="Refresh the board"><span class="ic ic-refresh" aria-hidden="true"></span></button>
+  </div>
+</section>
+<div class="countrow"><p class="t-strong" role="status">1 job</p></div>
+<ol class="jobs" aria-label="Jobs, in time order">
+  <li><article class="job job--mine" aria-labelledby="j1">
+    <time class="job__time" datetime="15:30">15:30</time>
+    <div class="job__status"><span class="badge badge--scheduled"><span class="ic ic-clock" aria-hidden="true"></span>Scheduled</span></div>
+    <div class="job__body">
+      <h2 class="job__title" id="j1">Leaking kitchen faucet</h2>
+      <p class="job__line"><span class="ic ic-pin" aria-hidden="true"></span><span>45 Main St W, Hamilton</span></p>
+      <p class="job__line"><span class="ic ic-user" aria-hidden="true"></span><span>Pat Example · (905) 555-0123</span></p>
+      <p class="job__notes"><span class="t-strong">Notes:</span> Key under mat</p>
+      <p>Assigned to <span class="t-strong">Tech A</span> <span class="tag">Your job</span></p>
+    </div>
+    <div class="job__actions">
+      <div class="seg" role="group" aria-label="Status for Leaking kitchen faucet">
+        <button type="button" aria-pressed="true"><span class="ic ic-check" aria-hidden="true"></span>Scheduled</button>
+        <button type="button" aria-pressed="false">In progress</button>
+        <button type="button" aria-pressed="false">Done</button>
+      </div>
+      <a class="btn btn--ghost" href="SCR-04-job-detail.html">Open job and notes</a>
+    </div>
+  </article></li>
+</ol>
+</main>
+</div>
+</body>
+</html>

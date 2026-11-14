@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New job · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the form</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board--owner.html" aria-current="page">Board</a><a href="SCR-06-team.html">Team</a></nav>
+  <p class="who">Signed in: Owner</p>
+</header>
+<main id="main" class="main">
+<div class="stack stack--lg" style="max-width: var(--narrow)">
+  <div>
+    <p style="margin-bottom: var(--spacing-sm)"><a class="btn btn--ghost" href="SCR-03-board--owner.html"><span class="ic ic-left" aria-hidden="true"></span>Back to board</a></p>
+    <h1 class="t-h2">New job</h1>
+    <p class="t-2nd">Customer name, phone and notes are optional.</p>
+  </div>
+  <form class="stack" novalidate>
+    <div class="form-grid">
+      <div class="field full"><label for="title">Job title<span class="req">required</span></label><input type="text" id="title" name="title" required maxlength="100"></div>
+      <div class="field full"><label for="tech">Technician<span class="req">required</span></label><p class="help" id="tech-h">Only people still on the team are listed.</p>
+        <select id="tech" name="tech" required aria-describedby="tech-h"><option value="" selected>Choose a technician</option><option value="a">Tech A</option><option value="b">Tech B</option><option value="c">Tech C</option></select></div>
+      <div class="field"><label for="date">Date<span class="req">required</span></label><input type="date" id="date" name="date" required value="2026-11-12"></div>
+      <div class="field"><label for="time">Start time<span class="req">required</span></label><input type="time" id="time" name="time" required></div>
+      <div class="field full"><label for="addr">Address<span class="req">required</span></label><input type="text" id="addr" name="addr" required maxlength="200" autocomplete="street-address"></div>
+      <div class="field"><label for="cust">Customer name</label><input type="text" id="cust" name="cust" maxlength="100"></div>
+      <div class="field"><label for="phone">Customer phone</label><input type="tel" id="phone" name="phone" inputmode="tel"></div>
+      <div class="field full"><label for="notes">Notes</label><textarea id="notes" name="notes"></textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn--primary" type="submit">Save job</button>
+      <a class="btn btn--ghost" href="SCR-03-board--owner.html">Back without saving</a>
+    </div>
+  </form>
+</div>
+</main>
+</div>
+</body>
+</html>

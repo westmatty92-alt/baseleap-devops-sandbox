@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Today's board, no jobs · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the jobs</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board.html" aria-current="page">Board</a></nav>
+  <p class="who">Signed in: Tech A · Technician</p>
+</header>
+<main id="main" class="main">
+<section class="daybar" aria-label="Day">
+  <div>
+    <h1 class="t-h2">Today</h1>
+    <p class="t-lg t-2nd">Thursday, November 12, 2026</p>
+  </div>
+  <div class="daynav" role="group" aria-label="Choose a day">
+    <button class="btn btn--ghost" type="button" aria-label="Previous day"><span class="ic ic-left" aria-hidden="true"></span></button>
+    <button class="btn btn--ghost pick" type="button"><span class="ic ic-cal" aria-hidden="true"></span><span>Nov 12<span class="sr"> — pick a date</span></span></button>
+    <button class="btn btn--ghost" type="button" aria-label="Next day"><span class="ic ic-right" aria-hidden="true"></span></button>
+    <button class="btn btn--ghost" type="button" aria-label="Refresh the board"><span class="ic ic-refresh" aria-hidden="true"></span></button>
+  </div>
+</section>
+<div class="countrow"><p class="t-strong" role="status">0 jobs</p></div>
+<section class="card panel" aria-labelledby="e">
+  <span class="ic ic--lg ic-cal" aria-hidden="true"></span>
+  <h2 class="t-h4 t-strong" id="e">No jobs today</h2>
+  <p>Jobs show up here as soon as the owner adds them. Use the refresh button to check again.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the team</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board--owner.html">Board</a><a href="SCR-06-team.html" aria-current="page">Team</a></nav>
+  <p class="who">Signed in: Owner</p>
+</header>
+<main id="main" class="main">
+<div class="stack stack--lg" style="max-width: var(--narrow)">
+  <h1 class="t-h2">Team</h1>
+  <section class="card stack" aria-labelledby="add">
+    <h2 class="t-h4 t-strong" id="add">Add a team member</h2>
+    <p>They're added as a technician. We don't email them. Ask them to open the job board and request their own sign-in link.</p>
+    <form class="stack" novalidate>
+      <div class="field"><label for="pname">Name<span class="req">required</span></label><input type="text" id="pname" name="pname" required maxlength="60" autocomplete="off"></div>
+      <div class="field"><label for="pemail">Email<span class="req">required</span></label><input type="email" id="pemail" name="pemail" required autocomplete="off" autocapitalize="none"></div>
+      <button class="btn btn--primary" type="submit">Add team member</button>
+    </form>
+  </section>
+  <section aria-labelledby="act">
+    <h2 class="t-h4 t-strong section-title" id="act">On the team (4)</h2>
+    <ul class="people">
+      <li class="person"><p class="person__name">Owner <span class="tag">You</span></p><p class="person__email">owner@example.test</p><p>Owner</p><span></span></li>
+      <li class="person"><p class="person__name">Tech A</p><p class="person__email">tech.a@example.test</p><p>Technician</p><button class="btn btn--danger" type="button" aria-label="Remove Tech A">Remove</button></li>
+      <li class="person"><p class="person__name">Tech B</p><p class="person__email">tech.b@example.test</p><p>Technician</p><button class="btn btn--danger" type="button" aria-label="Remove Tech B">Remove</button></li>
+      <li class="person"><p class="person__name">Tech C</p><p class="person__email">tech.c@example.test</p><p>Technician</p><button class="btn btn--danger" type="button" aria-label="Remove Tech C">Remove</button></li>
+    </ul>
+  </section>
+  <section aria-labelledby="rem">
+    <h2 class="t-h4 t-strong section-title" id="rem">Removed (1)</h2>
+    <ul class="people">
+      <li class="person"><p class="person__name">Tech D (removed)</p><p class="person__email">tech.d@example.test</p><p>Technician</p><span>Add this email again to give access back.</span></li>
+    </ul>
+  </section>
+</div>
+</main>
+</div>
+</body>
+</html>

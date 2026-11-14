@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team, form errors · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the team</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board--owner.html">Board</a><a href="SCR-06-team.html" aria-current="page">Team</a></nav>
+  <p class="who">Signed in: Owner</p>
+</header>
+<main id="main" class="main">
+<div class="stack stack--lg" style="max-width: var(--narrow)">
+  <h1 class="t-h2">Team</h1>
+  <section class="card stack" aria-labelledby="add">
+    <h2 class="t-h4 t-strong" id="add">Add a team member</h2>
+    <form class="stack" novalidate>
+      <div class="field field--error"><label for="pname">Name<span class="req">required</span></label><input type="text" id="pname" name="pname" required aria-invalid="true" aria-describedby="pname-e"><p class="err" id="pname-e"><span class="ic ic-alert" aria-hidden="true"></span><span>Enter a name</span></p></div>
+      <div class="field field--error"><label for="pemail">Email<span class="req">required</span></label><input type="email" id="pemail" name="pemail" required value="tech.a@" aria-invalid="true" aria-describedby="pemail-e"><p class="err" id="pemail-e"><span class="ic ic-alert" aria-hidden="true"></span><span>Enter a valid email address, like name@example.com</span></p></div>
+      <button class="btn btn--primary" type="submit">Add team member</button>
+    </form>
+  </section>
+  <section class="card stack" aria-labelledby="dup">
+    <h2 class="t-h4 t-strong" id="dup">Same form, other errors</h2>
+    <form class="stack" novalidate>
+      <div class="field field--error"><label for="n2">Name<span class="req">required</span></label><input type="text" id="n2" name="n2" value="Tech A with a name that is far too long to fit the sixty character limit" aria-invalid="true" aria-describedby="n2-e"><p class="err" id="n2-e"><span class="ic ic-alert" aria-hidden="true"></span><span>Names can be up to 60 characters</span></p></div>
+      <div class="field field--error"><label for="e2">Email<span class="req">required</span></label><input type="email" id="e2" name="e2" value="TECH.A@example.test" aria-invalid="true" aria-describedby="e2-e"><p class="err" id="e2-e"><span class="ic ic-alert" aria-hidden="true"></span><span>That email is already on the team</span></p></div>
+      <div class="msg msg--error" role="alert"><span class="ic ic-alert" aria-hidden="true"></span><div>Not saved. Try again<br><span class="help">Shown for a dropped connection. Your entries stay in the form.</span></div></div>
+    </form>
+  </section>
+</div>
+</main>
+</div>
+</body>
+</html>

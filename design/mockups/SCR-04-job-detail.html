@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job (own job, technician) · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the job</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board.html" aria-current="page">Board</a></nav>
+  <p class="who">Signed in: Tech A · Technician</p>
+</header>
+<main id="main" class="main">
+<p style="margin-bottom: var(--spacing-md)"><a class="btn btn--ghost" href="SCR-03-board.html"><span class="ic ic-left" aria-hidden="true"></span>Back to board</a></p>
+<div class="detail">
+  <section class="card card--light stack" aria-labelledby="jt">
+    <div class="row row--between"><time class="t-h4 t-strong" datetime="15:30">15:30</time><span class="badge badge--scheduled"><span class="ic ic-clock" aria-hidden="true"></span>Scheduled</span></div>
+    <h1 class="t-h3 t-strong" id="jt">Leaking kitchen faucet</h1>
+    <dl class="dl">
+      <div><dt>Date</dt><dd>Thursday, November 12, 2026</dd></div>
+      <div><dt>Address</dt><dd>45 Main St W, Hamilton</dd></div>
+      <div><dt>Customer</dt><dd>Pat Example</dd></div>
+      <div><dt>Customer phone</dt><dd>(905) 555-0123</dd></div>
+      <div><dt>Assigned to</dt><dd>Tech A</dd></div>
+    </dl>
+  </section>
+  <section class="card card--light on-light stack" aria-label="Update this job">
+    <div class="stack"><p class="t-strong">Status</p>
+      <div class="seg" role="group" aria-label="Status">
+        <button type="button" aria-pressed="true"><span class="ic ic-check" aria-hidden="true"></span>Scheduled</button>
+        <button type="button" aria-pressed="false">In progress</button>
+        <button type="button" aria-pressed="false">Done</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="notes">Notes</label>
+      <p class="help" id="notes-h">The owner and the assigned technician can edit notes. Everyone on the team can read them.</p>
+      <textarea id="notes" name="notes" aria-describedby="notes-h">Key under mat</textarea>
+      <p class="help">13 / 2000</p>
+    </div>
+    <button class="btn btn--primary btn--block" type="button">Save notes</button>
+  </section>
+</div>
+</main>
+</div>
+</body>
+</html>

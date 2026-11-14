@@ -1,0 +1,94 @@
+# .github/workflows/ci.yml: TEMPLATE (owned by bl-devops). Pin actions to full SHAs in the build session.
+name: ci
+
+on:
+  push:
+    branches: [staging, "lane/**"]
+  pull_request:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test -- --project unit
+      - name: Generated code matches the contract and DESIGN.md
+        run: |
+          npm run gen:api
+          npm run gen:theme
+          git diff --exit-code -- src/lib/api/generated src/app/theme.css docs/tokens.json
+      - run: npm run build
+
+  api-tests:
+    # Backend integration tests against the staging Supabase branch. Skipped for PRs from forks (no secrets).
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: staging
+    env:
+      SUPABASE_STAGING_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+      SUPABASE_STAGING_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+      SUPABASE_STAGING_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
+      SUPABASE_PRODUCTION_REF: ${{ vars.SUPABASE_PRODUCTION_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --project api
+
+  security:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: scripts/install-scanners.sh "$RUNNER_TEMP/bin" && echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Security scan (opengrep, gitleaks, osv-scanner, npm audit)
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: |
+          git fetch --no-tags origin "$BASE_REF"
+          scripts/security-scan.sh "origin/$BASE_REF" HEAD ci
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan
+          path: .baseleap/reviews/ci/
+          retention-days: 14
+
+  workflows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/install-scanners.sh "$RUNNER_TEMP/bin" actionlint && "$RUNNER_TEMP/bin/actionlint" -color

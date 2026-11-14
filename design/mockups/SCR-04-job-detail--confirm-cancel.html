@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job, confirm cancel · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the job</a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><span class="brand__name">Northside Plumbing</span><span class="brand__sub">Job board</span></div>
+  <button class="btn btn--ghost out" type="button">Sign out</button>
+  <nav class="nav" aria-label="Main"><a href="SCR-03-board--owner.html" aria-current="page">Board</a><a href="SCR-06-team.html">Team</a></nav>
+  <p class="who">Signed in: Owner</p>
+</header>
+<main id="main" class="main" aria-hidden="true">
+<p style="margin-bottom: var(--spacing-md)"><a class="btn btn--ghost" href="SCR-03-board--owner.html"><span class="ic ic-left" aria-hidden="true"></span>Back to board</a></p>
+<div class="detail">
+  <section class="card card--light stack">
+    <div class="row row--between"><time class="t-h4 t-strong" datetime="15:30">15:30</time><span class="badge badge--scheduled"><span class="ic ic-clock" aria-hidden="true"></span>Scheduled</span></div>
+    <h1 class="t-h3 t-strong">Leaking kitchen faucet</h1>
+    <dl class="dl">
+      <div><dt>Address</dt><dd>45 Main St W, Hamilton</dd></div>
+      <div><dt>Assigned to</dt><dd>Tech A</dd></div>
+    </dl>
+  </section>
+  <section class="card card--light on-light stack">
+    <div class="actions"><a class="btn btn--ghost" href="SCR-05-job-form--edit.html">Edit job</a><button class="btn btn--danger" type="button">Cancel job</button></div>
+  </section>
+</div>
+</main>
+</div>
+<div class="scrim"></div>
+<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dt" aria-describedby="dd">
+  <h2 class="t-h4 t-strong" id="dt">Cancel this job?</h2>
+  <p id="dd">Leaking kitchen faucet at 15:30 stays on the board marked Cancelled. You can restore it later by choosing a status.</p>
+  <div class="actions"><button class="btn btn--primary" type="button">No, keep the job</button><button class="btn btn--danger" type="button">Yes, cancel job</button></div>
+</div>
+</body>
+</html>

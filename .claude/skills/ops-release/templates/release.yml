@@ -1,0 +1,80 @@
+# .github/workflows/release.yml: TEMPLATE (owned by bl-devops). Production release after Gate 3.
+# The `production` GitHub environment must have Matthew as a required reviewer: the job waits for his approval.
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-production
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PRODUCTION_REF }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: npm ci
+      - run: npm install --global vercel@latest
+
+      - name: Migrations (dry run, then apply)
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+          supabase db push --dry-run
+          supabase db push
+
+      - name: Build and deploy to production (prebuilt)
+        id: deploy
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke check (read-only)
+        id: smoke
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: node scripts/smoke.mjs "$PRODUCTION_URL" "$EXPECTED_SHA"
+
+      - name: Roll back on failed smoke
+        if: failure() && steps.deploy.outcome == 'success'
+        run: |
+          vercel rollback --token="$VERCEL_TOKEN"
+          echo "::error::Smoke failed: production rolled back to the previous deployment. Migrations stay applied (expand/contract)."
+
+      - name: Release summary
+        if: always()
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+          SMOKE: ${{ steps.smoke.outcome }}
+        run: |
+          {
+            echo "### Release ${GITHUB_SHA::7}"
+            echo "- Deployment: ${DEPLOY_URL:-not deployed}"
+            echo "- Smoke: ${SMOKE}"
+            echo "- Rollback: \`vercel rollback\` (undo: \`vercel promote <deployment>\`)"
+          } >> "$GITHUB_STEP_SUMMARY"

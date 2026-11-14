@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Northside Plumbing job board</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<main id="main" class="center">
+  <section class="card stack" aria-labelledby="t">
+    <p class="brand__name">Northside Plumbing · Job board</p>
+    <h1 class="t-h2" id="t">Sign in</h1>
+    <p>Enter your work email. We'll email you a link. No password needed.</p>
+    <form class="stack" novalidate>
+      <div class="field">
+        <label for="email">Email<span class="req">required</span></label>
+        <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" autocapitalize="none">
+      </div>
+      <button class="btn btn--primary btn--block" type="submit">Email me a link</button>
+    </form>
+    <p class="help">Only people on the Northside Plumbing team can sign in.</p>
+  </section>
+</main>
+</body>
+</html>
