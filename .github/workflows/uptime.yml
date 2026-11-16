@@ -1,0 +1,56 @@
+# .github/workflows/uptime.yml (owned by bl-devops). Scheduled read-only production smoke check; one issue per outage.
+# Scheduled workflows only run from the default branch (main) and GitHub may delay them.
+# PRODUCTION_URL is a repository variable (not environment-scoped) so this never waits for production approval.
+name: uptime
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@PIN-ME-v4.2.2 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@PIN-ME-v4.4.0 # v4.4.0
+        with:
+          node-version: 22
+      - name: Configuration is complete (a missing variable is a setup problem, not an outage)
+        run: |
+          : "${PRODUCTION_URL:?GitHub repository variable PRODUCTION_URL is not set}"
+      - name: Smoke check production
+        id: smoke
+        continue-on-error: true
+        run: node scripts/smoke.mjs "$PRODUCTION_URL" > smoke.txt 2>&1
+      - name: Open or update the uptime issue
+        if: steps.smoke.outcome == 'failure'
+        run: |
+          gh label create uptime --color B60205 --description "Production smoke check failing" --force >/dev/null
+          body="$(printf 'Production smoke check failed at %s.\n\n```\n%s\n```\nRunbook: docs/runbook.md#incidents' "$(date -u +%FT%TZ)" "$(cat smoke.txt)")"
+          n=$(gh issue list --label uptime --state open --json number --jq '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body "$body"; else gh issue create --title "Production is down" --label uptime --body "$body"; fi
+          exit 1
+      - name: Close the uptime issue on recovery
+        if: steps.smoke.outcome == 'success'
+        run: |
+          n=$(gh issue list --label uptime --state open --json number --jq '.[0].number')
+          if [ -n "$n" ]; then gh issue close "$n" --comment "Recovered at $(date -u +%FT%TZ)."; fi
