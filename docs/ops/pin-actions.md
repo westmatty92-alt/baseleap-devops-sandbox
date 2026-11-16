@@ -58,3 +58,20 @@ bash scripts/install-scanners.sh /tmp/scanners actionlint && /tmp/scanners/actio
 Then commit (`.github/workflows/**` only) and push. CI's `workflows` job repeats the pin check on every push.
 
 Bumping later: change the tag, re-resolve the SHA, and read the action's release notes first.
+Current pins: checkout v7.0.1, setup-node v7.1.0, upload-artifact v7.0.2 (OPS3).
+
+## 4. Pin shellcheck (one-time, needs internet)
+
+shellcheck publishes no checksums file, so `scripts/install-scanners.sh` pins the tarball digest itself and
+refuses to install while `SHELLCHECK_SHA256` is `PIN-ME`. Download the tarball from the official release,
+compute the digest yourself, and compare it with the digest GitHub shows on the release page:
+
+```bash
+v=0.11.0   # must match SHELLCHECK_VERSION in the script; confirm it is still a current release
+curl -fsSLO "https://github.com/koalaman/shellcheck/releases/download/v${v}/shellcheck-v${v}.linux.x86_64.tar.xz"
+sha256sum "shellcheck-v${v}.linux.x86_64.tar.xz"
+```
+
+Put the 64 hex characters into `SHELLCHECK_SHA256`, then run
+`bash scripts/install-scanners.sh /tmp/scanners shellcheck actionlint` and put `/tmp/scanners` on `PATH`
+before running actionlint. CI does not need this: GitHub's runner already has shellcheck.
