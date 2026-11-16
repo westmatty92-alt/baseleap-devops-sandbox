@@ -34,13 +34,14 @@ Deviate only when a PRD requirement makes the default wrong (e.g. long-running j
 Write one whenever there were real alternatives — stack, auth approach, data ownership, sync strategy, tenancy model, anything the PRD's "stop and escalate" list touches. Not for trivia.
 
 Use `templates/decision.md`. Rules:
-- Numbered, never renumbered; `docs/decisions/README.md` is the index (number · title · status · date).
+- Numbered, never renumbered; `docs/decisions/README.md` is the index (number · title · status · date) and lists **every** file in the folder.
+- **The folder is shared with the orchestrator.** Intake decisions (build mode, scope calls Matthew made) may already be there as `0001`…: they are locked. Don't edit or renumber them. Number yours after the highest existing one, and name the stack record `NNNN-stack.md`. Cite intake decisions by number; don't restate them.
 - **Status:** `proposed` while you work → becomes `locked` when Matthew approves Gate 2 (the orchestrator sets it). A locked decision is changed only by a **new** record that supersedes it.
 - Alternatives are real ones with an honest "why not" — not strawmen.
 - Consequences include the negatives and the risks.
 - Link it: which PRD sections (FR-n) drove it, which migrations/contract paths implement it.
 
-`0001-stack.md` is always written: house stack confirmed or deviations listed.
+A `NNNN-stack.md` is always written (numbered after any intake decisions): house stack confirmed or deviations listed.
 
 ## 4. Research before deciding
 

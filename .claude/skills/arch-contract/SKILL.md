@@ -27,7 +27,7 @@ Every operation has: `operationId` (camelCase verb+noun, e.g. `listBookings`), `
 | Errors | `application/problem+json` (RFC 9457): `type`, `title`, `status`, `detail`, plus `errors[]` with `field` + `message` for 422 validation |
 | Status codes | 200/201/204 · 400 malformed · 401 no session · 403 wrong role · 404 not found *or not yours* (don't leak existence) · 409 conflict · 422 validation · 429 rate-limited |
 | Pagination | cursor-based on every list: `?cursor=&limit=` (default 20, max 100) → `{ data: [], next_cursor: string \| null }` |
-| Auth | `bearerAuth` (Supabase session JWT); GHL-embedded routes as defined in `docs/SECURITY_MODEL.md` |
+| Auth | `bearerAuth` (Supabase session JWT); GHL-embedded routes as defined in `docs/SECURITY_MODEL.md`. Pre-session routes (sign-in, callback) live under `/auth/*` with `security: []` and a rate-limit note, or as Server Actions documented in architecture.md |
 | Versioning | single first-party consumer → no URL version; changes after Gate 2 are **additive only** unless a superseding decision record says otherwise |
 | Webhooks in | (Stripe, GHL) documented as operations under `/api/webhooks/*` with signature verification noted |
 
@@ -49,10 +49,13 @@ Every operation has: `operationId` (camelCase verb+noun, e.g. `listBookings`), `
 
 Simple per-user reads/writes protected by RLS may go straight from the client to Supabase (no route handler). Allowed only when: the table's RLS fully expresses the rule, no secret or third-party call is involved, and no business logic runs. List each such table in `docs/architecture.md` ("Direct Supabase access") — the contract then covers everything else. When in doubt, put it in the API.
 
+**Errors every contract needs** (from dry run BE1): a `500` response with a problem `code` of `internal_error` in the enum, so unexpected failures still match the contract. And say what an undefined method returns (405 problem+json); Next returns a bare 405 unless the backend adds a handler for it.
+
 ## 6. Integration contract (`platform_extension` and `hybrid` only)
 
-The PRD's `build_mode` decides this. In those two modes you also write `docs/integration-contract.md` from `templates/integration-contract.md`. It's locked at Gate 2 with the API contract, before any frontend, backend or integration step starts.
+The PRD's `build_mode` decides this. In those two modes, **and in `custom` mode whenever the PRD names an external provider that needs a webhook, sync, OAuth or more than one call** (Stripe payments, QuickBooks, a POS), you also write `docs/integration-contract.md`. The ledger refuses any `integration` step that doesn't depend on it from `templates/integration-contract.md`. It's locked at Gate 2 with the API contract, before any frontend, backend or integration step starts.
 
+- **No sync in v1 is a valid answer.** Write "None in v1 — <reason>" under Field mapping instead of a table, and keep the other sections (outage behaviour still covers any outside service v1 uses, such as the email provider). Record deferred designs separately, clearly marked not built.
 - **One system of record per record type.** The copy never wins.
 - **Every mapped field has a direction:** `in`, `out`, `both` or `read-only`. A `both` field needs a written conflict rule. "Sync everything both ways" is not a design.
 - **Every inbound event has an idempotency key and a signature check.** Every outbound create has an idempotency key.

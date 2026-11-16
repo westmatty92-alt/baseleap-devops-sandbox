@@ -45,11 +45,19 @@ Rules:
 
 1. Create the app with the framework's own generator (non-interactive flags), TypeScript strict, ESLint.
 2. Add the house dependencies only: Supabase client (`@supabase/ssr`), Tailwind + shadcn base, TanStack Query, `zod`, `react-hook-form`, Orval + MSW (dev), test runner (Vitest + Testing Library) and Playwright (QA configures it later).
+   - Vitest `test.include` must cover every lane's test folder: `src/**/*.test.{ts,tsx}`, `tests/unit/**`, `tests/api/**` and `tests/integrations/**` (Lesson from INT2, Nov 15: integration tests were written but never matched by `npm test`.) Add a `test:offline` script that runs only the tests that need no database (`src/**`, `tests/unit/**`, `tests/integrations/**`), so lanes without the local stack can still prove their work. `npm test` stays the full run.
 3. Scripts in `package.json` — the build lanes and CI rely on these exact names:
-   `typecheck` · `lint` · `test` · `build` · `gen:types` (Orval + Supabase types) · `mock` (Prism on the contract) · `db:test` (migrations + RLS tests against the preview branch: `supabase db push --db-url "$SUPABASE_PREVIEW_DB_URL" && supabase test db --db-url "$SUPABASE_PREVIEW_DB_URL"`, with the Supabase CLI as a dev dependency; tests are pgTAP files under `supabase/tests/`). The script refuses to run when the URL contains the production project ref.
+   `typecheck` · `lint` · `test` · `build` · `gen:types` (Orval + Supabase types) · `mock` (Prism on the contract) · `db:migrate` · `db:test`. The database scripts come from `templates/db.mjs` → `supabase/scripts/db.mjs`: `db:migrate` = `node supabase/scripts/db.mjs migrate`, `db:test` = `node supabase/scripts/db.mjs test`, `gen:types` = `node supabase/scripts/db.mjs types && orval`.
+   - It applies pending migrations with `psql`, one file per transaction, and records them in `supabase_migrations.schema_migrations` (the CLI's own table, so a later real push sees them as applied).
+   - It runs every pgTAP file under `supabase/tests/` and checks the TAP output.
+   - It generates `src/types/database.ts` with the Supabase CLI devDependency. **CLI 3.x takes `--remote=<url>`; `--db-url` is gone.**
+   - It targets `SUPABASE_PREVIEW_DB_URL`. It refuses the production ref (`SUPABASE_PROD_PROJECT_REF`) and any non-local host while that ref is unset.
+   - Never `supabase db push` / `link` / `start` (`db push` is on the deny list). CI needs `psql` (`postgresql-client`).
 4. A `GET /api/health` route returning `{ status: "ok", version }` — devops and QA depend on it.
+   Supabase SSR helpers in `src/lib/server/` (user client, admin client used only where SECURITY_MODEL allows, lazily validated env so builds need no secrets, and a session-refresh helper for the proxy). **Next.js 16 renamed `middleware.ts` to `src/proxy.ts` (`export function proxy`).** Leave `src/proxy.ts` itself to the backend's auth step, and list it in the backend lane.
 5. Placeholder pages for each screen in the design spec's inventory (title only) so routes exist for both lanes.
    Keep the designer's generated `src/app/theme.css` (from `DESIGN.md`) and import it from the global stylesheet; never overwrite or hand-edit it.
+   **Fonts and page background are the scaffold's job** (the frontend doesn't own the root layout or `globals.css`): load DESIGN.md's fonts in the root layout: open-licence fonts through `@fontsource/*`, licensed ones self-hosted with `next/font/local` from `public/fonts/<family>/` (Baseleap: Garet Book and Garet Heavy, free from Font Squirrel under the Fontspring webfont EULA, for Baseleap-owned sites only). If the files aren't in the repo, say so in the report: don't fall back silently, and set the body background and text colour from DESIGN.md's tokens in `globals.css`. In dry run FE1 neither was done, so the board fell back to system fonts and overrode the body colour itself.
 6. Commit to the `staging` branch as `STEP <id>: scaffold` — lanes are created from this commit after Gate 2.
 
 ## 3. Prove it compiles (the step's verify)

@@ -45,3 +45,6 @@ Use the Playwright MCP (headless, isolated) to explore a screen, reproduce a fai
 
 ---
 Sources (ideas adapted, text written for Baseleap): lackeyjb/playwright-skill (MIT — multi-viewport runs, screenshots, network interception), anthropics/skills `webapp-testing` (Apache-2.0 — reconnaissance-then-action, wait for network idle, capture failures; the ComposioHQ entry is a copy of this skill under the same licence. Its `with_server.py` boots a local server, which Baseleap doesn't use), microsoft/playwright-mcp (Apache-2.0 — accessibility-snapshot navigation, `--isolated`, `--headless`), obra/superpowers (MIT — role-based selectors, evidence before claims).
+
+## Emails and messages: test inbox only
+A test that checks an email or message ("exactly one confirmation email") uses a **test inbox** the project sets up for staging (a sink or catch-all mailbox, named in `infra/environments.json` by DevOps), never a real person's address. Assert on count, recipient, subject and the key link or text. If staging has no test inbox, the test is NOT ASSESSABLE and the plan says what DevOps must add; never send to a real address to make it pass. SMS is never sent in tests.

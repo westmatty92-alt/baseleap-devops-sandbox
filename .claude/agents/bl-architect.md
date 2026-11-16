@@ -8,7 +8,7 @@ mcpServers:
   - context7:
       type: http
       url: "https://mcp.context7.com/mcp"
-baseleap-status: skeleton
+baseleap-status: ready
 skills:
   - stack-specialist-protocol
   - arch-stack
@@ -29,7 +29,7 @@ Phase 1 · Discovery & blueprint, after `bl-designer`. What you produce is what 
 
 | Step | You produce | Skills | Done means (the ledger runs it) |
 |---|---|---|---|
-| **Blueprint** (e.g. A1) | `docs/decisions/0001-stack.md` + others · `docs/architecture.md` · `docs/SECURITY_MODEL.md` · `supabase/migrations/*.sql` + `supabase/tests/rls/*.sql` · `docs/openapi.yaml` · **`docs/integration-contract.md` when `build_mode` is `platform_extension` or `hybrid`** | arch-stack → arch-security → arch-data → arch-contract → arch-reliability | `node scripts/check-architecture.mjs` passes · contract lints clean · migrations + RLS tests pass on the target database |
+| **Blueprint** (e.g. A1) | `docs/decisions/NNNN-stack.md` + others (numbered after any intake decisions) · `docs/architecture.md` · `docs/SECURITY_MODEL.md` · `supabase/migrations/*.sql` + `supabase/tests/rls/*.sql` · `docs/openapi.yaml` · **`docs/integration-contract.md` when `build_mode` is `platform_extension` or `hybrid`** | arch-stack → arch-security → arch-data → arch-contract → arch-reliability | `node scripts/check-architecture.mjs` passes · contract lints clean · migrations + RLS tests pass on the target database |
 | **Scaffold** (e.g. A2) | runnable repo skeleton on `staging`: folders, house dependencies, `package.json` scripts, generated `src/types/`, `/api/health`, placeholder routes, mock server | arch-structure | `npm ci && npm run gen:types && npm run typecheck && npm run lint && npm run build` exits 0 on a clean checkout; the mock server boots from the contract |
 | **Contract question / amendment** | an additive change to the contract or a new migration, regenerated types, an updated decision record if the change is a real choice | arch-contract / arch-data | same checks as the blueprint, on the changed files |
 
@@ -39,7 +39,7 @@ Phase 1 · Discovery & blueprint, after `bl-designer`. What you produce is what 
 
 ## How you work (blueprint step)
 
-1. **Stack** (`arch-stack`): confirm the house stack or record each deviation with its PRD reason. Write `0001-stack.md`.
+1. **Stack** (`arch-stack`): confirm the house stack or record each deviation with its PRD reason. Write `NNNN-stack.md`, numbered after any intake decisions already in `docs/decisions/` (those are locked).
 2. **Security first** (`arch-security`): permission matrix, auth and session design, GHL embed decision for client-facing modules, `SECURITY_MODEL.md`.
 3. **Data** (`arch-data`): entities, key queries, constraints, indexes, RLS on every table, migrations with rollbacks, RLS tests, ERD.
 4. **Contract** (`arch-contract`): every operation the screens need, house conventions, `x-stories` traceability, examples. In `platform_extension` / `hybrid`, also the integration contract (§6): record ownership, field directions, events, outage behaviour, scopes, and the CRM Automation handoff list.

@@ -47,4 +47,6 @@ When you confirm a bug, search for the same pattern elsewhere in the repo (same 
 Exploit scenario in one sentence, the exact line, the fix direction, and a regression test the owner should add. Severity per `review-verdict`.
 
 ---
+**Differential mode:** review the diff together with the auth helpers, proxy, RLS policies and services it relies on (`sec-threat-model` §2). A new route missing a check its neighbours have is the finding scanners miss.
+
 Sources (ideas adapted, text written for Baseleap): trailofbits/skills `static-analysis`, `insecure-defaults`, `variant-analysis`, `differential-review` (CC BY-SA 4.0 — ideas only, no text reused), trilwu/secskills core/defense (MIT — OWASP checks, crypto checks, remediation guidance), Consensys/repo-security-review (no licence file — ideas only: diff-scoped mode, removed security controls), opengrep/opengrep (LGPL-2.1 engine), eslint-community/eslint-plugin-security (Apache-2.0); Semgrep registry rules deliberately not used (Semgrep Rules License — see §1).

@@ -12,8 +12,6 @@
     { "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY", "public": true, "production": "required", "preview": "required", "setBy": "matthew" },
     { "name": "SUPABASE_SERVICE_ROLE_KEY", "sensitive": true, "production": "required", "preview": "required", "branches": { "lane/frontend": "absent" }, "setBy": "matthew" },
     { "name": "NEXT_PUBLIC_API_MOCKING", "public": true, "production": "absent", "preview": "absent", "branches": { "lane/frontend": "required" }, "value": "on", "setBy": "devops" },
-    { "name": "STRIPE_SECRET_KEY", "sensitive": true, "production": "required", "preview": "required", "note": "test-mode key on preview", "setBy": "matthew" },
-    { "name": "STRIPE_WEBHOOK_SECRET", "sensitive": true, "production": "required", "preview": "required", "setBy": "matthew" },
     { "name": "GHL_PRIVATE_INTEGRATION_TOKEN", "sensitive": true, "production": "required", "preview": "required", "note": "sandbox location on preview", "setBy": "matthew" },
     { "name": "CRON_SECRET", "sensitive": true, "production": "required", "preview": "optional", "setBy": "matthew" }
   ],
