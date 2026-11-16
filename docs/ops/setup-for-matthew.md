@@ -12,11 +12,11 @@ Nothing here deploys anything. It gives the pipeline the settings and keys it ne
 - Use these names exactly: capitals, underscores, no spaces.
 - This is a sandbox. It's deleted after the drills (see Part 5, which cleans up).
 
-**Spend check.** If any page says "Upgrade", "Pro plan" or shows a price, **stop**. That is a spending decision for you and Baseleap. Don't click upgrade. The one place this may happen is GitHub (Part 3, step 3.0).
+**Spend check.** If any page says "Upgrade", "Pro plan" or shows a price, **stop**. That is a spending decision for you and Baseleap. Don't click upgrade. GitHub shouldn't ask, because the sandbox repo is public.
 
 | Your sandbox | |
 |---|---|
-| GitHub repo | `westmatty92-alt/baseleap-devops-sandbox` (private) |
+| GitHub repo | `westmatty92-alt/baseleap-devops-sandbox` (public: it's a practice app with no client data; keys stay hidden in GitHub's encrypted secrets) |
 | Vercel project | `baseleap` team → `baseleap-devops-sandbox` |
 | Production address | `https://baseleap-devops-sandbox.vercel.app` (public address, not a secret) |
 | Supabase project ref | `lrwtbrycrjturxnyqdta` (ca-central-1) |
@@ -133,8 +133,8 @@ Open **supabase.com/dashboard/project/lrwtbrycrjturxnyqdta** (the project ref is
 
 Open **github.com/westmatty92-alt/baseleap-devops-sandbox** → **Settings** (top menu of the repo).
 
-### 3.0 Check your plan allows this
-Private repositories on GitHub's free plan don't support the two protections we need (required approvers on an environment, and protected branches). Look at step 3.3 first. If you see "Upgrade to GitHub Pro/Team" next to **Required reviewers**, **stop here** and tell Baseleap. Don't pay. It's a spend decision, and without those protections the release approval is not enforced.
+### 3.0 Plan check: already done
+The sandbox repo is **public**, so GitHub's free plan includes the two protections we need (required approvers on an environment, and protected branches). If you still see "Upgrade" next to **Required reviewers**, stop and send a screenshot.
 
 ### 3.1 Make the default permissions read-only
 1. **Settings → Actions → General**.
