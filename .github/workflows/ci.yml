@@ -1,0 +1,147 @@
+# .github/workflows/ci.yml (owned by bl-devops). Verification on every lane, staging and PR.
+# Required status checks for `main` (branch protection): verify, security, workflows.
+#
+# PINNING: every `uses:` must be a full 40-character commit SHA. The `PIN-ME-<tag>` refs below are
+# deliberate placeholders (the pipeline was authored without network access to resolve them).
+# They fail loudly (the `workflows` job below rejects them) until docs/ops/pin-actions.md has been run.
+name: ci
+
+on:
+  push:
+    branches: [staging, "lane/**"]
+  pull_request:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      # Placeholders only, so `next build` has something to read. Not real project values.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      # Unit/component tests only. tests/api talks to a real Supabase and refuses the production
+      # project; in this sandbox staging and production are the same project, so it is not run here.
+      - run: npm test -- --exclude 'tests/api/**'
+      - run: npm run build
+
+  security:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # gitleaks scans history
+          persist-credentials: false
+      - name: Install pinned, checksum-verified scanners
+        env:
+          BIN_DIR: ${{ runner.temp }}/bin
+        run: |
+          bash scripts/install-scanners.sh "$BIN_DIR" gitleaks osv-scanner
+          echo "$BIN_DIR" >> "$GITHUB_PATH"
+      - name: gitleaks (secrets in history)
+        run: gitleaks git --redact --no-banner --exit-code 1 .
+      # Policy (docs/ops/osv-policy.md): BLOCK on Critical/High in packages that ship; dev-only findings are
+      # warnings in the job summary unless Critical. Dev vs shipped comes from OSV's own dependency_groups.
+      - name: osv-scanner (known-vulnerable dependencies)
+        env:
+          OSV_JSON: ${{ runner.temp }}/osv.json
+        run: |
+          rc=0
+          osv-scanner scan source -L package-lock.json --format json --output-file "$OSV_JSON" || rc=$?
+          # 0 = clean, 1 = vulnerabilities found (judged below). Anything else is a scanner failure.
+          if [ "$rc" -gt 1 ] || [ ! -s "$OSV_JSON" ]; then
+            echo "::error::osv-scanner failed (exit $rc)"
+            exit 1
+          fi
+          node --input-type=module - <<'EOF'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const rank = { LOW: 1, MEDIUM: 2, MODERATE: 2, HIGH: 3, CRITICAL: 4 };
+          const names = ['', 'Low', 'Medium', 'High', 'Critical'];
+          const fromScore = (s) => (s >= 9 ? 4 : s >= 7 ? 3 : s >= 4 ? 2 : s > 0 ? 1 : 0);
+          const cmp = (a, b) => a.localeCompare(b, 'en', { numeric: true });
+          const doc = JSON.parse(readFileSync(process.env.OSV_JSON, 'utf8'));
+          const rows = [];
+          for (const res of doc.results ?? []) {
+            for (const pkg of res.packages ?? []) {
+              // Only an explicit, exclusive "dev" group counts as dev. Anything else is treated as shipped.
+              const groups = pkg.dependency_groups ?? [];
+              const dev = groups.length > 0 && groups.every((g) => g === 'dev');
+              for (const g of pkg.groups ?? []) {
+                const vulns = (pkg.vulnerabilities ?? []).filter((v) => g.ids.includes(v.id));
+                // Worst of the CVSS score and the advisory's own label; unknown severity is treated as High.
+                let sev = fromScore(parseFloat(g.max_severity));
+                for (const v of vulns) sev = Math.max(sev, rank[String(v.database_specific?.severity ?? '').toUpperCase()] ?? 0);
+                if (sev === 0) sev = 3;
+                const fixed = new Set();
+                for (const v of vulns)
+                  for (const a of v.affected ?? [])
+                    if (a.package?.name === pkg.package.name)
+                      for (const r of a.ranges ?? [])
+                        for (const e of r.events ?? []) if (e.fixed) fixed.add(e.fixed);
+                rows.push({
+                  name: pkg.package.name, version: pkg.package.version, dev, sev,
+                  id: g.ids[0], fixed: [...fixed].sort(cmp).join(', ') || 'none known',
+                });
+              }
+            }
+          }
+          const blocking = rows.filter((r) => (r.dev ? r.sev >= 4 : r.sev >= 3));
+          const warnings = rows.filter((r) => !blocking.includes(r));
+          const table = (list) =>
+            ['| Package | Version | Severity | Advisory | Fixed in |', '|---|---|---|---|---|',
+              ...list.sort((a, b) => b.sev - a.sev || a.name.localeCompare(b.name)).map(
+                (r) => `| ${r.name}${r.dev ? ' (dev)' : ''} | ${r.version} | ${names[r.sev]} | ${r.id} | ${r.fixed} |`)].join('\n');
+          let md = '## OSV-Scanner\n\n';
+          md += blocking.length ? `### Blocking (${blocking.length})\n\n${table(blocking)}\n\n` : 'No blocking findings.\n\n';
+          if (warnings.length) md += `### Warnings, not blocking (${warnings.length})\n\n${table(warnings)}\n`;
+          if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+          else console.log(md);
+          for (const r of warnings.filter((x) => x.dev && x.sev >= 3))
+            console.log(`::warning title=Dev-only vulnerability::${r.name}@${r.version} ${r.id} (${names[r.sev]}); fixed in ${r.fixed}`);
+          for (const r of blocking)
+            console.log(`::error title=Blocking vulnerability::${r.name}@${r.version} ${r.id} (${names[r.sev]}${r.dev ? ', dev' : ', ships'}); fixed in ${r.fixed}`);
+          if (blocking.length) process.exit(1);
+          EOF
+
+  workflows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Every action is pinned to a full commit SHA
+        run: |
+          bad=$(grep -rnE '^[[:space:]-]*uses:[[:space:]]' .github/workflows \
+            | grep -vE 'uses:[[:space:]]+\./' \
+            | grep -vE 'uses:[[:space:]]+[^@[:space:]]+@[0-9a-f]{40}([[:space:]]|$)' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Unpinned actions found. Pin them with docs/ops/pin-actions.md:"
+            echo "$bad"
+            exit 1
+          fi
+      - name: actionlint
+        env:
+          BIN_DIR: ${{ runner.temp }}/bin
+        run: |
+          bash scripts/install-scanners.sh "$BIN_DIR" actionlint
+          "$BIN_DIR/actionlint" -color

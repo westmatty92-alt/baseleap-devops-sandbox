@@ -40,9 +40,9 @@ Key queries and their indexes: <query → index>
 | <none / US-NNN> | <static content / client-only> |
 
 ## Lane ownership (copied into build steps)
-- **Backend:** `src/app/api/**`, `src/lib/server/**` (services, integrations, auth, http, log, env, admin), `supabase/seed.sql`, `tests/api/**`, `tests/helpers/**`
-- **Integration (only when `bl-integration` is dispatched; otherwise these stay with Backend):** `src/lib/server/integrations/**`, `src/app/api/webhooks/**`, `src/lib/server/jobs/sync-*`, `tests/integrations/**`, `docs/integrations/**`
-- **Frontend:** `src/app/(app)/**`, `src/app/embed/**`, `src/components/**`, `src/hooks/**`, `src/lib/api/fetcher.ts`, `src/mocks/**`
+- **Backend:** `src/proxy.ts` (Next 16 session refresh + redirects), `src/app/api/**`, `src/lib/server/**` (services, integrations, auth, http, log, env, admin), `supabase/seed.sql`, `tests/api/**`, `tests/helpers/**`
+- **Integration (only when `bl-integration` is dispatched; otherwise these stay with Backend):** `src/lib/server/integrations/**`, `src/app/api/webhooks/**`, `src/lib/server/jobs/sync-*`, `tests/integrations/**`, `tests/mocks/**`, `docs/integrations/**`
+- **Frontend:** `src/lib/utils.ts`, `src/app/(app)/**`, `src/app/embed/**`, `src/components/**`, `src/hooks/**`, `src/lib/api/fetcher.ts`, `src/mocks/**`
 - **Architect (contract — changes via contract question):** `docs/openapi.yaml`, `supabase/migrations/**`, `orval.config.ts`, `src/lib/shared/**`, generated `src/lib/api/generated/**` + `src/types/database.ts`
 - **Designer (generated):** `src/app/theme.css`
 - **QA:** `tests/e2e/**`, `tests/fuzz/**`, `playwright.config.ts`, `docs/test-plan.md`, `docs/qa-reports/**`

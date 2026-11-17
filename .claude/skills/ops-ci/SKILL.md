@@ -40,3 +40,6 @@ Read the failing step's log first, reproduce the exact command, and classify lik
 
 ---
 Sources (ideas adapted, text written for Baseleap): akin-ozer/cc-devops-skills `github-actions-generator`/`github-actions-validator` (Apache-2.0 — actionlint, pinned versions), alirezarezvani/claude-skills `ci-cd-pipeline-builder` (MIT — lint/test/build/gated deploy stages, caching), Jeffallan/claude-skills `devops-engineer` (MIT). borghei/Claude-Skills `ci-cd-pipeline-builder` reviewed for ideas only (Commons Clause).
+
+## Auto-commit jobs
+Any job that commits or pushes by itself (a docs auto-sync, a bot) runs `templates/pre-commit-secrets.sh` (as `scripts/pre-commit-secrets.sh`) right before its commit. A non-zero exit means don't commit and alert a human. Pair it with GitHub push protection on the repo.

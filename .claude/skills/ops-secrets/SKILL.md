@@ -38,6 +38,9 @@ When something must be set, write a **setting request** in your report: name · 
 
 ## 5. Rotation (runbook section you maintain)
 
+Keep `docs/ops/secret-inventory.md` from `templates/secret-inventory.md`: every secret by name, what it unlocks, its scope, every place it lives, who created it and when it was last rotated. On an existing project, build it during the takeover. Each rotation gets click-by-click steps written for a non-developer.
+
+
 For each secret: where it's created, where it's stored (every place), what breaks while rotating, and the order (create new → store everywhere → redeploy → verify → revoke old). A leaked secret (from `bl-security`) is rotated first and cleaned from history second — both are Matthew's actions, prepared by you as a checklist.
 
 ---

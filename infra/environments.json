@@ -1,0 +1,136 @@
+{
+  "$comment": "infra/environments.json (owned by bl-devops). Names and rules only, never values. Values are set by Matthew in Vercel / GitHub (see docs/ops/setup-for-matthew.md).",
+  "project": "baseleap-devops-sandbox",
+  "sandboxException": {
+    "sharedSupabaseProject": true,
+    "reason": "Throwaway DevOps sandbox: there is ONE Supabase project, used for both staging and production.",
+    "consequences": [
+      "Staging previews, lane previews and production read and write the same database.",
+      "The api-tests job is not run in CI: tests/helpers/auth.ts refuses a remote Supabase that matches SUPABASE_PROD_PROJECT_REF, and staging IS that project.",
+      "Migrations applied by release.yml take effect for staging too."
+    ],
+    "rule": "SANDBOX ONLY. Real client projects never share a Supabase project between staging and production."
+  },
+  "vercel": {
+    "team": "baseleap",
+    "project": "baseleap-devops-sandbox",
+    "region": "iad1",
+    "productionGitDeploys": "off (vercel.json git.deploymentEnabled.main = false); production is deployed only by .github/workflows/release.yml"
+  },
+  "environments": {
+    "production": {
+      "branch": "main",
+      "vercel": "production",
+      "supabase": "lrwtbrycrjturxnyqdta",
+      "supabaseRegion": "ca-central-1",
+      "url": "https://baseleap-devops-sandbox.vercel.app",
+      "deployedBy": "release.yml (behind the GitHub `production` environment, Matthew approves)"
+    },
+    "staging": {
+      "branch": "staging",
+      "vercel": "preview",
+      "supabase": "lrwtbrycrjturxnyqdta",
+      "sandboxException": "shares the production Supabase project",
+      "url": null,
+      "urlPattern": "https://baseleap-devops-sandbox-git-staging-<team-slug>.vercel.app",
+      "urlNote": "Matthew confirms the exact stable branch URL in Vercel > Deployments (see setup-for-matthew.md step 1.6). CI uses the exact deployment URL from the deployment event instead."
+    },
+    "lane-frontend": {
+      "branch": "lane/frontend",
+      "vercel": "preview",
+      "supabase": "lrwtbrycrjturxnyqdta",
+      "sandboxException": "shares the production Supabase project"
+    },
+    "lane-backend": {
+      "branch": "lane/backend",
+      "vercel": "preview",
+      "supabase": "lrwtbrycrjturxnyqdta",
+      "sandboxException": "shares the production Supabase project"
+    }
+  },
+  "variables": [
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_URL",
+      "public": true,
+      "production": "required",
+      "preview": "required",
+      "setBy": "matthew",
+      "readBy": "src/lib/server/env.ts, src/lib/server/supabase-proxy.ts, src/app/api/health/route.ts",
+      "source": "Supabase > Project Settings > Data API > Project URL"
+    },
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "public": true,
+      "production": "required",
+      "preview": "required",
+      "setBy": "matthew",
+      "readBy": "src/lib/server/env.ts, src/lib/server/supabase-proxy.ts, src/app/api/health/route.ts",
+      "source": "Supabase > Project Settings > API Keys > anon (legacy) or publishable key"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "sensitive": true,
+      "production": "required",
+      "preview": "required",
+      "setBy": "matthew",
+      "readBy": "src/lib/server/env.ts (serviceRoleKey), used only by src/lib/server/admin.ts",
+      "source": "Supabase > Project Settings > API Keys > service_role (legacy) or secret key"
+    },
+    {
+      "name": "SITE_URL",
+      "sensitive": false,
+      "production": "required",
+      "preview": "required",
+      "setBy": "matthew",
+      "readBy": "src/lib/server/env.ts (email sign-in redirect)",
+      "note": "Not a secret, a URL. Production = the production URL. Preview = the stable staging URL, set for ALL preview branches (env-check --vercel requires an all-branches Preview entry; lane previews therefore send sign-in links to staging, which is fine for the sandbox)."
+    },
+    {
+      "name": "SESSION_MAX_AGE_DAYS",
+      "sensitive": false,
+      "production": "optional",
+      "preview": "optional",
+      "setBy": "matthew",
+      "readBy": "src/lib/server/env.ts",
+      "note": "Defaults to 30 in code. Leave unset."
+    }
+  ],
+  "systemVariables": {
+    "VERCEL_GIT_COMMIT_SHA": "Provided by Vercel, never set by hand. GET /api/health reports its first 7 characters as `version`; the release smoke check compares against it."
+  },
+  "toolingOnly": {
+    "note": "Read by scripts/ and tests/, never by the deployed app. Must NOT exist in Vercel (env-check --vercel reports them as undeclared if they do).",
+    "names": [
+      "SUPABASE_PREVIEW_DB_URL",
+      "SUPABASE_PROD_PROJECT_REF",
+      "E2E_OWNER_EMAIL",
+      "E2E_TECH_A_EMAIL",
+      "E2E_TECH_B_EMAIL",
+      "BASELEAP_LEDGER_URL",
+      "BASELEAP_LEDGER_SERVICE_KEY",
+      "BASELEAP_LEDGER_ANON_KEY",
+      "BASELEAP_OPERATOR_ID",
+      "BASELEAP_OPERATOR_EMAIL"
+    ]
+  },
+  "github": {
+    "repository": {
+      "secrets": [],
+      "variables": ["PRODUCTION_URL"],
+      "note": "PRODUCTION_URL is a repository variable (not environment-scoped) so the 15-minute uptime check can read it without waiting for production approval."
+    },
+    "staging": {
+      "secrets": ["VERCEL_AUTOMATION_BYPASS_SECRET"],
+      "variables": ["PRODUCTION_HOSTS"],
+      "requiredReviewers": [],
+      "later": "SUPABASE_STAGING_URL, SUPABASE_STAGING_ANON_KEY, SUPABASE_STAGING_SERVICE_ROLE_KEY are added (as a setting request) only when QA's e2e suite lands and needs them. Not granted to CI before there is a consumer."
+    },
+    "production": {
+      "secrets": ["VERCEL_TOKEN", "SUPABASE_ACCESS_TOKEN", "SUPABASE_DB_PASSWORD"],
+      "variables": ["VERCEL_ORG_ID", "VERCEL_PROJECT_ID", "SUPABASE_PRODUCTION_REF"],
+      "requiredReviewers": ["matthew"],
+      "deploymentBranches": ["main"]
+    }
+  },
+  "smokePaths": ["/api/health", "/sign-in", "/offline"]
+}

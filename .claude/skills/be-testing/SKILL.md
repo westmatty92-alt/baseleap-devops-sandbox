@@ -20,7 +20,9 @@ Call the handlers in-process (import the route's `GET`/`POST` and pass a `NextRe
 
 ## 2. Against the staging branch, not a laptop database
 
-Integration tests run against the **staging Supabase branch** (the architect's migrations applied, `seed.sql` loaded), using dedicated test users per role created by the test setup and cleaned up after. Each test file creates and deletes its own rows (or uses a unique tenant per run) so runs never collide. Never point tests at production.
+Integration tests run against the **staging Supabase branch** (the architect's migrations applied, `seed.sql` loaded), using dedicated test users per role created by the test setup and cleaned up after. Each test file creates and deletes its own rows (or uses a unique tenant per run) so runs never collide. Never point tests at production. Start from `templates/auth-helper.ts` → `tests/helpers/auth.ts`. Its `assertNotProduction()` follows the same rule as `supabase/scripts/db.mjs`: it refuses the `SUPABASE_PROD_PROJECT_REF` URL, and any remote URL while that ref is unset. Sessions go on requests as the contract's bearer token, so route handlers are called in-process with no cookies needed. In dry runs the test database is a throwaway local Supabase stack (`npx supabase start` on its own ports and project id). In real builds it's the preview branch.
+
+**Test setup that works with Next server code:** `server-only` throws outside Next's server bundle, so alias it in `vitest.config.ts` to a one-line stub (`tests/helpers/server-only.ts`: `export {};`). Mark API test files `// @vitest-environment node`. Test rows live in `is_test` orgs created by the helper; tables that are append-only by design (audit) keep them, and cleanup deletes only the auth users.
 
 ## 3. Unit tests for services
 

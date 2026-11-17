@@ -133,7 +133,8 @@
         "docs/SECURITY_MODEL.md",
         "docs/decisions/**",
         "supabase/migrations/**",
-        "supabase/tests/rls/**",
+        "supabase/tests/**",
+        "docs/integration-contract.md",
         "supabase/config.toml",
         "orval.config.ts",
         "src/lib/shared/**",
@@ -244,13 +245,14 @@
         "Bash",
         "Write"
       ],
-      "bash": "yes: git diff/log, typecheck, lint, build, generators (regeneration diff), EXPLAIN on staging (read-only)",
+      "bash": "yes: git diff/log, typecheck, lint, build, generators (regeneration diff), EXPLAIN on staging (read-only); installs dependency-cruiser, knip and a TypeScript 6 into .baseleap/tools (git-ignored) and runs them read-only",
       "web": false,
       "mcpServers": [
         "supabase (read_only, project_ref=staging branch, features=database,debugging,docs)"
       ],
       "write": [
-        ".baseleap/reviews/**"
+        ".baseleap/reviews/**",
+        ".baseleap/tools/**"
       ],
       "read": "everything (repository is read-only)",
       "git": "read-only (diff, log, show)",
@@ -275,7 +277,9 @@
         ".baseleap/reviews/**",
         ".opengrep/**",
         ".gitleaks.toml",
-        "scripts/security-scan.sh"
+        "scripts/security-scan.sh",
+        "docs/threat-model.md",
+        "docs/security/**"
       ],
       "read": "everything (repository is read-only)",
       "git": "read-only (diff, log, show)",
@@ -308,12 +312,47 @@
         "scripts/smoke.mjs",
         ".env.example",
         "docs/runbook.md",
-        "docs/deployments/**"
+        "docs/deployments/**",
+        "docs/ops/**",
+        "scripts/pre-commit-secrets.sh"
       ],
       "read": "everything except secret values",
       "git": "own branch; opens + merges the staging→main release PR after Gate 3 and required checks",
       "database": "none directly; production migrations only inside the approved release workflow",
       "production": "only through release.yml behind the GitHub 'production' environment (Matthew = required reviewer); no production credentials in the agent"
+    },
+    "bl-integration": {
+      "model": "sonnet",
+      "phases": "2 · build (only when dispatched: platform_extension/hybrid, webhooks, sync, OAuth, 2+ providers); takeover first on existing projects",
+      "tools": [
+        "Read",
+        "Glob",
+        "Grep",
+        "Write",
+        "Edit",
+        "Bash",
+        "WebFetch",
+        "WebSearch"
+      ],
+      "bash": "yes: npm test/typecheck/lint/build, provider simulators (tests/mocks), node scripts/read-docs.mjs for JavaScript-rendered official docs (read-only), no live provider calls except test modes behind spend_approval",
+      "web": true,
+      "mcpServers": [
+        "context7"
+      ],
+      "write": [
+        "src/lib/server/integrations/**",
+        "src/app/api/webhooks/**",
+        "src/app/api/integrations/**",
+        "src/lib/server/jobs/sync-*",
+        "tests/integrations/**",
+        "tests/mocks/**",
+        "docs/integrations/**",
+        ".baseleap/docs/**"
+      ],
+      "read": "everything except .env* files and token columns",
+      "git": "own lane/branch commits only",
+      "database": "test database only; tokens via Supabase Vault (never printed); integration_events/sync_state/jobs/provider_health are the architect's migrations",
+      "notes": "Contract first (docs/integration-contract.md). Takeover steps write only docs/integrations/**. Platform configuration inside GHL/Monday/HubSpot belongs to CRM Automation."
     }
   },
   "mcpCatalog": {

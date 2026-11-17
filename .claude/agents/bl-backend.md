@@ -8,7 +8,7 @@ mcpServers:
   - context7:
       type: http
       url: "https://mcp.context7.com/mcp"
-baseleap-status: skeleton
+baseleap-status: ready
 skills:
   - stack-specialist-protocol
   - be-contract

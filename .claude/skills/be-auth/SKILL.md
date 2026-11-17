@@ -13,6 +13,8 @@ description: Authentication, authorisation and hardening for bl-backend — Supa
 - Missing or expired → 401. Never fall back to "anonymous with defaults".
 - `next/server` middleware may redirect pages, but **API authorisation happens in the handler** (via the guard) — middleware alone is not a security boundary.
 
+**Pattern proven in dry run BE1:** `requireMember(req)` takes the contract's bearer token when an `Authorization` header is present, validated with `auth.getUser(token)` (never just decoded) and used to build a user-scoped client, so RLS applies. Otherwise it reads the session cookie through `@supabase/ssr`, without setting cookies; `src/proxy.ts` refreshes them. It then loads the caller's **active** member row through that same client. No row means 401, so a removed member is locked out at once. Role checks come next, per the permission matrix. Tests call handlers in-process with the bearer token, so no cookies or server are needed.
+
 ## 2. Authorisation — every route, every object
 
 - `requireRole(session, ...roles)` enforces the **permission matrix** (role × resource × operation) → 403.

@@ -16,7 +16,7 @@ mcpServers:
         - "@playwright/mcp@0.0.85"
         - --headless
         - --isolated
-baseleap-status: skeleton
+baseleap-status: ready
 skills:
   - stack-specialist-protocol
   - fe-components

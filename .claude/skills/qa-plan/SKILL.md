@@ -7,6 +7,9 @@ description: Test planning for bl-qa — turn the PRD's acceptance criteria and 
 
 The test plan is the promise: every acceptance criterion in the PRD has a named test that proves it on the deployed app. If a criterion has no test, nobody has checked it.
 
+## 0. Existing projects: test takeover first
+On a project that already exists, before writing anything, list what's there: every test suite and how it runs (unit, SQL harnesses, Playwright, manual checklists, a reviewer's routine checks), which pass today (run them read-only where the project allows, or read the latest recorded results), and which roadmap items or flows have **no** test. Output `docs/qa-reports/test-takeover.md`: suites, last known result, gaps ranked by risk (money, orders, personal data, access first). New tests follow the project's existing layout and rules.
+
 ## 1. Inputs
 
 - `docs/PRD.md` (FRs, NFRs, out-of-scope) and `docs/user-stories.md` (AC ids like `AC-003.2`, tagged `[happy]`, `[edge]`, `[error]`).

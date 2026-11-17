@@ -16,6 +16,8 @@ The frontend built against `docs/openapi.yaml` without ever talking to you. Your
 4. **Shape the response** to the contract's schema — no extra fields, no internal columns (`operator_id`, internal flags) unless the contract lists them.
 5. **Map errors** to the contract's status codes as `application/problem+json`.
 
+**Unknown fields:** Orval's generated Zod object schemas let unknown keys through by default, even when the contract says `additionalProperties: false`. Parse request bodies and queries with `schema.strict()` so an unexpected field gets 422 naming it. Dry run BE1 relied on this to refuse the planted `estimated_minutes` field.
+
 ## 2. Status codes (as the contract defines — no improvising)
 
 | Situation | Code |

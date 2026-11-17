@@ -38,6 +38,12 @@ For each query in §1, name the index that serves it (in a comment above the ind
 - The service-role key bypasses RLS — server-only code paths that use it must be named in `docs/SECURITY_MODEL.md`.
 - **Tests:** for every table, `supabase/tests/rls/<table>.sql` asserts that a user sees their rows, can't see another tenant's, and can't write what their role forbids. RLS checks run on the executable SQL, never on comments.
 
+## 4b. RLS tests (pgTAP) — the session setup
+
+To act as a user in a test, set **both** claim settings:
+`select set_config('request.jwt.claims', json_build_object('sub', '<uuid>', 'role', 'authenticated')::text, true), set_config('request.jwt.claim.sub', '<uuid>', true);` then `set local role authenticated;`.
+`auth.uid()` reads `claim.sub` on older Supabase images and `claims->>'sub'` on newer ones. With only one set, some environments see a NULL user: in dry run A2, 26 of 64 assertions failed that way. For the anonymous case, set both to `''`.
+
 ## 5. Migrations
 
 - Files: `supabase/migrations/<YYYYMMDDHHMMSS>_<slug>.sql` (template: `templates/migration.sql`), one concern per file, applied in order.

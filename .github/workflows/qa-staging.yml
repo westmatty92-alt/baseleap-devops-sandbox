@@ -1,0 +1,102 @@
+# .github/workflows/qa-staging.yml (owned by bl-devops).
+# Runs on every successful Vercel preview deployment whose commit is the head of `staging`: read-only smoke, then QA's @smoke
+# Playwright suite, against that exact deployment, through Vercel's Protection Bypass for Automation.
+# NOTE: `deployment_status` workflows run from the default branch (main), so this file only starts
+# working once it has been merged to main. See docs/ops/setup-for-matthew.md.
+name: qa-staging
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+# Vercel sets deployment.ref to the commit SHA, never the branch name (see docs/ops/vercel-deployment-events.md),
+# so "is this staging?" is decided by comparing deployment.sha with the head of the staging branch.
+# Concurrency lives on the smoke job only, so skipped lane deploys cannot cancel a running staging check.
+jobs:
+  gate:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      staging: ${{ steps.head.outputs.staging }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DEPLOY_SHA: ${{ github.event.deployment.sha }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Is this deployment the head of staging?
+        id: head
+        run: |
+          staging_sha=$(gh api "repos/${REPO}/branches/staging" --jq .commit.sha)
+          if [ -n "$staging_sha" ] && [ "$DEPLOY_SHA" = "$staging_sha" ]; then
+            echo "staging=true" >> "$GITHUB_OUTPUT"
+            echo "Staging deployment of ${DEPLOY_SHA}: running smoke." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "staging=false" >> "$GITHUB_OUTPUT"
+            echo "Deployment ${DEPLOY_SHA} is not staging (head is ${staging_sha}): skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  smoke:
+    needs: gate
+    if: needs.gate.outputs.staging == 'true'
+    concurrency:
+      group: qa-staging
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: staging
+    env:
+      BASE_URL: ${{ github.event.deployment_status.environment_url }}
+      DEPLOY_SHA: ${{ github.event.deployment.sha }}
+      PRODUCTION_HOSTS: ${{ vars.PRODUCTION_HOSTS }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Only talk to this project's Vercel preview, never production
+        run: |
+          case "$BASE_URL" in
+            https://baseleap-devops-sandbox-*.vercel.app|https://baseleap-devops-sandbox-*.vercel.app/) ;;
+            *) echo "::error::Refusing to send the bypass header to an unexpected host."; exit 1 ;;
+          esac
+          host=${BASE_URL#https://}; host=${host%%/*}
+          for p in $PRODUCTION_HOSTS; do
+            if [ "$host" = "$p" ]; then echo "::error::BASE_URL is a production host."; exit 1; fi
+          done
+          if [ -z "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo "::error::VERCEL_AUTOMATION_BYPASS_SECRET is not set in the staging environment."; exit 1; fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.deployment.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Read-only smoke (health version must match the deployed commit)
+        run: node scripts/smoke.mjs "$BASE_URL" "$DEPLOY_SHA"
+      - name: Does QA's Playwright suite exist yet?
+        id: pw
+        run: |
+          if [ -f playwright.config.ts ] || [ -f playwright.config.js ] || [ -f playwright.config.mjs ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No playwright config on this commit yet (QA owns it). Only the read-only smoke ran."
+          fi
+      - if: steps.pw.outputs.present == 'true'
+        run: npm ci
+      - if: steps.pw.outputs.present == 'true'
+        run: npx playwright install --with-deps chromium
+      - name: "@smoke suite (QA's config must send the x-vercel-protection-bypass header from VERCEL_AUTOMATION_BYPASS_SECRET)"
+        if: steps.pw.outputs.present == 'true'
+        run: npx playwright test --grep @smoke
+      - if: always() && steps.pw.outputs.present == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qa-staging-smoke
+          path: |
+            docs/qa-reports/
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -45,3 +45,6 @@ Against the test plan, not lines of code: ACs with a passing test / total ACs, p
 
 ---
 Sources (ideas adapted, text written for Baseleap): laurigates/claude-plugins `vitest-testing` (MIT — setup/teardown, isolation, mocking), obra/superpowers `test-driven-development` + `systematic-debugging` (MIT — red-green, root cause before fixes, no "retry until green"), lackeyjb/playwright-skill (MIT — resilient selectors).
+
+## Offline provider drills (for bl-integration)
+QA re-runs the integration engineer's outage and webhook drills against its simulators (`tests/mocks/<provider>/`) with **no network** (a container started with `--network none`, or the project's offline test command; if `node_modules` is mounted read-only, add `--tmpfs /work/node_modules/.vite-temp` so Vitest can write its temp config), and reports per provider: suites run, passed, and anything that tried to reach the network. A test that needs the network to pass is a finding routed to bl-integration.

@@ -5,6 +5,8 @@ description: Third-party integrations and background work for bl-backend — wra
 
 # Back-End · Integrations & Background Work
 
+> **When `bl-integration` is dispatched (see its spec, I1), it owns all of this**: wrappers, webhooks, sync jobs, OAuth and simulators, using the `int-*` skills (`int-providers`, `int-webhooks`, `int-sync`, `int-auth`, `int-testing`, `int-takeover`, `int-new-provider`). You call integrations only through `src/lib/server/integrations/*`. Use this skill yourself only for a single outbound call when no integration step exists, and follow `int-providers` for the wrapper.
+
 Every outside service will be slow, rate-limited or down at some point. Design each call so the user's action is never lost and never happens twice.
 
 ## 1. One wrapper per provider (`src/lib/server/integrations/<provider>.ts`)

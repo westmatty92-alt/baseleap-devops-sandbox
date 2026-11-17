@@ -39,4 +39,15 @@ For every AC the diff serves: find the code path that satisfies it and the test 
 `npm run typecheck`, `npm run lint`, `npm run build`, and a regeneration diff for generated code (`orval` / `supabase gen types` / the DESIGN.md export, then `git diff --exit-code` on the generated paths). Results go in the audit table.
 
 ---
-Sources (ideas adapted, text written for Baseleap): VoltAgent `code-reviewer.md` (MIT — review checklist), obra/superpowers `requesting-code-review` (MIT — review against the plan/spec, minimal diffs), multica-ai/andrej-karpathy-skills (no licence file — ideas only: surgical changes, no speculative abstraction), qodo-ai/pr-agent (MIT — reviewed for ideas: duplicated/dead code, ranking findings).
+## 6. Tools: boundaries and dead code (only what the change added)
+Install once per project into `.baseleap/tools` (git-ignored, pinned; dependency-cruiser needs a TypeScript below 7 next to it, so pin the project's TS 6 there):
+`npm i --prefix .baseleap/tools --no-audit --no-fund dependency-cruiser@18.7.2 knip@6.45.1 typescript@<project's 6.x>`
+- **Boundaries:** `.baseleap/tools/node_modules/.bin/depcruise --config .dependency-cruiser.cjs --output-type err src` (config from `templates/dependency-cruiser.cjs`: no circular imports, UI never imports server code, server never imports UI, shared code imports no lane, routes stay thin). An `error` is Important (an architecture violation); a `warn` is Minor unless it hides a real bug.
+- **Dead code:** `.baseleap/tools/node_modules/.bin/knip --no-progress --reporter json` (config from `templates/knip.json`).
+- **Report only what the change added.** Run both on the base commit and on the head, and compare. Existing dead code or violations in untouched files are not this change's findings (list them once under "pre-existing" for the architect, never as blockers). Tested Nov 15 on a scaffold: a clean base had 34 unused exports already; reporting them all would bury the real finding.
+- **Formatting is the linter's job.** Never comment on formatting, indentation or import order; if the linter passes, it's settled.
+
+## 7. Cross-lane duplicates (combined staging diff)
+Frontend, backend and integration build in parallel lanes, so the same helper often gets written twice. On the combined staging diff, look specifically for duplicated **types, constants, schemas and helpers** across lanes (two date formatters, two copies of a status enum, a Zod schema redefined instead of imported from the generated contract). Each duplicate is a finding routed to the architect to move into `src/lib/shared/` (the architect owns it), or to the lane that should import the existing one. Report them under "Cross-lane consolidation" in the verdict.
+
+Sources (ideas adapted, text written for Baseleap): sverweij/dependency-cruiser (MIT, tool), webpro-nl/knip (ISC, tool), multica-ai/andrej-karpathy-skills and obra/superpowers (minimal-diff and verification discipline, ideas only), VoltAgent `code-reviewer.md` (MIT — review checklist), obra/superpowers `requesting-code-review` (MIT — review against the plan/spec, minimal diffs), multica-ai/andrej-karpathy-skills (no licence file — ideas only: surgical changes, no speculative abstraction), qodo-ai/pr-agent (MIT — reviewed for ideas: duplicated/dead code, ranking findings).

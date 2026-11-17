@@ -45,3 +45,9 @@ Loading → skeleton; empty → the designed empty state; error → designed err
 
 ---
 Sources (ideas adapted, text written for Baseleap): orval-labs/orval (MIT — React Query hooks, Zod, MSW mocks and a custom mutator generated from OpenAPI), leejpsd/typescript-react-nextjs-patterns `data-fetching-and-api-types` (MIT — runtime validation of every response, typed errors, pagination), tanstack-skills/tanstack-skills (MIT), Baseleap contract rules from `arch-contract` (problem+json, cursor pagination, cents, UTC).
+
+## Proven in dry run FE1
+- **Mocking flag at runtime.** `NEXT_PUBLIC_*` values are frozen into the bundle at build time. Read `NEXT_PUBLIC_API_MOCKING` on the server in the `(app)` layout, validate it (`on`/`off`, otherwise off) and pass it down, so one build runs with mocks on or off. With mocking off, no MSW code loads.
+- **`fetcher.ts` throws `ApiProblem` on every non-2xx**, including a 500 without problem+json. The scaffold stub resolved that as data. Keep the raw body so a 409's `current` can be read.
+- **Check responses with the generated Zod schemas** in the query's `select`. A body that breaks the contract shows the "can't load" state instead of crashing.
+

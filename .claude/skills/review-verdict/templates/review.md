@@ -37,3 +37,9 @@
 ## Coverage & limits
 
 - Read in full: <files>. Grepped for context: <what>. Not reviewed: <what, why>.
+
+## Cross-lane consolidation
+| Duplicate | Where (each lane) | Move to / import from | Owner |
+|---|---|---|---|
+
+## Pre-existing (not this change; for the architect)
