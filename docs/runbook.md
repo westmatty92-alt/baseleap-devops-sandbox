@@ -22,13 +22,13 @@ Production is deployed **only** by `.github/workflows/release.yml`. Vercel's own
 
 1. Gate 3 approved in the ledger → DevOps opens PR `staging → main` → required checks (`verify`, `security`, `workflows`) pass → merge.
 2. **Matthew:** GitHub emails "Review pending deployments". Open the `release` run → **Review deployments → production → Approve and deploy**.
-3. Workflow: drift check (names only) → migrations (`supabase db push --dry-run`, then apply) → `vercel pull` / `vercel build --prod` / `vercel deploy --prebuilt --prod` → read-only smoke (health must report this commit; every `smokePaths` entry 200) → automatic `vercel rollback` if smoke fails.
+3. Workflow: drift check (names only) → record the restore point (the production deployment live now; no restore point, no release) → migrations (`supabase db push --dry-run`, then apply) → `vercel pull` / `vercel build --prod` / `vercel deploy --prebuilt --prod --skip-domain` → explicit `vercel promote` → read-only smoke (health must report this commit; every `smokePaths` entry 200) → automatic rollback to the recorded deployment if it fails. Every `vercel` call passes `--scope` (team) and `--token`.
 4. DevOps writes the release-log entry (PR to `staging`).
 
 ## Roll back
 
-- **App (Matthew):** `vercel rollback` (previous production deployment) or `vercel rollback <deployment-url>`; undo with `vercel promote <deployment-url>`. Or Vercel dashboard → Deployments → the previous production deployment → **Instant Rollback**.
-- **Automatic:** the release workflow does `vercel rollback` itself when smoke fails, then fails the run.
+- **App (Matthew), manual:** Vercel dashboard → Deployments → the last good production deployment → **Instant Rollback**. After an Instant Rollback Vercel stops auto-assigning the production domains to new deployments; that is fine, because the next release promotes its deployment explicitly.
+- **Automatic:** when promotion or smoke fails, the release workflow runs `vercel rollback <recorded deployment> --scope … --token …` (falling back to `vercel promote <recorded>`), checks that production reports the previous commit, then fails the run. The run summary lists the restore point, the new deployment, whether it was promoted, and whether the recorded deployment was restored.
 - **Database:** no down-migrations. Migrations are expand/contract, so the previous app version still works on the new schema. Ship a forward-fix migration through the normal flow. Data loss → **Matthew:** Supabase point-in-time recovery (Dashboard → Database → Backups), after deciding the restore point. (Sandbox: staging shares this database, so a restore affects both.)
 
 ## Check health by hand
