@@ -19,6 +19,7 @@ Sandbox: public practice repo, one Supabase project (ca-central-1), Vercel team 
 
 | Date | Drill | Version | Result | What happened | Fix (where it went) |
 |---|---|---|---|---|---|
+| 2026-11-17 | 4 Rollback | manual | ✅ restored | Matthew used Vercel → Deployments → `cadc497` → Instant Rollback. Health back to `cadc497` ok. Note: after an Instant Rollback, Vercel stops auto-assigning the production domain to new deploys until one is promoted. | Release must promote explicitly (OPS5). |
 | 2026-11-17 | 4 Rollback | ed77171 | ❌ | Planted production-only "degraded" health. Smoke failed as intended; `vercel rollback --token` → `Error: User not found. (404)`. The team-scoped token was used without naming the team, so the CLI looked in the personal account. Production served the broken version until Matthew restored `cadc497` from the Vercel dashboard. | Pending: rollback names the team (`--scope`) and the exact deployment to restore (sandbox + kit `release.yml`). Re-run the drill. |
 | 2026-11-17 | 3 Release | cadc497 | ✅ | Approved by Matthew; dry run listed 4 migrations, applied; prebuilt deploy; health reported `cadc497`. | n/a |
 | 2026-11-17 | 3 Release | ce08781 (attempt 3) | ❌ safe | Migrations dry run targeted a local database (Supabase CLI 3 `db push` is local by default). Nothing applied. | `--remote="$SUPABASE_PROJECT_REF"` on both commands (sandbox + kit template); CLIs no longer installed at "latest" (kit). |
