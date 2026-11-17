@@ -12,10 +12,9 @@ OPENGREP_SHA256=46e8133cc490f9f50518061590ce2f6be5a08afaeda034471c0ceda4b3899808
 GITLEAKS_VERSION=8.30.1
 OSV_VERSION=2.7.1
 ACTIONLINT_VERSION=1.7.12
-# shellcheck: upstream publishes no checksums file, so the digest is pinned here. PIN-ME until resolved with
-# docs/ops/pin-actions.md §shellcheck (needs internet); the installer refuses to run while it is a placeholder.
+# shellcheck: upstream publishes no checksums file, so the digest is pinned here (from the release asset digest).
 SHELLCHECK_VERSION=0.11.0
-SHELLCHECK_SHA256=PIN-ME   # shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz (sha256 of the tarball)
+SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198   # shellcheck-v0.11.0.linux.x86_64.tar.xz; GitHub release asset digest, confirmed by download (2026-11-17)
 
 for t in "${TOOLS[@]}"; do
   case "$t" in
