@@ -74,8 +74,8 @@ jobs:
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           npx --no-install supabase link --project-ref "$SUPABASE_PROJECT_REF"
-          npx --no-install supabase db push --dry-run 2>&1 | tee "$RUNNER_TEMP/migrations-dry-run.txt"
-          npx --no-install supabase db push --yes
+          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --dry-run 2>&1 | tee "$RUNNER_TEMP/migrations-dry-run.txt"
+          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --yes
 
       - name: Pull production settings, build, and deploy the prebuilt output
         id: deploy
