@@ -1,0 +1,3 @@
+# Vercel deployment events (why qa-staging gates on SHA)
+
+Vercel creates the GitHub deployment with `ref` set to the **commit SHA** (not the branch name), `environment` = `Preview` and `task` = `deploy`; it then posts `deployment_status` events (pending, then success with `environment_url` = the unique deployment URL). A condition like `github.event.deployment.ref == 'staging'` is therefore always false and silently skips every run (run 43986927753). `qa-staging.yml` instead treats a deployment as staging when `deployment.sha` equals the current head of the `staging` branch; other preview deploys (lanes) are skipped cleanly with a job-summary line. Do not re-add a `deployment.ref` branch check.

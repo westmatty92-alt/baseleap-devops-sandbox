@@ -1,5 +1,5 @@
 # .github/workflows/qa-staging.yml (owned by bl-devops).
-# Runs on every successful Vercel preview deployment of `staging`: read-only smoke, then QA's @smoke
+# Runs on every successful Vercel preview deployment whose commit is the head of `staging`: read-only smoke, then QA's @smoke
 # Playwright suite, against that exact deployment, through Vercel's Protection Bypass for Automation.
 # NOTE: `deployment_status` workflows run from the default branch (main), so this file only starts
 # working once it has been merged to main. See docs/ops/setup-for-matthew.md.
@@ -11,13 +11,39 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: qa-staging
-  cancel-in-progress: true
-
+# Vercel sets deployment.ref to the commit SHA, never the branch name (see docs/ops/vercel-deployment-events.md),
+# so "is this staging?" is decided by comparing deployment.sha with the head of the staging branch.
+# Concurrency lives on the smoke job only, so skipped lane deploys cannot cancel a running staging check.
 jobs:
+  gate:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      staging: ${{ steps.head.outputs.staging }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DEPLOY_SHA: ${{ github.event.deployment.sha }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Is this deployment the head of staging?
+        id: head
+        run: |
+          staging_sha=$(gh api "repos/${REPO}/branches/staging" --jq .commit.sha)
+          if [ -n "$staging_sha" ] && [ "$DEPLOY_SHA" = "$staging_sha" ]; then
+            echo "staging=true" >> "$GITHUB_OUTPUT"
+            echo "Staging deployment of ${DEPLOY_SHA}: running smoke." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "staging=false" >> "$GITHUB_OUTPUT"
+            echo "Deployment ${DEPLOY_SHA} is not staging (head is ${staging_sha}): skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   smoke:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment.ref == 'staging'
+    needs: gate
+    if: needs.gate.outputs.staging == 'true'
+    concurrency:
+      group: qa-staging
+      cancel-in-progress: true
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: staging
