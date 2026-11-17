@@ -13,11 +13,9 @@
 # Every `vercel` call passes --scope "$VERCEL_ORG_ID" (the token is team-scoped; without it the CLI falls
 # back to the personal account: "User not found (404)") and --token.
 #
-# CLI 65.x flag confidence:
-#   sure:      --scope, --token, --prebuilt, --prod, --yes (pull, promote), `vercel promote <url>`, `vercel rollback <url>`
-#   fairly:    `vercel deploy --skip-domain` (exists with --prod since CLI ~28; verify in the first drill)
-#   NOT sure:  `vercel rollback --yes` (not used: rollback does not prompt in CI); rollback targeting an older
-#              (non-previous) deployment may be plan-limited, hence the `vercel promote <recorded>` fallback.
+# CLI flags verified against vercel@65.16.0 --help (2026-11-17): -S/--scope, -t/--token, deploy --prebuilt --prod
+#   --skip-domain, `vercel promote <deployment> -y`, `vercel rollback <deployment> -y`.
+#   Rollback to an older (non-previous) deployment may be plan-limited, hence the `vercel promote <recorded>` fallback.
 #
 # PINNING: `PIN-ME-*` refs and VERCEL_CLI_VERSION are deliberate placeholders; they fail loudly until
 # docs/ops/pin-actions.md has been run. Secrets are passed only to the steps that need them (never to `npm ci`).
@@ -151,7 +149,7 @@ jobs:
           RESTORE_URL: ${{ steps.restore.outputs.url }}
         run: |
           # Restore the KNOWN deployment recorded before this release, never "whatever was before".
-          if ! vercel rollback "$RESTORE_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN"; then
+          if ! vercel rollback "$RESTORE_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN" --yes; then
             echo "::warning::vercel rollback could not target the recorded deployment; promoting it instead."
             vercel promote "$RESTORE_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN" --yes
           fi
