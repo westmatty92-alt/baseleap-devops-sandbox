@@ -58,12 +58,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(body, { status: ok ? 200 : 503, headers });
   }
 
-  // ROLLBACK DRILL (DevOps sandbox, revert after): production only reports degraded, so the release's
-  // smoke check fails and the automatic rollback must restore the previous deployment. Staging stays ok.
-  if (process.env.VERCEL_ENV === 'production') {
-    const drill: Health = { status: 'degraded', checks: { app: 'ok' }, version: version() };
-    return NextResponse.json(drill, { status: 503, headers });
-  }
   const body: Health = { status: 'ok', checks: { app: 'ok' }, version: version() };
   return NextResponse.json(body, { headers });
 }
