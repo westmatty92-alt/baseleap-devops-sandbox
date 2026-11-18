@@ -56,6 +56,15 @@ jobs:
       # No Supabase access token here: a personal access token reaches every org and project the owner belongs to
       # (Supabase tokens can't be limited to one org; checked Nov 18 2026). The staging database's own connection
       # string reaches that one database only. The URL is a secret; GitHub masks it in logs.
+      - name: Shape of the staging connection string (no values printed)
+        env:
+          U: ${{ secrets.SUPABASE_STAGING_DB_URL }}
+        run: |
+          rest="${U#postgresql://}"; up="${rest%%@*}"; host="${rest#*@}"; user="${up%%:*}"; pass="${up#*:}"
+          alnum=no; [[ "$pass" =~ ^[A-Za-z0-9]+$ ]] && alnum=yes
+          ws=no; [[ "$U" =~ [[:space:]] ]] && ws=yes
+          br=no; [[ "$pass" == *"["* || "$pass" == *"]"* ]] && br=yes
+          echo "scheme_ok=$([[ "$U" == postgresql://* ]] && echo yes || echo no) user=$user host=${host%%/*} pass_len=${#pass} pass_letters_digits_only=$alnum whitespace_anywhere=$ws brackets_in_password=$br at_signs=$(tr -cd '@' <<<"$U" | wc -c)"
       - name: Migrations (dry run, then apply) — staging database only
         env:
           SUPABASE_STAGING_DB_URL: ${{ secrets.SUPABASE_STAGING_DB_URL }}
