@@ -10,12 +10,13 @@
 #
 # Why explicit promote: after an Instant Rollback in the dashboard, Vercel stops auto-assigning the production
 # domains to new production deployments until one is promoted. Deploy + promote works in both states.
-# Every `vercel` call passes --scope "$VERCEL_ORG_ID" (the token is team-scoped; without it the CLI falls
-# back to the personal account: "User not found (404)") and --token.
+# The CLI is used only to pull, build and deploy, with --token and NO --scope (the project is linked from
+# VERCEL_ORG_ID + VERCEL_PROJECT_ID; the team-scoped token cannot read a user, which --scope would look up).
+# Promote and rollback use the Vercel REST API with ?teamId=, like the restore-point step. A rollback is the same
+# promote call with the recorded restore deployment id.
 #
-# CLI flags verified against vercel@65.16.0 --help (2026-11-17): -S/--scope, -t/--token, deploy --prebuilt --prod
-#   --skip-domain, `vercel promote <deployment> -y`, `vercel rollback <deployment> -y`.
-#   Rollback to an older (non-previous) deployment may be plan-limited, hence the `vercel promote <recorded>` fallback.
+# CLI flags verified against vercel@65.16.0 --help (2026-11-17): -t/--token, deploy --prebuilt --prod --skip-domain.
+#   REST endpoints used: GET /v13/deployments/{host|id}, POST /v10/projects/{project}/promote/{deploymentId}.
 #
 # PINNING: `PIN-ME-*` refs and VERCEL_CLI_VERSION are deliberate placeholders; they fail loudly until
 # docs/ops/pin-actions.md has been run. Secrets are passed only to the steps that need them (never to `npm ci`).
@@ -121,19 +122,46 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          vercel pull --yes --environment=production --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN"
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
           # The build runs without the token: it only needs the pulled project settings.
           env -u VERCEL_TOKEN vercel build --prod
           # --skip-domain: create the production deployment without assigning the domains; promoted next.
-          url=$(vercel deploy --prebuilt --prod --skip-domain --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN")
+          url=$(vercel deploy --prebuilt --prod --skip-domain --token="$VERCEL_TOKEN")
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
-      - name: Promote the new deployment to production
+      - name: Promote the new deployment to production (REST API)
         id: promote
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
-        run: vercel promote "$DEPLOY_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN" --yes
+        run: |
+          host="${DEPLOY_URL#https://}"
+          host="${host#http://}"
+          host="${host%%/*}"
+          if ! [[ "$host" =~ ^[A-Za-z0-9.-]+$ ]]; then
+            echo "::error::Unexpected deployment address from vercel deploy."; exit 1
+          fi
+          if ! curl --silent --show-error --fail-with-body --max-time 60 \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --output "$RUNNER_TEMP/new-deployment.json" \
+            --write-out 'lookup HTTP %{http_code}\n' \
+            "https://api.vercel.com/v13/deployments/${host}?teamId=${VERCEL_ORG_ID}"; then
+            echo "::error::Could not read the new deployment ${host}:"; cat "$RUNNER_TEMP/new-deployment.json"; echo; exit 1
+          fi
+          id=$(node -e 'const d=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")); process.stdout.write(typeof d.id==="string"?d.id:"")' "$RUNNER_TEMP/new-deployment.json")
+          if ! [[ "$id" =~ ^dpl_[A-Za-z0-9]+$ ]]; then
+            echo "::error::Unexpected deployment id for ${host}."; exit 1
+          fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          if ! curl --silent --show-error --fail-with-body --max-time 60 \
+            --request POST \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --output "$RUNNER_TEMP/promote.json" \
+            --write-out 'promote HTTP %{http_code}\n' \
+            "https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/promote/${id}?teamId=${VERCEL_ORG_ID}"; then
+            echo "::error::Promote failed:"; cat "$RUNNER_TEMP/promote.json"; echo; exit 1
+          fi
+          echo "Promoted ${id} (${host})."
 
       - name: Smoke check (read-only; health must report this commit)
         id: smoke
@@ -146,12 +174,19 @@ jobs:
         if: failure() && steps.deploy.outcome == 'success' && (steps.promote.outcome == 'failure' || steps.smoke.outcome == 'failure')
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          RESTORE_URL: ${{ steps.restore.outputs.url }}
+          RESTORE_ID: ${{ steps.restore.outputs.id }}
         run: |
           # Restore the KNOWN deployment recorded before this release, never "whatever was before".
-          if ! vercel rollback "$RESTORE_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN" --yes; then
-            echo "::warning::vercel rollback could not target the recorded deployment; promoting it instead."
-            vercel promote "$RESTORE_URL" --scope "$VERCEL_ORG_ID" --token="$VERCEL_TOKEN" --yes
+          if ! [[ "$RESTORE_ID" =~ ^dpl_[A-Za-z0-9]+$ ]]; then
+            echo "::error::No valid recorded deployment id to restore."; exit 1
+          fi
+          if ! curl --silent --show-error --fail-with-body --max-time 60 \
+            --request POST \
+            --header "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --output "$RUNNER_TEMP/rollback.json" \
+            --write-out 'rollback HTTP %{http_code}\n' \
+            "https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/promote/${RESTORE_ID}?teamId=${VERCEL_ORG_ID}"; then
+            echo "::error::Rollback (promote of the recorded deployment) failed:"; cat "$RUNNER_TEMP/rollback.json"; echo; exit 1
           fi
           echo "::error::Release failed (promotion error, wrong or missing version, or a smoke path not 200): production restored to the recorded deployment. Migrations stay applied (expand/contract)."
 
