@@ -8,7 +8,7 @@ name: staging-migrations
 on:
   push:
     branches: [staging]
-    paths: ["supabase/migrations/**"]
+    paths: ["supabase/migrations/**", ".github/workflows/staging-migrations.yml"]   # also when this file changes (first setup of an empty staging DB)
   workflow_dispatch:
 
 permissions:
