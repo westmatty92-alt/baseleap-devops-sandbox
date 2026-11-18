@@ -1,0 +1,72 @@
+# .github/workflows/staging-migrations.yml (owned by bl-devops).
+# Applies supabase/migrations/** to the STAGING Supabase project when they change on `staging`.
+# Production gets its migrations only from release.yml, after Gate 3. This workflow reads only the staging
+# environment, and it refuses to run if the target ref looks like production.
+# The first run on an empty project applies every migration in order.
+name: staging-migrations
+
+on:
+  push:
+    branches: [staging]
+    paths: ["supabase/migrations/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-migrations
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash # adds pipefail
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: staging
+    env:
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_STAGING_REF }}
+      PRODUCTION_REF_PUBLIC: ${{ vars.SUPABASE_PRODUCTION_REF_PUBLIC }}
+      PRODUCTION_HOSTS: ${{ vars.PRODUCTION_HOSTS }}
+    steps:
+      - name: Refuse to target production
+        run: |
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "::error::GitHub variable SUPABASE_STAGING_REF is not set in the staging environment."; exit 1
+          fi
+          if [ -n "$PRODUCTION_REF_PUBLIC" ] && [ "$SUPABASE_PROJECT_REF" = "$PRODUCTION_REF_PUBLIC" ]; then
+            echo "::error::SUPABASE_STAGING_REF equals the production project ref."; exit 1
+          fi
+          for p in $PRODUCTION_HOSTS; do
+            case "$p" in
+              *"$SUPABASE_PROJECT_REF"*) echo "::error::SUPABASE_STAGING_REF appears in PRODUCTION_HOSTS."; exit 1 ;;
+            esac
+          done
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci # lockfile-exact; no secrets in this step
+      - name: Link the staging project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+        run: npx --no-install supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Migrations (dry run, then apply)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+        run: |
+          {
+            echo '### Staging migrations: dry run'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --dry-run 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --yes
