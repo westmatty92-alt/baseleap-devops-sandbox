@@ -8,7 +8,7 @@ mcpServers:
   - vercel:
       type: http
       url: "https://mcp.vercel.com"
-baseleap-status: skeleton
+baseleap-status: ready
 skills:
   - stack-specialist-protocol
   - ops-platform

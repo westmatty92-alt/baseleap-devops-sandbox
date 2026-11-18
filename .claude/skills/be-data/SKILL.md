@@ -39,7 +39,15 @@ Multi-step writes (create booking + mark slot taken + record payment intent) mus
 
 For each new list or search query, run `EXPLAIN (ANALYZE, BUFFERS)` against the **staging Supabase branch** (via the read-only, project-scoped Supabase MCP or `psql` with the branch's read connection) with seed data at the PRD's expected volume. Note in your report the index each key query uses. A sequential scan on a growing table is a finding for the architect.
 
-## 6. Seeds
+## 6. Renaming or dropping a column (expand/contract)
+
+Follow `ops-release` §3: release 1 adds the new column, backfills and keeps both in sync, and the app moves to the new one; release 2 drops the old one.
+- **Before the drop, search the database, not just the app.** Functions, triggers, views and RLS policy expressions that name the column (`grep -rn '<column>' supabase/`) must move to the new column **in the same migration, before the drop**. Postgres resolves columns inside plpgsql functions only when they run, so the drop applies cleanly and every write breaks afterwards. (Drill, Nov 2026: `jobs_guard` and `jobs_record_change` still compared `notes`.)
+- Also update tests outside the app (pgTAP under `supabase/tests/`), and regenerate the database types once the migration has run locally.
+- The API field can keep its name; only the column changes.
+- A drop is a forward migration with a written rollback note (re-add, backfill from the new column), never a down-migration on production.
+
+## 7. Seeds
 
 `supabase/seed.sql` (your lane owns it): realistic, non-personal data at the PRD's volumes for tests and previews. Never real client data, never production.
 

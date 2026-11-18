@@ -33,6 +33,7 @@ export const ROSTER = {
   'bl-security': 'security',
   'bl-devops': 'devops',
   'bl-integration': 'integration',
+  'bl-docs': 'docs',
 };
 export const AGENT_KEYS = Object.values(ROSTER);
 export const agentKeyFor = (subagentType) => ROSTER[subagentType] ?? null;
@@ -57,9 +58,9 @@ export const STEP_PHASES = Object.keys(PHASE_GATE);
 /** Which agents may own steps in which phase. */
 const PHASE_AGENTS = {
   product: ['pm'],
-  design: ['architect', 'designer', 'security', 'devops'],   // security: threat model of the blueprint before Gate 2; devops: the account-setup packet
+  design: ['architect', 'designer', 'security', 'devops', 'docs'],   // security: threat model before Gate 2; devops: the account-setup packet; docs: the SOP plan
   build: ['frontend', 'backend', 'devops', 'integration'],
-  verify: ['qa', 'reviewer', 'security', 'designer'],   // designer: post-build visual review
+  verify: ['qa', 'reviewer', 'security', 'designer', 'docs'],   // designer: post-build visual review; docs: SOPs from the verified build
   deploy: ['devops'],
 };
 
@@ -359,6 +360,20 @@ export function validatePlan(doc, { existing = [], requireProfile = true, mode =
     errors.push('plan.accounts_ready must be a sentence saying which accounts exist and how that was checked');
   }
 
+  // SOPs: anything that ships must sit behind a verify-phase docs step (the SOPs for what was built),
+  // unless the plan says why no SOP changes (plan.docs_not_needed). Matthew's standing rule, Nov 18 2026.
+  const isSopStep = (id) => known[id]?.agent === 'docs' && known[id]?.phase === 'verify';
+  if (!doc.docs_not_needed) {
+    for (const t of tasks) {
+      if (t.phase !== 'deploy') continue;
+      if (![...ancestors(t.id)].some(isSopStep)) {
+        errors.push(`task ${t.id}: deploy work must depend on a verify-phase docs step (SOPs for what was built), or set plan.docs_not_needed to say why no SOP changes`);
+      }
+    }
+  } else if (typeof doc.docs_not_needed !== 'string' || !doc.docs_not_needed.trim()) {
+    errors.push('plan.docs_not_needed must be a sentence saying why this release changes no SOP');
+  }
+
   // parallel lanes: tasks in the same wave must not own the same files
   for (const wave of waves) {
     const owner = {};
@@ -469,7 +484,7 @@ export async function addPlan(db, planId, doc, { amend = false } = {}) {
   const { errors, waves } = validatePlan(doc, {
     requireProfile: firstSubmission,
     mode: firstSubmission ? null : (await getPlan(db, planId)).plan?.build_mode ?? null,
-    existing: existing.map((s) => ({ id: s.manifest.local_id, agent: s.agent, files: s.manifest.files ?? [], requires_gates: s.manifest.requires_gates ?? [], depends_on: (s.depends_on ?? []).map((u) => localOf[u]).filter(Boolean) })),
+    existing: existing.map((s) => ({ id: s.manifest.local_id, agent: s.agent, phase: s.phase ?? s.manifest.phase, files: s.manifest.files ?? [], requires_gates: s.manifest.requires_gates ?? [], depends_on: (s.depends_on ?? []).map((u) => localOf[u]).filter(Boolean) })),
   });
   if (errors.length) throw new LedgerError('plan rejected:\n  - ' + errors.join('\n  - '), 4);
 
