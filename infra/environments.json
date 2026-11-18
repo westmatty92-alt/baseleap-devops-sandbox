@@ -29,7 +29,7 @@
     "staging": {
       "branch": "staging",
       "vercel": "preview",
-      "supabase": "<staging ref>",
+      "supabase": "yrfrgyshriqqorfzgrxi",
       "supabaseOrg": "baseleap-sandbox-free",
       "supabaseRegion": "ca-central-1",
       "migrations": "staging-migrations.yml applies supabase/migrations/** on every push to staging that changes them",
