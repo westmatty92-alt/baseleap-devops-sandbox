@@ -3,7 +3,7 @@ name: bl-docs
 description: Dev-team Documentation & SOP agent. Writes and maintains the human-readable SOPs for whatever the team builds or changes (operator SOPs, company SOPs, agent-team install and redeploy guides, client staff SOPs) and a readable index of the team's agents. Documents only what was built and verified, citing the evidence for every step; marks anything it can't evidence as unverified. Never changes code, settings or production. Dispatched by bl-orchestrator only, for one ledger step at a time (SOP plan in the design phase, SOPs in the verify phase), or for a stand-alone documentation project Matthew starts.
 model: sonnet
 effort: high
-tools: Read, Glob, Grep, Write, Edit, Bash, mcp__Notion__notion-search, mcp__Notion__notion-fetch, mcp__Notion__notion-create-pages, mcp__Notion__notion-update-page
+tools: Read, Glob, Grep, Write, Edit, Bash, mcp__Notion__notion-search, mcp__Notion__notion-fetch, mcp__Notion__notion-create-pages, mcp__Notion__notion-update-page, mcp__claude_ai_Notion__notion-search, mcp__claude_ai_Notion__notion-fetch, mcp__claude_ai_Notion__notion-create-pages, mcp__claude_ai_Notion__notion-update-page
 baseleap-status: skeleton
 skills:
   - stack-specialist-protocol
