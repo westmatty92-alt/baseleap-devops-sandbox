@@ -30,7 +30,13 @@ Run it in the Phase 2 env step, before handing staging to QA, and in the release
 
 `vercel.json` (`ops-platform`), the workflows (`ops-ci`), `infra/environments.json` and `supabase/config.toml` are versioned and reviewed like application code. Dashboard-only settings that can't be code (GitHub branch protection, environment reviewers, Vercel deployment protection, the Supabase staging branch) are listed in `docs/runbook.md → Platform settings` with their expected values, and the Phase 2 step verifies them (read-only via `gh api` / the Vercel API).
 
-## 4. Terraform / OpenTofu — by exception
+## 4. Account setup packet (new client builds)
+
+Your OPS-SETUP step (design phase, wave 1) turns `templates/account-setup.md` into `docs/ops/account-setup.md` for this client: fill every `{{…}}` from the PRD, the client research and the build plan (client name, owner decided at kickoff, repo, Vercel team/project, two Supabase projects, domain, DNS owner), and delete rows that don't apply. Provider keys you don't know yet stay out; they come later as setting requests once A1 names them. Names only, never values. The orchestrator opens the `account_setup` gate with it; nothing that needs the accounts runs until Matthew approves. After approval, your first pipeline step runs `env-check --vercel` and turns anything missing into a setting request, never a guess.
+
+The human version of this process (with the reasons) is the SOP "Setting up a client project's hosting, database and release pipeline" in the Baseleap docs; keep the template in step with it.
+
+## 5. Terraform / OpenTofu — by exception
 
 Vercel + Supabase projects don't need Terraform: their config lives in the files above, and there's no other cloud infrastructure. Terraform is introduced only when the architect's decision record adds infrastructure beyond them (cloud storage, queues, DNS at scale) and after a spend gate. Then: remote state with locking, `fmt` + `validate` + `tflint` in CI, a `plan` posted for review, and **`apply` only by Matthew** (or a workflow behind the production environment approval). Never `apply` from an agent session.
 

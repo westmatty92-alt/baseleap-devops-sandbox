@@ -1,17 +1,24 @@
 import 'server-only';
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { Job, BoardDay, Me } from '@/lib/api/generated/model';
+import type { Database } from '@/types/database';
 import type { Caller, Member } from '../auth';
 import { HttpError, notAllowed, notFound } from '../http';
 
 // One row of the board: the job and its technician (the FK hint avoids created_by / updated_by).
-const JOB_SELECT = '*, assigned:team_members!jobs_assigned_member_id_fkey(id, name, is_active)' as const;
+// Explicit columns: the database column is `details`; the API field stays `notes` (see toJob).
+const JOB_SELECT =
+  'id, job_date, start_time, title, address, customer_name, customer_phone, details, status, version, assigned_member_id, created_at, updated_at, assigned:team_members!jobs_assigned_member_id_fkey(id, name, is_active)' as const;
 
 const MAX_BOARD = 500;
 const MIN_DATE = '2020-01-01';
 const MAX_DATE = '2100-12-31';
 
 type JobStatus = Job['status'];
+
+// src/types/database.ts is generated and not regenerated for the expand migration yet, so it lacks
+// `details`. Drop this intersection once `npm run gen:types` has run (release 2 at the latest).
+type JobInsert = Database['public']['Tables']['jobs']['Insert'] & { details?: string | null };
 
 export type CreateJobInput = {
   client_request_id: string;
@@ -44,7 +51,7 @@ type JobRow = {
   address: string;
   customer_name: string | null;
   customer_phone: string | null;
-  notes: string | null;
+  details: string | null;
   status: string;
   version: number;
   assigned_member_id: string;
@@ -63,7 +70,7 @@ function toJob(member: Member, r: JobRow): Job {
     address: r.address,
     customer_name: r.customer_name,
     customer_phone: r.customer_phone,
-    notes: r.notes,
+    notes: r.details, // column `details`, API field `notes`
     status: r.status as JobStatus,
     version: r.version,
     assigned_technician: { id: r.assigned.id, name: r.assigned.name, is_active: r.assigned.is_active },
@@ -98,7 +105,7 @@ function mapDbError(error: PostgrestError): never {
       throw new HttpError(422, 'validation_failed');
     case '23514': {
       const column = /constraint "jobs_(\w+?)_check"/.exec(error.message)?.[1];
-      const field = column ?? 'body';
+      const field = column === 'details' ? 'notes' : (column ?? 'body'); // column `details` is the API's `notes`
       throw new HttpError(422, 'validation_failed', {
         errors: [{ field, code: field === 'job_date' ? 'invalid_date' : 'invalid_format', message: field === 'job_date' ? 'Enter a valid date' : 'Check this value' }],
       });
@@ -185,9 +192,7 @@ export async function createJob(caller: Caller, input: CreateJobInput): Promise<
   const replay = await findByRequestId(caller, input.client_request_id);
   if (replay) return { job: replay, created: false };
 
-  const { data, error } = await db
-    .from('jobs')
-    .insert({
+  const row: JobInsert = {
       org_id: member.org.id,
       client_request_id: input.client_request_id,
       title,
@@ -197,12 +202,11 @@ export async function createJob(caller: Caller, input: CreateJobInput): Promise<
       address,
       customer_name: blankToNull(input.customer_name, true),
       customer_phone: blankToNull(input.customer_phone, true),
-      notes: blankToNull(input.notes, false),
+      details: blankToNull(input.notes, false),
       created_by: member.id, // the guard trigger sets created_by / updated_by / status / version itself
       updated_by: member.id,
-    })
-    .select(JOB_SELECT)
-    .single();
+  };
+  const { data, error } = await db.from('jobs').insert(row as Database['public']['Tables']['jobs']['Insert']).select(JOB_SELECT).single();
 
   if (error) {
     if (error.code === '23505' && error.message.includes('jobs_client_request_unique')) {

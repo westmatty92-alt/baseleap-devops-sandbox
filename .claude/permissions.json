@@ -24,7 +24,7 @@
       "GitHub access through the gh CLI with a repo-scoped token where needed; no GitHub MCP by default."
     ],
     "enforcement": [
-      "settings.json permissions.deny: command-level blocks for all agents (31 rules; production deploy/rollback/promote, env pull/add, db push, secret set, terraform apply, printenv, .env reads, gate resolve).",
+      "settings.json permissions.deny: command-level blocks for all agents (prefix rules backed by the prod-guard hook, which judges what a command does; production deploy/rollback/promote, env pull/add, db push, secret set, terraform apply, printenv, .env reads, gate resolve).",
       "gate-guard hook: dispatch only with STEP id, deps done, phase gate resolved, agent file ready, no nested bl-* spawns.",
       "orchestrator-scope hook: orchestrator writes only PLAN.md, .baseleap/**, docs/decisions/**.",
       "gate-guard also refuses the orchestrator's dispatch of non-team agents that can write (anything but Explore and Plan), so code can't bypass the specialists.",
@@ -49,7 +49,7 @@
       "read": "everything",
       "git": "creates lanes/worktrees; merges lanes into staging only; opens no PR to main",
       "database": "ledger only, via scripts/stack-ledger.mjs (service role in the ledger process; cannot resolve gates)",
-      "humanGates": "scope_approval (after PRD) · contract_lock (blueprint + build plan) · release_approval (before deploy); plus spend_approval, scope_decision, escalation"
+      "humanGates": "scope_approval (after PRD) · contract_lock (blueprint + build plan) · release_approval (before deploy); plus account_setup (new accounts, before anything uses them), spend_approval, scope_decision, escalation"
     },
     "bl-pm": {
       "model": "sonnet",

@@ -36,7 +36,10 @@ fi
 
 # 3. Dependencies: known CVEs from the lockfile (all ecosystems) + npm's advisory DB for production deps.
 if have osv-scanner; then
-  osv-scanner scan source --lockfile package-lock.json --format json --output-file "$OUT/osv.json" >/dev/null 2>&1 || status=1
+  rc=0; osv-scanner scan source --lockfile package-lock.json --format json --output-file "$OUT/osv.json" >/dev/null 2>&1 || rc=$?
+  # 0 = clean, 1 = findings (judged by the policy: block shipped High/Critical, warn on dev-only), else scanner failure
+  if [ "$rc" -gt 1 ] || [ ! -s "$OUT/osv.json" ]; then echo "osv-scanner: FAILED (exit $rc)"; status=1
+  elif [ "$rc" -eq 1 ]; then node "$(dirname "$0")/osv-gate.mjs" "$OUT/osv.json" || status=1; fi
   echo "osv-scanner: done ($OUT/osv.json)"
 fi
 if have npm; then
