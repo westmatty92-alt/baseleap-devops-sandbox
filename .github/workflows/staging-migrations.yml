@@ -72,6 +72,6 @@ jobs:
             echo '### Staging migrations: dry run'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --dry-run 2>&1 | grep -v 'postgres' | tee -a "$GITHUB_STEP_SUMMARY"
+          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --dry-run 2>&1 | sed '/postgresql:\/\//d' | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --yes 2>&1 | grep -v 'postgresql://'
+          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --yes 2>&1 | sed '/postgresql:\/\//d'
