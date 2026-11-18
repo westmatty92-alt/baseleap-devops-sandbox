@@ -118,9 +118,9 @@ export type Database = {
           created_by: string;
           customer_name: string | null;
           customer_phone: string | null;
+          details: string | null;
           id: string;
           job_date: string;
-          notes: string | null;
           org_id: string;
           start_time: string;
           status: string;
@@ -138,9 +138,9 @@ export type Database = {
           created_by: string;
           customer_name?: string | null;
           customer_phone?: string | null;
+          details?: string | null;
           id?: string;
           job_date: string;
-          notes?: string | null;
           org_id: string;
           start_time: string;
           status?: string;
@@ -157,9 +157,9 @@ export type Database = {
           created_by?: string;
           customer_name?: string | null;
           customer_phone?: string | null;
+          details?: string | null;
           id?: string;
           job_date?: string;
-          notes?: string | null;
           org_id?: string;
           start_time?: string;
           status?: string;
