@@ -44,7 +44,7 @@ set local role authenticated;
 
 select is((select count(*) from public.jobs), 3::bigint, 'Tech A reads every job in the org, including Tech B''s');
 select is((select count(*) from public.jobs where org_id = '00000000-0000-4000-8000-0000000000a2'), 0::bigint, 'Tech A cannot read another org''s jobs');
-select lives_ok($$update public.jobs set notes = 'Key under mat' where id = '00000000-0000-4000-8000-0000000000d1'$$, 'Tech A edits notes on own job');
+select lives_ok($$update public.jobs set details = 'Key under mat' where id = '00000000-0000-4000-8000-0000000000d1'$$, 'Tech A edits notes on own job');
 select lives_ok($$update public.jobs set status = 'in_progress' where id = '00000000-0000-4000-8000-0000000000d1'$$, 'Tech A sets In progress on own job');
 select is((select version from public.jobs where id = '00000000-0000-4000-8000-0000000000d1'), 3, 'each real change bumps version');
 select throws_ok($$update public.jobs set title = 'Hacked' where id = '00000000-0000-4000-8000-0000000000d1'$$, 'BLA02', null, 'Tech A cannot change the title of own job');
@@ -53,10 +53,10 @@ select throws_ok($$insert into public.jobs (org_id, client_request_id, title, ad
                    values ('00000000-0000-4000-8000-0000000000a1', gen_random_uuid(), 'New', 'Somewhere', '2026-11-12', '10:00', '00000000-0000-4000-8000-0000000000c2')$$,
                  '42501', null, 'Tech A cannot create a job');
 select throws_ok($$delete from public.jobs where id = '00000000-0000-4000-8000-0000000000d1'$$, '42501', null, 'Tech A cannot delete a job');
-update public.jobs set notes = 'Not mine' where id = '00000000-0000-4000-8000-0000000000d2';
-select is((select notes from public.jobs where id = '00000000-0000-4000-8000-0000000000d2'), null, 'Tech A cannot change Tech B''s job');
-update public.jobs set notes = 'Too late' where id = '00000000-0000-4000-8000-0000000000d3';
-select is((select notes from public.jobs where id = '00000000-0000-4000-8000-0000000000d3'), null, 'Tech A cannot change own cancelled job');
+update public.jobs set details = 'Not mine' where id = '00000000-0000-4000-8000-0000000000d2';
+select is((select details from public.jobs where id = '00000000-0000-4000-8000-0000000000d2'), null, 'Tech A cannot change Tech B''s job');
+update public.jobs set details = 'Too late' where id = '00000000-0000-4000-8000-0000000000d3';
+select is((select details from public.jobs where id = '00000000-0000-4000-8000-0000000000d3'), null, 'Tech A cannot change own cancelled job');
 select throws_ok($$select * from public.audit_log$$, '42501', null, 'Tech A cannot read the audit log');
 select throws_ok($$select * from public.events$$, '42501', null, 'Tech A cannot read events');
 reset role;
