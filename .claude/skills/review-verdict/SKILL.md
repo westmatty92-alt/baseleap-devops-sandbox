@@ -44,6 +44,7 @@ Never print a secret you find — cite `file:line` and the secret type, and mark
 - **BLOCKED** if any Critical or Important is open. **APPROVED** otherwise (Minors listed).
 - Every acceptance criterion in your scope is marked met / not met / can't tell (reviewer), and every security check in the audit log is marked passed / failed / not assessable (security). **Not assessable is not passed** — say what was missing.
 - State coverage limits honestly: what you didn't read, which tools didn't run and why.
+- **Before handing in, run `node scripts/review-check.mjs .baseleap/reviews/<STEP>.md --kind code|security` and fix what it lists.** It refuses a verdict without every template section (Findings, Acceptance criteria or Checks, Coverage & limits, Cross-lane consolidation, Pre-existing), a code review whose AC section names no AC id without saying why none is touched, and duplicates filed under Minor.
 
 ## 6. Re-reviews (after a fix)
 

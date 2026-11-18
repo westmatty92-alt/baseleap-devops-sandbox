@@ -367,7 +367,11 @@
         "mcp__Notion__notion-search",
         "mcp__Notion__notion-fetch",
         "mcp__Notion__notion-create-pages",
-        "mcp__Notion__notion-update-page"
+        "mcp__Notion__notion-update-page",
+        "mcp__claude_ai_Notion__notion-search",
+        "mcp__claude_ai_Notion__notion-fetch",
+        "mcp__claude_ai_Notion__notion-create-pages",
+        "mcp__claude_ai_Notion__notion-update-page"
       ],
       "bash": "yes, narrow: node scripts/sop-check.mjs, node scripts/agent-index.mjs, read-only git (status/diff/log); no installs, no network",
       "web": false,

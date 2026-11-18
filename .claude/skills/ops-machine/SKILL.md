@@ -18,5 +18,5 @@ One installer, many machines. The same script sets up Baseleap's own mini PC and
 - **Sleep and power:** the machine never sleeps; jobs survive a reboot (systemd user services or equivalent, not a terminal loop).
 
 ## 2. Output
-- `infra/machine/install.sh` (from `templates/install.sh`, v1 proven Nov 15 in a container: run 1 = 15 changes, run 2 = 0 changes, kit tests 134/134 inside; drill script in `templates/drill/`), `infra/machine/machine.example.json`, and a runbook section: setup, update, recovery, and decommissioning (revoke keys, wipe, return hardware).
+- `infra/machine/install.sh` (the kit itself ships a copy at `infra/machine/`, kept identical by `tests/machine-installer.test.mjs`, so the dev team install guide works from a kit checkout or bundle; from `templates/install.sh`, v1 proven Nov 15 in a container: run 1 = 15 changes, run 2 = 0 changes, kit tests 134/134 inside; drill script in `templates/drill/`), `infra/machine/machine.example.json`, and a runbook section: setup, update, recovery, and decommissioning (revoke keys, wipe, return hardware).
 - Before a client install ships: a dry run on a clean machine or VM, with the checklist in the runbook ticked.

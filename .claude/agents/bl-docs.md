@@ -4,7 +4,7 @@ description: Dev-team Documentation & SOP agent. Writes and maintains the human-
 model: sonnet
 effort: high
 tools: Read, Glob, Grep, Write, Edit, Bash, mcp__Notion__notion-search, mcp__Notion__notion-fetch, mcp__Notion__notion-create-pages, mcp__Notion__notion-update-page, mcp__claude_ai_Notion__notion-search, mcp__claude_ai_Notion__notion-fetch, mcp__claude_ai_Notion__notion-create-pages, mcp__claude_ai_Notion__notion-update-page
-baseleap-status: skeleton
+baseleap-status: ready
 skills:
   - stack-specialist-protocol
   - docs-plan

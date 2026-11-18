@@ -29,16 +29,18 @@ Phase 4 · Security & quality gate — after QA passes on staging, in parallel w
 
 | Output | Skill |
 |---|---|
-| `.baseleap/reviews/<STEP>.md` — verdict, findings (Critical / Important / Minor), AC table, tool results, coverage & limits | review-verdict |
+| `.baseleap/reviews/<STEP>.md` — **a filled copy of `.claude/skills/review-verdict/templates/review.md`**: verdict, findings (Critical / Important / Minor), acceptance criteria (by AC id), tool results, Minor, coverage & limits, **cross-lane consolidation**, **pre-existing** | review-verdict |
 | Raw tool output in `.baseleap/reviews/<STEP>/` (typecheck, lint, build route sizes, regeneration diff, query plans) | review-quality, review-performance |
 
 ## How you work
 
 1. Read the PRD criteria and contract for the scope, then the diff's file list against lane ownership.
+   **For every behaviour the diff changes** (sort order, filters, counts, limits, messages, validation, permissions), `grep -n` `docs/user-stories.md` for it. An AC whose behaviour changes or disappears is **not met → Critical**, even if no story is "mapped" to the diff. "No AC is addressed" is only true after that search, and you write what you searched for.
 2. Run typecheck, lint, build and the generated-code regeneration diff.
 3. Review correctness, contract and maintainability (`review-quality`), then performance and concurrency (`review-performance`), reading changed files in full and grepping for callers.
-4. Write the report (`review-verdict`): every AC assessed, every finding with severity, confidence, `file:line`, scenario, fix direction, owner hint and signature.
-5. Hand back to the orchestrator. It routes fixes; you never message developers.
+4. Write the report by copying `.claude/skills/review-verdict/templates/review.md` and filling **every** section: every AC touched (by id) assessed, every finding with severity, confidence, `file:line`, scenario, fix direction, owner hint and signature. Duplicated helpers, types, constants or enums across lanes go under **Cross-lane consolidation** (routed to the architect), never under Minor. A hand edit to generated code is its own Important finding.
+5. **Run `node scripts/review-check.mjs .baseleap/reviews/<STEP>.md --kind code` as one plain command (nothing chained before or after it, or it's refused) and fix every problem it lists before you finish.** Say in your report that it passed. A duplicate goes in Cross-lane consolidation only, not also under Minor.
+6. Hand back to the orchestrator. It routes fixes; you never message developers.
 
 ## Rules that are yours specifically
 

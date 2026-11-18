@@ -21,7 +21,7 @@ For every route and server action in the diff (and any route whose service chang
 
 ## 3. In the database (the executable SQL in `supabase/migrations/`)
 
-- Every table: `enable row level security` **and** `force row level security`; no table without policies (or an explicit "service-only" note in the security model).
+- Every table: `enable row level security` **and** `force row level security`; no table without policies (or an explicit "service-only" note in the security model). **Check each new table for both lines by name**; a new table without `force`, or with write policies that don't tie the row to an in-org parent (a child row whose `job_id`/`parent_id` isn't checked against the caller's org), is **Critical** (cross-tenant write), not Important. (Drill, Nov 18 2026: `job_photos` without `force` and with org-only write policies was rated Important and the missing `force` wasn't named.)
 - Policies cover each operation (`select`, `insert`, `update`, `delete`) with `using` **and** `with check` where rows are written — `with check` missing on update lets a user move a row into another tenant.
 - Policies compare against `auth.uid()` / the tenant mapping, not against something the client controls (a column the user can update, a JWT claim the user can set via `user_metadata`).
 - `security definer` functions set `search_path` and check the caller themselves; grants to `anon`/`authenticated` are deliberate.
