@@ -53,20 +53,25 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci # lockfile-exact; no secrets in this step
-      - name: Link the staging project
+      # No Supabase access token here: a personal access token reaches every org and project the owner belongs to
+      # (Supabase tokens can't be limited to one org; checked Nov 18 2026). The staging database's own connection
+      # string reaches that one database only. The URL is a secret; GitHub masks it in logs.
+      - name: Migrations (dry run, then apply) — staging database only
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
-        run: npx --no-install supabase link --project-ref "$SUPABASE_PROJECT_REF"
-      - name: Migrations (dry run, then apply)
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+          SUPABASE_STAGING_DB_URL: ${{ secrets.SUPABASE_STAGING_DB_URL }}
         run: |
+          case "$SUPABASE_STAGING_DB_URL" in
+            "") echo "::error::Secret SUPABASE_STAGING_DB_URL is not set in the staging environment."; exit 1 ;;
+            *"$SUPABASE_PROJECT_REF"*) ;;
+            *) echo "::error::SUPABASE_STAGING_DB_URL is not for project $SUPABASE_PROJECT_REF."; exit 1 ;;
+          esac
+          if [ -n "$PRODUCTION_REF_PUBLIC" ]; then
+            case "$SUPABASE_STAGING_DB_URL" in *"$PRODUCTION_REF_PUBLIC"*) echo "::error::SUPABASE_STAGING_DB_URL points at the production project."; exit 1 ;; esac
+          fi
           {
             echo '### Staging migrations: dry run'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --dry-run 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --dry-run 2>&1 | grep -v 'postgres' | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          npx --no-install supabase db push --remote="$SUPABASE_PROJECT_REF" --yes
+          npx --no-install supabase db push --remote="$SUPABASE_STAGING_DB_URL" --yes 2>&1 | grep -v 'postgresql://'
