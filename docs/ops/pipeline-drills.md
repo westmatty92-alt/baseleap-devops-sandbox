@@ -45,3 +45,4 @@ Sandbox: public practice repo, one Supabase project (ca-central-1), Vercel team 
 | Drill | Change | Reverted in |
 |---|---|---|
 | 4 Rollback | `src/app/api/health/route.ts`: production-only `degraded` 503 (commit on `ed77171`) | reverted after attempt 3 passed (2026-11-18) |
+| 5 Expand/contract | Nothing planted. Release 1 (expand, STEP BE-EC1) adds `jobs.details`, backfills it, and adds the two-way trigger `jobs_details_sync` (function `app.jobs_sync_details()`); the app reads and writes `details`, the API field stays `notes`. **Release 2 (contract) must drop the trigger and its function first, then drop the column `notes`**, then delete `tests/api/jobs-details-sync.test.ts` and regenerate `src/types/database.ts` (removing the `JobInsert` shim in `services/jobs.ts`). Never drop the column while the trigger exists, and never before release 1 is live everywhere. | n/a (nothing to revert) |
