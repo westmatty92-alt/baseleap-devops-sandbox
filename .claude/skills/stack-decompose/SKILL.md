@@ -17,7 +17,7 @@ Before planning, these must have answers. Ask **one question per turn**, each wi
 | 2 | Which client is it for, or is it a **new build** (our own product or venture, with no client and no audit)? | **Client:** `stack-ledger init --client <uuid>`, then `client-brief --client <uuid>` before dispatching P0. **New build:** `stack-ledger init --new "<name>"` creates a venture record (no audit, no research), and Q7 is asked in full, not confirmed. Who uses it and why is the **PM's** discovery, not yours |
 | 3 | What must NOT change? | No-touch paths, existing APIs, live data, brand tokens |
 | 4 | What does it run on? | Existing Baseleap stack: Vercel + Supabase (RLS on every table) unless the brief forces otherwise |
-| 5 | Any money, accounts, or external access needed? | List them now — each one becomes a `spend_approval` gate or a blocker, never a mid-build surprise |
+| 5 | Any money, accounts, or external access needed? | List them now — each one becomes a `spend_approval` gate or a blocker, never a mid-build surprise. New GitHub/Supabase/Vercel accounts for this build = the **account setup** step (§4.2a), not a spend gate on its own |
 | 6 | Iteration budget | 3 attempts per step, escalate after; raise only with a reason |
 | 7 | **Build mode:** which system holds the customer records, and what does each platform do? | Matthew asks this on the audit call. The Audit Assistant won't save gaps without it, so look for `current_stack.build_decision` in `.baseleap/inputs/client-research.md` first and ask him to **confirm** it. Ask the decision tree in `build-specs/build-modes.md` yourself only if there's no record (Q1 keep their CRM as the main system? → Q2 native features enough? / Q3 platform still runs website/email?). Default for new Baseleap clients: `hybrid` (our app is the system of record; GHL for website, forms, email) |
 
@@ -92,6 +92,9 @@ Ordering conventions (yours to apply), matching the 5-phase assembly line:
 1. `P0` writes `docs/PRD.md` (seeded by `init`), and everything depends on it.
 2. **Blueprint, in sequence:** designer, then architect. The standard design step:
    `{"id":"D1","agent":"designer","phase":"design","files":["DESIGN.md","src/app/theme.css","docs/tokens.json","docs/user-flows.md","docs/design-specs.md","design/**","docs/design/**"],"verify":["npx --yes @google/design.md lint DESIGN.md","node scripts/check-design.mjs"]}`
+   **2a. Account setup** (any plan that deploys, i.e. every profile except `in_platform`, unless the accounts already exist): in wave 1, alongside D1, `bl-devops` writes the client's account-setup packet from `ops-environments/templates/account-setup.md`:
+   `{"id":"OPS-SETUP","agent":"devops","phase":"design","depends_on":["P0"],"files":["docs/ops/account-setup.md"],"verify":["test -s docs/ops/account-setup.md","! grep -n '{{' docs/ops/account-setup.md"]}`
+   When it verifies, open the **`account_setup`** gate with the packet (`stack-hitl`). Matthew does the setup by hand and approves. The **first step that needs the accounts** declares `"requires_gates":["account_setup"]` and the ledger holds it until then: **A2** when there's an architect (its migrations and RLS tests run on the new staging Supabase project), otherwise the first devops pipeline step. The ledger rejects a plan whose deploy step doesn't sit behind such a step. **Accounts already exist** (takeover, a client's existing project, a second build on the same app): skip OPS-SETUP and set `"accounts_ready": "<which accounts exist and how you checked them, e.g. OPS0 read-only takeover>"` on the plan. Provider keys found later (after A1 names them) are follow-up setting requests (`ops-secrets`), not a second account_setup.
    Then the architect, in two steps. Spikes come before the architect step that depends on their decision.
    - **A1 blueprint** (depends on D1):
      `{"id":"A1","agent":"architect","phase":"design","files":["docs/decisions/**","docs/architecture.md","docs/SECURITY_MODEL.md","docs/openapi.yaml","supabase/migrations/**","supabase/tests/**"],"verify":["node scripts/check-architecture.mjs","npx --yes @redocly/cli lint docs/openapi.yaml"]}`
@@ -99,10 +102,10 @@ Ordering conventions (yours to apply), matching the 5-phase assembly line:
    - **S0 threat model** (depends on A1, runs alongside A2; Gate 2 waits for it): `bl-security` reviews the blueprint before code exists (`sec-threat-model`).
      `{"id":"S0","agent":"security","phase":"design","depends_on":["A1"],"files":["docs/threat-model.md",".baseleap/reviews/S0.md"],"verify":["test -s docs/threat-model.md","test -s .baseleap/reviews/S0.md"]}`
      Its Critical and Important findings go back to the architect as contract questions and must be answered before Gate 2. Skip S0 only for a plan with no data store and no external input (e.g. a static page), and say why.
-   - **A2 scaffold** (depends on A1). The repo skeleton on `staging`; the migrations and RLS tests run here, on the Supabase preview branch:
+   - **A2 scaffold** (depends on A1; `"requires_gates":["account_setup"]` on a new client build). The repo skeleton on `staging`; the migrations and RLS tests run here, on the staging Supabase project (or the existing project's preview branch):
      `{"id":"A2","agent":"architect","phase":"design","files":["package.json","package-lock.json","tsconfig.json","next.config.*","eslint.config.*","vitest.config.*","postcss.config.*","orval.config.ts","components.json","src/**","public/**","supabase/config.toml","supabase/scripts/**",".gitignore",".env.example"],"verify":["npm ci","npm run gen:types","npm run typecheck","npm run lint","npm run build","npm run db:test","node scripts/check-mock.mjs"]}`
      `src/**` is the scaffold's skeleton and placeholders. Later build steps own their lane's paths from `architecture.md` → Lane ownership. Different waves may own the same files.
-   - **Before A2: one `spend_approval`** for the Supabase preview branch (branches bill hourly). The packet asks Matthew to create the branch on the project and set `SUPABASE_PREVIEW_DB_URL` (the name only goes in files). The same branch becomes the staging database in Phase 2. Skip it when the project already has a staging branch.
+   - **Existing project with no staging database** (`accounts_ready` plans only): before A2, one `spend_approval` for a Supabase preview branch (branches bill hourly). The packet asks Matthew to create the branch and set `SUPABASE_PREVIEW_DB_URL` (the name only goes in files). New client builds don't need it: the staging project from account setup is the test database.
 3. **Build in parallel lanes:** backend (migrations → endpoints → auth) in `wt-backend`; frontend in `wt-frontend`, built against the locked contract with mocks; devops sets up the Vercel preview environment and CI for `staging`. Frontend doesn't wait for backend. That's the point of locking the contract.
    **Build-step verify templates** (narrow each to the step's own paths):
    - **backend:** `npm run typecheck` · `npm run lint` · `npm test -- tests/api/<resource>` · `npm run build` · `node scripts/check-code-guards.mjs service-role`
@@ -111,7 +114,7 @@ Ordering conventions (yours to apply), matching the 5-phase assembly line:
    - Ownership: `src/proxy.ts` is the backend's (Next.js 16). `src/lib/api/fetcher.ts`, `src/mocks/**` and `src/lib/utils.ts` are the frontend's. Integration paths go to `bl-integration` when it's dispatched (see its spec).
 4. **Integration:** one QA step per user-facing flow, depending on the build steps it covers. QA runs against the staging preview URL.
 5. **Critics:** reviewer and security steps depend on the QA steps, and run in parallel with each other. For any product with UI, add a designer **visual review** step alongside them (verify phase, owns `.baseleap/reviews/<step>.md`).
-6. **Deploy:** one deploy-phase devops step depending on every verify-phase step.
+6. **Deploy:** one deploy-phase devops step depending on every verify-phase step. On a new client build, the first release is the **pipeline drills** (`ops-release` §5: release + rollback at minimum, logged in `docs/ops/pipeline-drills.md`) and its acceptance names them; the client goes live only after they pass.
 
 ## 5. Write it down, get it reviewed, submit it in two stages
 
@@ -119,7 +122,7 @@ The ledger takes plans only after **Gate 1 · scope_approval**, and appends each
 
 | Submission | When | Contains | Needs `profile` |
 |---|---|---|---|
-| **Blueprint plan** | right after scope_approval | designer step(s), spikes, architect step(s) | yes |
+| **Blueprint plan** | right after scope_approval | designer step(s), OPS-SETUP (or `accounts_ready`), spikes, architect step(s), S0 | yes |
 | **Build plan** | after the architect's steps verify, before contract_lock | backend, frontend, devops, qa, reviewer, security, deploy steps | no |
 | Amendment | after contract_lock | anything new (`plan --amend`, which opens `scope_decision` automatically) | no |
 
@@ -142,15 +145,16 @@ Done means: <forcing question 1 answer>
 ## Waves
 | Wave | Steps | Starts when |
 |---|---|---|
-| 1 | D1 | scope_approval |
-| 2 | A1 → A2 | D1 verified (A2 also needs the preview-branch spend_approval) |
+| 1 | D1, OPS-SETUP | scope_approval |
+| 2 | A1 → A2 | D1 verified (A2 also waits for Matthew's account_setup approval) |
 | 3 | BE1, FE1, OPS1 | contract_lock |
 | 4 | QA1, QA2 | build verified (staging preview up) |
 | 5 | REV1, SEC1 | QA verified |
 | 6 | DEP1 | release_approval |
 
 ## Graph
-P0 ── D1 ── A1 ── A2 ──┬── BE1 ──┬── QA1 ──┬── REV1 ──┬── DEP1
+P0 ─┬ D1 ── A1 ── A2 ──┬── BE1 ──┬── QA1 ──┬── REV1 ──┬── DEP1
+    └ OPS-SETUP ··(account_setup)··┘ (A2 waits)
                        ├── FE1 ──┤         └── SEC1 ──┘
                        └── OPS1 ─┴── QA2 ──┘
 
@@ -164,7 +168,7 @@ Depends on: A1 · Verify: `npm ci` · `npm run gen:types` · `npm run typecheck`
 Acceptance: …
 
 ## Gates
-scope_approval → contract_lock → release_approval (+ spend_approval: <what costs money>)
+scope_approval → account_setup (new accounts) → contract_lock → release_approval (+ spend_approval: <what costs money>)
 
 ## Risks
 - <what could go wrong> → <mitigation>

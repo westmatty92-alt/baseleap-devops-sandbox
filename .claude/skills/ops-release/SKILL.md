@@ -45,7 +45,16 @@ A migration that breaks this rule is a finding for the architect before Gate 3, 
 - **App:** `vercel rollback` (instant; re-points production to the previous deployment, no rebuild). Undo with `vercel promote <deployment>`. Matthew runs these from the runbook; the release workflow runs rollback automatically on smoke failure.
 - **Database:** no down-migrations on production. Because migrations are expand/contract, the previous app version still works on the new schema; problems are fixed with a **new forward migration** through the normal flow. Data-destroying mistakes → Supabase point-in-time recovery, which is Matthew's call (escalation).
 
-## 5. Never
+## 5. Pipeline drills before launch (every new client build)
+
+The release and its rollback are proven on the client's real accounts **before the client goes live**, while production has no users. Keep `docs/ops/pipeline-drills.md` from `templates/pipeline-drills.md`: one row per attempt, failures included with their fix, and whether the fix also went into the kit template.
+- Drills: CI on staging · staging tests start by themselves · release (approval → migrations dry run then apply → deploy → live check) · **rollback** (a planted production-only failure must be replaced automatically) · expand/contract · uptime alert · guardrails.
+- **Launch is blocked until release and rollback pass.** The deploy step's preconditions (§1) cite the drill log.
+- Planted breaks are listed in the log and reverted in the next PR. Matthew approves every production step; if an automatic rollback fails, stop, ask Matthew to restore production from the Vercel dashboard (Instant Rollback), then fix forward.
+- Re-run release and rollback after any change to `release.yml`, the account setup, or the tools the release installs.
+- Every lesson goes back into the kit (template + `build-specs/decisions.md`), so the next client starts from the fixed version.
+
+## 6. Never
 
 - Deploy production outside the release workflow, or before Gate 3.
 - Run `supabase db push` against production yourself, or migrations not named in the Gate 3 packet.

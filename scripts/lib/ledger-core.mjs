@@ -32,6 +32,7 @@ export const ROSTER = {
   'bl-reviewer': 'reviewer',
   'bl-security': 'security',
   'bl-devops': 'devops',
+  'bl-integration': 'integration',
 };
 export const AGENT_KEYS = Object.values(ROSTER);
 export const agentKeyFor = (subagentType) => ROSTER[subagentType] ?? null;
@@ -56,13 +57,16 @@ export const STEP_PHASES = Object.keys(PHASE_GATE);
 /** Which agents may own steps in which phase. */
 const PHASE_AGENTS = {
   product: ['pm'],
-  design: ['architect', 'designer'],
-  build: ['frontend', 'backend', 'devops'],
+  design: ['architect', 'designer', 'security', 'devops'],   // security: threat model of the blueprint before Gate 2; devops: the account-setup packet
+  build: ['frontend', 'backend', 'devops', 'integration'],
   verify: ['qa', 'reviewer', 'security', 'designer'],   // designer: post-build visual review
   deploy: ['devops'],
 };
 
-export const GATE_KEYS = ['scope_approval', 'contract_lock', 'release_approval', 'spend_approval', 'scope_decision', 'escalation'];
+export const GATE_KEYS = ['scope_approval', 'contract_lock', 'release_approval', 'spend_approval', 'scope_decision', 'escalation', 'account_setup'];
+/** Triggered gates a single step can wait on (task.requires_gates). account_setup = Matthew finished the
+ *  human account setup (GitHub/Supabase/Vercel, per the account-setup SOP) for this build. */
+export const STEP_GATES = ['account_setup', 'spend_approval'];
 export const FIXED_GATES = ['scope_approval', 'contract_lock', 'release_approval'];
 export const MAX_ATTEMPTS = 3;
 
@@ -222,7 +226,7 @@ export function redact(text) {
 // Build modes — decided at intake, recorded on the plan at the first submission.
 // See build-specs/build-modes.md for the decision tree.
 export const BUILD_MODES = {
-  in_platform: { appIsRecord: false, needsPlatforms: true, contract: false, banned: ['architect', 'frontend', 'backend', 'devops'] },
+  in_platform: { appIsRecord: false, needsPlatforms: true, contract: false, banned: ['architect', 'frontend', 'backend', 'devops', 'integration'] },
   platform_extension: { appIsRecord: false, needsPlatforms: true, contract: true, banned: [] },
   hybrid: { appIsRecord: true, needsPlatforms: true, contract: true, banned: [] },
   custom: { appIsRecord: true, needsPlatforms: false, contract: false, banned: [] },
@@ -279,6 +283,9 @@ export function validatePlan(doc, { existing = [], requireProfile = true, mode =
     if (!Array.isArray(t.files)) errors.push(`${where}: files must list the paths/globs this step owns`);
     const hasVerify = Array.isArray(t.verify) && t.verify.length > 0 && t.verify.every((c) => typeof c === 'string' && c.trim());
     if (!hasVerify) errors.push(`${where}: verify must list shell commands that exit 0 only when the step is done`);
+    if (t.requires_gates !== undefined && (!Array.isArray(t.requires_gates) || t.requires_gates.some((g) => !STEP_GATES.includes(g)))) {
+      errors.push(`${where}: requires_gates may only list ${STEP_GATES.join(', ')}`);
+    }
   }
   if (errors.length) return { errors };
 
@@ -319,15 +326,37 @@ export function validatePlan(doc, { existing = [], requireProfile = true, mode =
     }
   }
 
-  // platform_extension / hybrid: every FE/BE step must sit behind the integration contract
-  if (rules?.contract) {
-    const ownsContract = (id) => known[id]?.agent === 'architect' && (known[id]?.files ?? []).includes(INTEGRATION_CONTRACT);
+  // platform_extension / hybrid: every FE/BE/integration step must sit behind the integration contract.
+  // In any mode, an integration step needs it (bl-integration I2: contract first).
+  const ownsContract = (id) => known[id]?.agent === 'architect' && (known[id]?.files ?? []).includes(INTEGRATION_CONTRACT);
+  if (!rules?.contract) {
     for (const t of tasks) {
-      if (!['frontend', 'backend'].includes(t.agent)) continue;
+      if (t.agent === 'integration' && ![...ancestors(t.id)].some(ownsContract)) {
+        errors.push(`task ${t.id}: integration work must depend on an architect step that owns ${INTEGRATION_CONTRACT}, whatever the build mode`);
+      }
+    }
+  }
+  if (rules?.contract) {
+    for (const t of tasks) {
+      if (!['frontend', 'backend', 'integration'].includes(t.agent)) continue;
       if (![...ancestors(t.id)].some(ownsContract)) {
         errors.push(`task ${t.id}: build_mode ${buildMode} — ${t.agent} work must depend on an architect step that owns ${INTEGRATION_CONTRACT} (system of record, sync direction, field mapping)`);
       }
     }
+  }
+
+  // Account setup: anything that deploys must sit behind the human account setup (GitHub, Supabase,
+  // Vercel — see ops-environments/templates/account-setup.md), unless the accounts already exist.
+  const waitsForSetup = (id) => (known[id]?.requires_gates ?? []).includes('account_setup');
+  if (!doc.accounts_ready) {
+    for (const t of tasks) {
+      if (t.phase !== 'deploy') continue;
+      if (!waitsForSetup(t.id) && ![...ancestors(t.id)].some(waitsForSetup)) {
+        errors.push(`task ${t.id}: deploy work must depend on a devops step with "requires_gates": ["account_setup"] (Matthew's account setup), or set plan.accounts_ready to say why the accounts already exist`);
+      }
+    }
+  } else if (typeof doc.accounts_ready !== 'string' || !doc.accounts_ready.trim()) {
+    errors.push('plan.accounts_ready must be a sentence saying which accounts exist and how that was checked');
   }
 
   // parallel lanes: tasks in the same wave must not own the same files
@@ -440,7 +469,7 @@ export async function addPlan(db, planId, doc, { amend = false } = {}) {
   const { errors, waves } = validatePlan(doc, {
     requireProfile: firstSubmission,
     mode: firstSubmission ? null : (await getPlan(db, planId)).plan?.build_mode ?? null,
-    existing: existing.map((s) => ({ id: s.manifest.local_id, agent: s.agent, files: s.manifest.files ?? [], depends_on: (s.depends_on ?? []).map((u) => localOf[u]).filter(Boolean) })),
+    existing: existing.map((s) => ({ id: s.manifest.local_id, agent: s.agent, files: s.manifest.files ?? [], requires_gates: s.manifest.requires_gates ?? [], depends_on: (s.depends_on ?? []).map((u) => localOf[u]).filter(Boolean) })),
   });
   if (errors.length) throw new LedgerError('plan rejected:\n  - ' + errors.join('\n  - '), 4);
 
@@ -477,6 +506,7 @@ export async function addPlan(db, planId, doc, { amend = false } = {}) {
         manifest: {
           kind: 'stack', local_id: t.id, files: t.files, verify: t.verify, model: t.model ?? null,
           context: t.context ?? [], attempts: 0, error_signatures: [],
+          requires_gates: t.requires_gates ?? [],
           amendment_gate_id: amendmentGateId,
         },
       });
@@ -559,6 +589,11 @@ export async function checkDispatch(db, planId, { subagentType, stepLocalId }) {
   const required = PHASE_GATE[step.phase];
   if (required && latest[required]?.status !== 'approved') {
     return { allow: false, reason: `${step.phase}-phase work needs gate ${required} approved (currently ${latest[required]?.status ?? 'not requested'})` };
+  }
+  for (const g of step.manifest.requires_gates ?? []) {
+    if (latest[g]?.status !== 'approved') {
+      return { allow: false, reason: `step ${stepLocalId} waits for Matthew: gate ${g} is ${latest[g]?.status ?? 'not requested'}${g === 'account_setup' ? ' (open it with the account-setup packet, docs/ops/account-setup.md)' : ''}` };
+    }
   }
   const amendGate = step.manifest.amendment_gate_id;
   if (amendGate) {

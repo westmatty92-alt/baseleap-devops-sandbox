@@ -14,11 +14,12 @@ Two failure modes, both expensive: asking about things you should just decide (M
 |---|---|---|---|
 | 1 · `scope_approval` | P0 verified (PRD, user stories, metrics spec pass `check-pm-docs`) | Is this the right thing to build? Stories, edge cases, what's out, team profile | ~1 minute |
 | 2 · `contract_lock` | design + architecture verified and build plan submitted | The blueprint: design specs, schema + RLS, API contract, build waves and verify commands. After this, changing them costs a gate | ~5–10 minutes |
-| 3 · `release_approval` | every step verified + ship gate run | Shipping: features done, test results, review and security findings, deferred minors, rollback path | ~2 minutes |
+| 3 · `release_approval` | every step verified + ship gate run (new client builds: release and rollback drills passed, `docs/ops/pipeline-drills.md`) | Shipping: features done, test results, review and security findings, deferred minors, rollback path | ~2 minutes |
 
 **Triggered gates** (whenever they apply):
 | Gate | Trigger |
 |---|---|
+| `account_setup` | OPS-SETUP verified: Matthew must create or connect GitHub, Supabase and Vercel for this build. The packet is `docs/ops/account-setup.md`. Its gate summary lists the accounts, who owns them (decided at kickoff), and each recurring cost as a **DECISION** line (e.g. the second Supabase project's compute). Approving it covers those costs. Steps with `requires_gates: ["account_setup"]` are held until he approves |
 | `spend_approval` | Any paid resource: new cloud service, plan upgrade, paid API, domain, usage likely to bill |
 | `scope_decision` | Business logic the PRD doesn't settle; any change to a locked decision or the contract; adding/removing steps after approval (`plan --amend` opens it automatically) |
 | `escalation` | The ledger opened it (loop / budget) — or you hit a credential/access boundary, or every path forward is a guess |

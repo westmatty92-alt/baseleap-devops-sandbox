@@ -33,7 +33,11 @@
       "Read(./.env.staging)",
       "Read(./.env.development)",
       "mcp__vercel__deploy_to_vercel",
-      "mcp__vercel__buy_domain"
+      "mcp__vercel__buy_domain",
+      "Bash(gh workflow run release:*)",
+      "Bash(gh workflow run .github/workflows/release:*)",
+      "Bash(vercel deploy --prebuilt --prod:*)",
+      "Bash(npx --no-install supabase db push:*)"
     ]
   },
   "hooks": {
@@ -48,6 +52,15 @@
       }
     ],
     "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/prod-guard.mjs\""
+          }
+        ]
+      },
       {
         "matcher": "Agent|Task",
         "hooks": [
