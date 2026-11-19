@@ -1,0 +1,651 @@
+2026-11-19T01:11:22.4812282Z Current runner version: '2.338.2'
+##[group]Runner Image Provisioner
+Hosted Compute Agent
+Version: 20261111.635
+Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+Build Date: 2026-11-11T01:49:01Z
+Worker ID: {78a78f3c-73ca-4968-81b8-f7448329ceae}
+Region: us-east-1
+Cloud: AWS
+##[endgroup]
+##[group]Operating System
+Ubuntu
+24.04.5
+LTS
+##[endgroup]
+##[group]Runner Image
+Image: ubuntu-24.04
+Version: 20261116.133.1
+Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261116.133/images/ubuntu/Ubuntu2404-Readme.md
+Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261116.133
+##[endgroup]
+##[group]GITHUB_TOKEN Permissions
+Contents: read
+Metadata: read
+##[endgroup]
+Secret source: Actions
+Cache mode: write
+Prepare workflow directory
+Prepare all required actions
+Getting action download info
+Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+Complete job name: smoke
+##[group]Run case "$BASE_URL" in
+[36;1mcase "$BASE_URL" in[0m
+[36;1m  https://baseleap-devops-sandbox-*.vercel.app|https://baseleap-devops-sandbox-*.vercel.app/) ;;[0m
+[36;1m  *) echo "::error::Refusing to send the bypass header to an unexpected host."; exit 1 ;;[0m
+[36;1mesac[0m
+[36;1mhost=${BASE_URL#https://}; host=${host%%/*}[0m
+[36;1mfor p in $PRODUCTION_HOSTS; do[0m
+[36;1m  if [ "$host" = "$p" ]; then echo "::error::BASE_URL is a production host."; exit 1; fi[0m
+[36;1mdone[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+with:
+  ref: 172792684f6f32f74f2f0318869b5315b69074f0
+  persist-credentials: false
+  repository: westmatty92-alt/baseleap-devops-sandbox
+  token: ***
+  ssh-strict: true
+  ssh-user: git
+  clean: true
+  sparse-checkout-cone-mode: true
+  fetch-depth: 1
+  fetch-tags: false
+  show-progress: true
+  lfs: false
+  submodules: false
+  set-safe-directory: true
+  allow-unsafe-pr-checkout: false
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+Syncing repository: westmatty92-alt/baseleap-devops-sandbox
+##[group]Getting Git version info
+Working directory is '/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox'
+[command]/usr/bin/git version
+git version 2.56.1
+##[endgroup]
+Temporarily overriding HOME='/home/runner/work/_temp/85d3e292-78f9-474f-963f-a6bf21288464' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+[command]/usr/bin/git config --global --add safe.directory /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox
+Deleting the contents of '/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox'
+##[group]Determining repository object format
+##[endgroup]
+##[group]Initializing the repository
+[command]/usr/bin/git init /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Initialized empty Git repository in /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git/
+[command]/usr/bin/git remote add origin https://github.com/westmatty92-alt/baseleap-devops-sandbox
+##[endgroup]
+##[group]Disabling automatic garbage collection
+[command]/usr/bin/git config --local gc.auto 0
+##[endgroup]
+##[group]Setting up auth
+Removing SSH command configuration
+[command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Removing HTTP extra header
+[command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Removing includeIf entries pointing to credentials config files
+[command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+[command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+[command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+[command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git.path /home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+##[endgroup]
+##[group]Fetching the repository
+[command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 172792684f6f32f74f2f0318869b5315b69074f0
+From https://github.com/westmatty92-alt/baseleap-devops-sandbox
+ * branch            172792684f6f32f74f2f0318869b5315b69074f0 -> FETCH_HEAD
+[command]/usr/bin/git rev-parse --verify --quiet 172792684f6f32f74f2f0318869b5315b69074f0^{object}
+172792684f6f32f74f2f0318869b5315b69074f0
+##[endgroup]
+##[group]Determining the checkout info
+##[endgroup]
+[command]/usr/bin/git sparse-checkout disable
+[command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+##[group]Checking out the ref
+[command]/usr/bin/git checkout --progress --force 172792684f6f32f74f2f0318869b5315b69074f0
+Note: switching to '172792684f6f32f74f2f0318869b5315b69074f0'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 1727926 STEP QA7: run C verdict
+##[endgroup]
+[command]/usr/bin/git log -1 --format=%H
+172792684f6f32f74f2f0318869b5315b69074f0
+##[group]Removing auth
+Removing SSH command configuration
+[command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Removing HTTP extra header
+[command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Removing includeIf entries pointing to credentials config files
+[command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git.path
+includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git/worktrees/*.path
+includeif.gitdir:/github/workspace/.git.path
+includeif.gitdir:/github/workspace/.git/worktrees/*.path
+[command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git.path
+/home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-e303a73a\-d1fb\-424b\-bb1d\-e96c9b473d6a\.config
+[command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git/worktrees/*.path
+/home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-e303a73a\-d1fb\-424b\-bb1d\-e96c9b473d6a\.config
+[command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+/github/runner_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-e303a73a\-d1fb\-424b\-bb1d\-e96c9b473d6a\.config
+[command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+/github/runner_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config
+[command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-e303a73a\-d1fb\-424b\-bb1d\-e96c9b473d6a\.config
+[command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Removing credentials config '/home/runner/work/_temp/git-credentials-e303a73a-d1fb-424b-bb1d-e96c9b473d6a.config'
+##[endgroup]
+##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+with:
+  node-version: 22
+  cache: npm
+  check-latest: false
+  token: ***
+  package-manager-cache: true
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+Found in cache @ /opt/hostedtoolcache/node/22.23.5/x64
+##[group]Environment details
+node: v22.23.5
+npm: 10.9.9
+yarn: 1.22.22
+##[endgroup]
+[command]/opt/hostedtoolcache/node/22.23.5/x64/bin/npm config get cache
+/home/runner/.npm
+Cache hit for: node-cache-Linux-x64-npm-e62e628627e54548a51b9db5788588289cf3df3056afab50a840732aaa2fcd63
+Received 685 of 685 (100.0%), 0.0 MBs/sec
+Cache Size: ~0 MB (685 B)
+[command]/usr/bin/tar -xf /home/runner/work/_temp/82182ec0-5a7e-4e11-9f37-26ad29970d5a/cache.tzst -P -C /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox --use-compress-program unzstd
+Cache restored successfully
+Cache restored from key: node-cache-Linux-x64-npm-e62e628627e54548a51b9db5788588289cf3df3056afab50a840732aaa2fcd63
+##[group]Run node scripts/smoke.mjs "$BASE_URL" "$DEPLOY_SHA"
+[36;1mnode scripts/smoke.mjs "$BASE_URL" "$DEPLOY_SHA"[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+✓ /api/health — ok, version 1727926
+✓ /sign-in — 200
+✓ /offline — 200
+##[group]Run if [ -f playwright.config.ts ] || [ -f playwright.config.js ] || [ -f playwright.config.mjs ]; then
+[36;1mif [ -f playwright.config.ts ] || [ -f playwright.config.js ] || [ -f playwright.config.mjs ]; then[0m
+[36;1m  echo "present=true" >> "$GITHUB_OUTPUT"[0m
+[36;1melse[0m
+[36;1m  echo "present=false" >> "$GITHUB_OUTPUT"[0m
+[36;1m  echo "::notice::No playwright config on this commit yet (QA owns it). Only the read-only smoke ran."[0m
+[36;1mfi[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+##[group]Run npm ci
+[36;1mnpm ci[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+npm warn deprecated node-abort-controller@3.1.1: This package is no longer needed on supported Node.js versions. Node.js 16+ includes AbortController and AbortSignal as built-in globals. All Node.js versions requiring this polyfill are end-of-life. Use the built-in globals instead.
+npm warn deprecated json-schema-ref-parser@6.1.0: Please switch to @apidevtools/json-schema-ref-parser
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated @faker-js/faker@5.5.3: Please update to a newer version.
+
+added 741 packages, and audited 748 packages in 41s
+
+218 packages are looking for funding
+  run `npm fund` for details
+
+16 vulnerabilities (2 low, 8 moderate, 6 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+##[group]Run npx playwright install --with-deps chromium
+[36;1mnpx playwright install --with-deps chromium[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+Installing dependencies...
+Switching to root user to install dependencies...
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [152 B]
+Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+Hit:2 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble InRelease
+Get:3 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:5 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [794 kB]
+Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [723 kB]
+Get:9 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1455 kB]
+Get:10 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [317 kB]
+Get:11 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1715 kB]
+Get:12 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [346 kB]
+Get:13 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1887 kB]
+Get:14 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [433 kB]
+Get:15 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1198 kB]
+Get:16 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security/main Translation-en [239 kB]
+Get:17 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1230 kB]
+Get:18 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1792 kB]
+Get:19 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [414 kB]
+Fetched 12.9 MB in 1s (10.1 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+libasound2t64 set to manually installed.
+libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+libatk-bridge2.0-0t64 set to manually installed.
+libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+libatk1.0-0t64 set to manually installed.
+libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+libatspi2.0-0t64 set to manually installed.
+libcairo2 is already the newest version (1.18.0-3build1).
+libcairo2 set to manually installed.
+libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+libcups2t64 set to manually installed.
+libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+libdbus-1-3 set to manually installed.
+libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+libdrm2 set to manually installed.
+libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).
+libglib2.0-0t64 set to manually installed.
+libnspr4 is already the newest version (2:4.35-1.1build1).
+libnspr4 set to manually installed.
+libnss3 is already the newest version (2:3.98-1ubuntu0.3).
+libnss3 set to manually installed.
+libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+libpango-1.0-0 set to manually installed.
+libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+libx11-6 set to manually installed.
+libxcb1 is already the newest version (1.15-1ubuntu2).
+libxcb1 set to manually installed.
+libxcomposite1 is already the newest version (1:0.4.5-1build3).
+libxcomposite1 set to manually installed.
+libxdamage1 is already the newest version (1:1.1.6-1build1).
+libxdamage1 set to manually installed.
+libxext6 is already the newest version (2:1.3.4-1build2).
+libxext6 set to manually installed.
+libxfixes3 is already the newest version (1:6.0.0-2build1).
+libxfixes3 set to manually installed.
+libxkbcommon0 is already the newest version (1.6.0-1build1).
+libxkbcommon0 set to manually installed.
+libxrandr2 is already the newest version (2:1.5.2-2build1).
+libxrandr2 set to manually installed.
+xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+libfontconfig1 set to manually installed.
+libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+libfreetype6 set to manually installed.
+fonts-liberation is already the newest version (1:2.1.5-3).
+fonts-liberation set to manually installed.
+The following additional packages will be installed:
+  libgl1-mesa-dri libglx-mesa0 mesa-libgallium xfonts-encodings xfonts-utils
+Recommended packages:
+  fonts-ipafont-mincho fonts-tlwg-loma
+The following NEW packages will be installed:
+  fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+  fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+  xfonts-utils
+The following packages will be upgraded:
+  libgbm1 libgl1-mesa-dri libglx-mesa0 mesa-libgallium
+4 upgraded, 9 newly installed, 0 to remove and 8 not upgraded.
+Need to get 32.1 MB of archives.
+After this operation, 79.7 MB of additional disk space will be used.
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [152 B]
+Get:2 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+Get:3 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+Get:4 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+Get:5 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+Get:6 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+Get:7 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgl1-mesa-dri amd64 25.2.8-0ubuntu0.24.04.5 [38.0 kB]
+Get:8 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglx-mesa0 amd64 25.2.8-0ubuntu0.24.04.5 [110 kB]
+Get:9 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgbm1 amd64 25.2.8-0ubuntu0.24.04.5 [34.2 kB]
+Get:10 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 mesa-libgallium amd64 25.2.8-0ubuntu0.24.04.5 [10.8 MB]
+Get:11 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+Get:12 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+Get:13 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+Get:14 http://us-east-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+Fetched 32.1 MB in 7min 3s (75.9 kB/s)
+Selecting previously unselected package fonts-ipafont-gothic.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 216720 files and directories currently installed.)
+Preparing to unpack .../00-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+Selecting previously unselected package fonts-freefont-ttf.
+Preparing to unpack .../01-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+Selecting previously unselected package fonts-tlwg-loma-otf.
+Preparing to unpack .../02-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+Selecting previously unselected package fonts-unifont.
+Preparing to unpack .../03-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+Unpacking fonts-unifont (1:15.1.01-1build1) ...
+Selecting previously unselected package fonts-wqy-zenhei.
+Preparing to unpack .../04-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+Preparing to unpack .../05-libgl1-mesa-dri_25.2.8-0ubuntu0.24.04.5_amd64.deb ...
+Unpacking libgl1-mesa-dri:amd64 (25.2.8-0ubuntu0.24.04.5) over (25.2.8-0ubuntu0.24.04.4) ...
+Preparing to unpack .../06-libglx-mesa0_25.2.8-0ubuntu0.24.04.5_amd64.deb ...
+Unpacking libglx-mesa0:amd64 (25.2.8-0ubuntu0.24.04.5) over (25.2.8-0ubuntu0.24.04.4) ...
+Preparing to unpack .../07-libgbm1_25.2.8-0ubuntu0.24.04.5_amd64.deb ...
+Unpacking libgbm1:amd64 (25.2.8-0ubuntu0.24.04.5) over (25.2.8-0ubuntu0.24.04.4) ...
+Preparing to unpack .../08-mesa-libgallium_25.2.8-0ubuntu0.24.04.5_amd64.deb ...
+Unpacking mesa-libgallium:amd64 (25.2.8-0ubuntu0.24.04.5) over (25.2.8-0ubuntu0.24.04.4) ...
+Selecting previously unselected package xfonts-encodings.
+Preparing to unpack .../09-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+Selecting previously unselected package xfonts-utils.
+Preparing to unpack .../10-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+Unpacking xfonts-utils (1:7.7+6build3) ...
+Selecting previously unselected package xfonts-cyrillic.
+Preparing to unpack .../11-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+Selecting previously unselected package xfonts-scalable.
+Preparing to unpack .../12-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+Setting up mesa-libgallium:amd64 (25.2.8-0ubuntu0.24.04.5) ...
+Setting up libgbm1:amd64 (25.2.8-0ubuntu0.24.04.5) ...
+Setting up libgl1-mesa-dri:amd64 (25.2.8-0ubuntu0.24.04.5) ...
+Setting up fonts-wqy-zenhei (0.9.45-8) ...
+Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+Setting up fonts-unifont (1:15.1.01-1build1) ...
+Setting up libglx-mesa0:amd64 (25.2.8-0ubuntu0.24.04.5) ...
+Setting up xfonts-utils (1:7.7+6build3) ...
+Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+Setting up xfonts-scalable (1:1.0.3-1.3) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.12) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Not building database; man-db/auto-update is not 'true'.
+Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Downloading Chrome for Testing 159.0.8154.6 (playwright chromium v1255) from https://cdn.playwright.dev/builds/cft/159.0.8154.6/linux64/chrome-linux64.zip
+|                                                                                |   0% of 199.3 MiB
+|■■■■■■■■                                                                        |  10% of 199.3 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 199.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 199.3 MiB
+Chrome for Testing 159.0.8154.6 (playwright chromium v1255) downloaded to /home/runner/.cache/ms-playwright/chromium-1255
+Downloading FFmpeg (playwright ffmpeg v1013) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1013/ffmpeg-linux.zip
+|                                                                                |   0% of 2.2 MiB
+|■■■■■■■■                                                                        |  10% of 2.2 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.2 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.2 MiB
+FFmpeg (playwright ffmpeg v1013) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1013
+Downloading Chrome Headless Shell 159.0.8154.6 (playwright chromium-headless-shell v1255) from https://cdn.playwright.dev/builds/cft/159.0.8154.6/linux64/chrome-headless-shell-linux64.zip
+|                                                                                |   0% of 125.7 MiB
+|■■■■■■■■                                                                        |  10% of 125.7 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 125.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 125.7 MiB
+Chrome Headless Shell 159.0.8154.6 (playwright chromium-headless-shell v1255) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1255
+##[group]Run prod_ref=$(jq -r '.environments.production.supabase // empty' infra/environments.json)
+[36;1mprod_ref=$(jq -r '.environments.production.supabase // empty' infra/environments.json)[0m
+[36;1mif [ -z "$prod_ref" ]; then echo "::error::environments.production.supabase is empty in infra/environments.json."; exit 1; fi[0m
+[36;1mesac[0m
+[36;1mesac[0m
+[36;1mecho "prod_ref=$prod_ref" >> "$GITHUB_OUTPUT"[0m
+[36;1mecho "Supabase guard passed: staging URL matches the staging ref and not production."[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+Supabase guard passed: staging URL matches the staging ref and not production.
+[36;1mnpx playwright test --grep @smoke[0m
+shell: /usr/bin/bash -e {0}
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+
+Running 22 tests using 2 workers
+
+  ✓   1 [setup] › tests/e2e/support/auth.setup.ts:14:1 › setup @smoke: create the e2e tenant, sign in owner, Tech A and Tech B, record ids and the org date (3.9s)
+  ✓   3 [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /sign-in is served and has a level-1 heading (570ms)
+  ✓   2 [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /sign-in is served and has a level-1 heading (584ms)
+  ✓   4 [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /link-expired is served and has a level-1 heading (401ms)
+  ✓   5 [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /link-expired is served and has a level-1 heading (486ms)
+  ✓   6 [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /offline is served and has a level-1 heading (289ms)
+  ✓   7 [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /offline is served and has a level-1 heading (381ms)
+  ✓   8 [desktop] › tests/e2e/smoke.spec.ts:14:1 › smoke @smoke the root address sends a signed-out visitor to a page, not an error (515ms)
+  ✓   9 [mobile] › tests/e2e/smoke.spec.ts:14:1 › smoke @smoke the root address sends a signed-out visitor to a page, not an error (581ms)
+  ✓  10 [api] › tests/e2e/api/contract.spec.ts:21:3 › health (US-006) › AC-006.3 @smoke GET /api/health returns 200 {status, checks, version} with no session and no personal data (110ms)
+  ✘  11 [api] › tests/e2e/api/contract.spec.ts:29:3 › health (US-006) › AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok (192ms)
+  ✘  13 [api] › tests/e2e/api/contract.spec.ts:29:3 › health (US-006) › AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok (retry #1) (95ms)
+  ✓  14 [api] › tests/e2e/api/contract.spec.ts:40:3 › session and board shape (US-004) › AC-004.8 @smoke GET /me returns the org time zone America/Toronto and a YYYY-MM-DD today (314ms)
+  ✓  15 [api] › tests/e2e/api/contract.spec.ts:56:3 › session and board shape (US-004) › AC-004.1 @smoke board responses are no-store and match the BoardDay shape (217ms)
+  ✓  12 [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out GET /api/me -> 401, no data [CRITICAL if not] (77ms)
+  ✓  17 [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out GET /api/board -> 401, no data [CRITICAL if not] (65ms)
+  ✓  18 [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out POST /api/jobs -> 401, no data [CRITICAL if not] (53ms)
+  ✓  19 [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out PUT /api/jobs/{id}/status -> 401, no data [CRITICAL if not] (55ms)
+  ✓  16 [api] › tests/e2e/api/contract.spec.ts:218:3 › create-job validation and limits (US-003, FR-4) › AC-003.6 @smoke the same client_request_id twice creates exactly one job (second returns 200 with the same job) (1.2s)
+  ✓  21 [api] › tests/e2e/api/contract.spec.ts:229:3 › create-job validation and limits (US-003, FR-4) › AC-003.1 / FR-9 @smoke a new job starts Scheduled at version 1 with the assigned technician and permissions (237ms)
+  ✓  20 [api] › tests/e2e/api/permissions.spec.ts:96:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-003.9 @smoke technician POST /jobs -> 403 not_allowed, no job created (305ms)
+  ✓  22 [api] › tests/e2e/api/contract.spec.ts:244:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-007.1 / AC-007.6 @smoke technician sets In progress, Done, then back to In progress (any to any) (2.4s)
+cleanup: users deleted 3 (already gone 2, failed 0); orgs deleted 0, kept 2
+cleanup problem: org 23503: update or delete on table "organizations" violates foreign key constraint "team_members_org_id_fkey" on table "team_members"
+cleanup problem: org 23503: update or delete on table "organizations" violates foreign key constraint "team_members_org_id_fkey" on table "team_members"
+  ✓  23 [cleanup] › tests/e2e/support/auth.teardown.ts:8:1 › cleanup @smoke: remove the users and organisations this run created (1.3s)
+
+
+  1) [api] › tests/e2e/api/contract.spec.ts:29:3 › health (US-006) › AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 503
+
+      29 |   test('AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok', async () => {
+      30 |     const res = await anon.get('/api/health?check=db');
+    > 31 |     expect(res.status()).toBe(200);
+         |                          ^
+      32 |     expect((await res.json()).checks.db).toBe('ok');
+      33 |   });
+      34 |   test('AC-006.3 GET /api/health?check=nonsense is a 400 problem, not a 500', async () => {
+        at /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/tests/e2e/api/contract.spec.ts:31:26
+
+    Error Context: test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api/error-context.md
+
+    Error Context: test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 503
+
+      29 |   test('AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok', async () => {
+      30 |     const res = await anon.get('/api/health?check=db');
+    > 31 |     expect(res.status()).toBe(200);
+         |                          ^
+      32 |     expect((await res.json()).checks.db).toBe('ok');
+      33 |   });
+      34 |   test('AC-006.3 GET /api/health?check=nonsense is a 400 problem, not a 500', async () => {
+        at /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox/tests/e2e/api/contract.spec.ts:31:26
+
+    Error Context: test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api-retry1/error-context.md
+
+    Error Context: test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-contract-health-US-006-6bd36-k-db-returns-200-with-db-ok-api-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [api] › tests/e2e/api/contract.spec.ts:29:3 › health (US-006) › AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok 
+  21 passed (18.3s)
+##[error]Process completed with exit code 1.
+##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+with:
+  name: qa-staging-smoke
+  path: docs/qa-reports/
+playwright-report/
+test-results/
+
+  if-no-files-found: ignore
+  retention-days: 14
+  compression-level: 6
+  overwrite: false
+  include-hidden-files: false
+  archive: true
+env:
+  BASE_URL: https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app
+  DEPLOY_SHA: 172792684f6f32f74f2f0318869b5315b69074f0
+  PRODUCTION_HOSTS: baseleap-devops-sandbox.vercel.app
+##[endgroup]
+Multiple search paths detected. Calculating the least common ancestor of all paths
+The least common ancestor is /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox. This will be the root directory of the artifact
+With the provided path, there will be 31 files uploaded
+Artifact name is valid!
+Root directory input is valid!
+Uploading artifact: qa-staging-smoke.zip
+Beginning upload of artifact content to blob storage
+Uploaded bytes 737831
+Finished uploading artifact content to blob storage!
+SHA256 digest of uploaded artifact is 6526c9e4e3964de0b0e08f5be5b1c676b8adc5c7337bf10e79d097fa3b44492b
+Finalizing artifact upload
+Artifact qa-staging-smoke successfully finalized. Artifact ID 14488708070
+Artifact qa-staging-smoke has been successfully uploaded! Final size is 737831 bytes. Artifact ID is 14488708070
+Artifact download URL: https://github.com/westmatty92-alt/baseleap-devops-sandbox/actions/runs/44434945604/artifacts/14488708070
+Post job cleanup.
+[command]/usr/bin/git version
+git version 2.56.1
+Temporarily overriding HOME='/home/runner/work/_temp/3c1b3c83-30ae-4081-9245-e529316f4fae' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+[command]/usr/bin/git config --global --add safe.directory /home/runner/work/baseleap-devops-sandbox/baseleap-devops-sandbox
+Removing SSH command configuration
+[command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Removing HTTP extra header
+[command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Removing includeIf entries pointing to credentials config files
+[command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+[command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Cleaning up orphan processes
