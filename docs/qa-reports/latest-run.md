@@ -1,31 +1,45 @@
 # QA run report
 
-**Verdict: PASS on the tests that ran, NOT release evidence** (run C, the latest). 181 passed, 0 failed, 0 flaky, 220 skipped/fixme (401 listed).
+**Verdict: FAIL** (first staging run, `@smoke` only). 21 passed, 1 failed, 0 flaky, of the 22 `@smoke` tests that ran. Not release evidence: the full suite has not run on staging.
 
-- Step: QA7 (re-run after the QA6 test fixes). Target: **local stack, not staging**, `--retries=1`. Evidence: `.baseleap/inputs/qa6/runC.{log,json}`. Commit SHA: working tree on top of the branch head, with an uncommitted local change in `src/app/api/jobs/route.ts` (the QA4-001 fix).
-- Crossed permission boundaries: none (the permissions spec passed).
-- Counts are the Playwright summary lines (181 + 220 = 401). I could not run a JSON summary in this session. The log has no failure, retry or flaky output.
-
-## Why this is not release evidence
-1. **Not staging.** Local stack only. A release verdict needs a full run on the staging preview with its commit SHA.
-2. **The code under test is not what would ship.** The QA4-001 fix is an uncommitted local change, so the green blank-phone tests don't describe any deployed build. The contract decision is still open (see QA4-001).
-3. **220 tests did not run** (unbuilt P2, PATCH, cancel, and Vercel-only). That includes the edit-path blank-phone rule (AC-008.4) and the PATCH permission probes. Those ACs have no evidence.
-4. **Cleanup is still incomplete.** `users deleted 3 (already gone 2, failed 0); orgs deleted 0, kept 2`, with a 23503 foreign-key error on `team_members_org_id_fkey` (QA4-002, open). Each run leaves two orgs behind.
+- Step: QA8. Target: **staging**, `https://baseleap-devops-sandbox-p2gs5apa4-baseleap.vercel.app`, the deployment of commit `172792684f6f32f74f2f0318869b5315b69074f0` (1727926), against the staging Supabase project. Workflow `qa-staging`, run 44434945604, `--grep @smoke`, 2 workers, 1 retry.
+- Evidence: `.baseleap/inputs/qa8-staging-run.log`; CI artifact `qa-staging-smoke` (id 14488708070: traces and error contexts).
+- Crossed permission boundaries: **none.** The four signed-out probes (`/api/me`, `/api/board`, `POST /api/jobs`, `PUT /api/jobs/{id}/status` all 401) and the technician `POST /api/jobs` 403 passed.
 
 ## Failed
-None. The three tests that failed or were wrongly lenient in A/B (`NULLS malformed JSON…`, `SHAPE problems`, `SECURITY 3 problem+json…`) now run with Buffer bodies and show no failure or retry in run C. Run C is the evidence that the QA6 test fixes work.
+| Test | Result | Ticket |
+|---|---|---|
+| `contract.spec.ts:29` AC-006.3 `GET /api/health?check=db` returns 200 with db ok | 503 on the first attempt and on retry #1. A real failure, not flaky. | QA8-001 (Important, bl-backend) |
+
+Cause, from the code and Claude's checks (I did not call production myself): `dbReachable()` probes `/rest/v1/` with the anon key. Hosted Supabase refuses that, the local stack accepts it, so the check reports "down" on every hosted environment. Production answers `degraded` / `db: down` too. The test is unchanged and stays red until the route is fixed. No request id is in the log; the traces in the artifact hold the response headers.
 
 ## Flaky
-None. The drill test (`zz-drill-flake`) is gone from the suite, so the total dropped from 402 to 401. It was never an app test.
+None. The one failure repeated on retry.
 
-## Skipped / fixme
-220, the same known set as runs A and B. Nothing added or removed.
+## Staging Definition of Done
+| Item | Held? | Evidence |
+|---|---|---|
+| Tenant created on staging | **Yes** | `auth.setup.ts` passed (3.9 s): tenant, owner, Tech A and Tech B signed in. |
+| Tenant cleaned up | **Partly** | Users: deleted 3 (2 already gone, 0 failed). **Organisations: deleted 0, kept 2**, `23503` on `team_members_org_id_fkey`. This is QA4-002 and it now happens on staging, so each staging run leaves 2 `E2E` orgs behind. The cleanup test itself passes, because it reports problems without failing. |
+| Mobile and desktop | **Yes, for the smoke pages** | `/sign-in`, `/link-expired`, `/offline` and the root redirect passed on both projects (8 of 8). No console errors (the guard fixture is active). |
+| Production refused | **Held, but not shown as a refusal** | The workflow guard steps passed for this URL ("BASE_URL is not a production host", "Supabase guard passed: staging URL matches the staging ref and not production"). This run had no case where production was the target, so the refusal itself was not exercised. The target-guard logic is covered by the local checks only. |
+| Right build | **Yes** | The pre-test smoke reported `/api/health` version `1727926`, equal to `DEPLOY_SHA`. |
+
+## What is still missing
+1. **The full suite on staging.** Only `@smoke` ran (22 of 401 listed). The other ~380, including all of the `permissions.spec.ts` boundary probes beyond the five smoke ones, the shape, nulls and round-trip specs, and the fuzz run, have no staging evidence.
+2. **The embed project.** No embed test ran (the embed handoff is not in the smoke set). Nothing about the embedded view is proven on staging.
+3. **The skipped set.** The 220 `fixme` / unbuilt (P2, PATCH, cancel) / Vercel-only tests from the local runs are unchanged. I can't say yet how many Vercel-only tests will run on staging; that is the next run's first number.
+4. **The open tickets:** QA8-001 (new), QA4-002 (confirmed on staging), QA4-001 (contract decision still open; no staging proof).
+
+## Lint and type check (CI `verify`)
+Fixed in my files: `npm run lint` and `npx tsc --noEmit -p tsconfig.json` are both clean. The two `react-hooks/rules-of-hooks` errors came from the rule reading Playwright's fixture callback `use` as a React hook; the callback is now named `provide` in `tests/e2e/support/fixtures.ts`, so the rule stays on everywhere. The 17 unused-variable warnings came from destructuring values only to drop them; a small `omit()` helper (`tests/e2e/support/omit.ts`) replaces that in `roundtrip.spec.ts` and `shapes.spec.ts`. No assertion changed. I have not re-run the specs after this edit (no staging or local run in this step), so the first green after it is the check that `omit` behaves as the destructuring did.
 
 ## Run history
-| Run | Passed | Failed | Flaky | Skipped | Verdict |
-|---|---|---|---|---|---|
-| A (before QA4-001 fix) | 177 | 4 | 1 | 220 | FAIL |
-| B (after fix) | 179 | 2 | 1 | 220 | FAIL |
-| C (after test fixes) | 181 | 0 | 0 | 220 | PASS locally, not release evidence |
+| Run | Target | Passed | Failed | Flaky | Skipped | Verdict |
+|---|---|---|---|---|---|---|
+| A (before QA4-001 fix) | local | 177 | 4 | 1 | 220 | FAIL |
+| B (after fix) | local | 179 | 2 | 1 | 220 | FAIL |
+| C (after test fixes) | local | 181 | 0 | 0 | 220 | PASS locally, not release evidence |
+| D, QA8 (`@smoke`) | **staging** 1727926 | 21 | 1 | 0 | n/a (grep) | **FAIL** |
 
-Details, triage and tickets: `.baseleap/reports/QA6.md`, `docs/qa-reports/tickets/`.
+Details and triage: `.baseleap/reports/QA8.md`, `docs/qa-reports/tickets/`.

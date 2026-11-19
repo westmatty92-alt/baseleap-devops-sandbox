@@ -8,6 +8,7 @@
 import { type APIRequestContext } from '@playwright/test';
 import { test, expect } from '../support/fixtures';
 import { addDays, jobBody, uniq } from '../support/data';
+import { omit } from '../support/omit';
 import { CreateJobBody } from '../../../src/lib/api/generated/jobs/jobs.zod';
 import { apiAs, board, loadIds, type Job } from '../support/api';
 
@@ -77,8 +78,8 @@ test.describe('ROUNDTRIP POST /api/jobs: every writable field comes back as sent
         expect(found, `the new job is on ${who} for ${v.body.job_date}`).toBeTruthy();
         expectSent(`a fresh read from ${who}`, found!, v.body, v.tech.name);
         // The read is the same job the create returned (nothing else may drift between the two).
-        const { permissions: _p, is_mine: _m, ...readRest } = found!;
-        const { permissions: _cp, is_mine: _cm, ...createdRest } = created;
+        const readRest = omit(found!, ['permissions', 'is_mine']);
+        const createdRest = omit(created, ['permissions', 'is_mine']);
         expect(readRest, `${who}: the fresh read differs from the create response`).toEqual(createdRest);
       }
     });
@@ -136,8 +137,8 @@ test.describe('ROUNDTRIP PUT /api/jobs/{id}/status: the status (and nothing else
       job = await res.json();
       expect(job.status, `response status after sending ${status}`).toBe(status);
       expect(job.version, `version after ${before.status} -> ${status}`).toBe(before.version + 1);
-      const { status: _s, version: _v, updated_at: _u, permissions: _p, ...restBefore } = before;
-      const { status: _s2, version: _v2, updated_at: _u2, permissions: _p2, ...restAfter } = job;
+      const restBefore = omit(before, ['status', 'version', 'updated_at', 'permissions']);
+      const restAfter = omit(job, ['status', 'version', 'updated_at', 'permissions']);
       expect(restAfter, `a status change to ${status} altered another field`).toEqual(restBefore);
       // fresh reads, as two different people
       for (const [who, ctx] of [['owner', owner], ['assigned technician', techB], ['other technician', techA]] as const) {
@@ -145,8 +146,8 @@ test.describe('ROUNDTRIP PUT /api/jobs/{id}/status: the status (and nothing else
         expect(read, `job on the ${who} board`).toBeTruthy();
         expect(read!.status, `${who}: fresh read status after ${status}`).toBe(status);
         expect(read!.version, `${who}: fresh read version after ${status}`).toBe(job.version);
-        const { permissions: _p3, is_mine: _m3, ...readRest } = read!;
-        const { permissions: _p4, is_mine: _m4, ...jobRest } = job;
+        const readRest = omit(read!, ['permissions', 'is_mine']);
+        const jobRest = omit(job, ['permissions', 'is_mine']);
         expect(readRest, `${who}: fresh read differs from the response to ${status}`).toEqual(jobRest);
       }
     }

@@ -7,29 +7,30 @@ import { CONSOLE_ALLOWLIST, resetSeen, takeSeen, watchContext } from './console'
 // run directly (`playwright test path/to/spec`) can't skip the guard in playwright.config.ts.
 export const test = base.extend<{ guard: void; consoleGuard: void; ids: Ids }>({
   guard: [
-    async ({}, use) => {
+    async ({}, provide) => {
       assertSafeTarget(process.env.BASE_URL, process.env);
-      await use();
+      await provide();
     },
     { auto: true },
   ],
   // The default `context` (and so `page`) is watched. It needs no browser, so API-only tests never launch one.
-  context: async ({ context }, use) => {
+  context: async ({ context }, provide) => {
     watchContext(context);
-    await use(context);
+    await provide(context);
   },
   // Fails the test, listing every message, when a browser console error or page error happened. Runs for every
   // browser test, @smoke included. Checked after the body, so a failure in the body is still reported first.
   consoleGuard: [
-    async ({}, use) => {
+    async ({}, provide) => {
       resetSeen();
-      await use();
+      await provide();
       const bad = takeSeen().filter((s) => !CONSOLE_ALLOWLIST.some((a) => a.pattern.test(s)));
       expect(bad, `the browser reported ${bad.length} console/page error(s) while this test ran:\n  - ${bad.join('\n  - ')}`).toEqual([]);
     },
     { auto: true },
   ],
-  ids: async ({}, use) => use(loadIds()),
+  // The callback is named `provide`, not Playwright's usual `use`, so eslint's react-hooks rule does not mistake it for a hook.
+  ids: async ({}, provide) => provide(loadIds()),
 });
 
 export { expect };

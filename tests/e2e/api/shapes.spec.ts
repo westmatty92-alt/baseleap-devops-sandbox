@@ -7,7 +7,8 @@ import { type APIRequestContext } from '@playwright/test';
 import { test, expect } from '../support/fixtures';
 import { addDays, jobBody, uniq } from '../support/data';
 import { apiAnon, apiAs, createJob, loadIds, type Job } from '../support/api';
-import { expectProblemShape, expectShape, unknownKeys } from '../support/shapes';
+import { omit } from '../support/omit';
+import { expectProblemShape,expectShape, unknownKeys } from '../support/shapes';
 import { CreateJobResponse, SetJobStatusResponse } from '../../../src/lib/api/generated/jobs/jobs.zod';
 import { GetBoardResponse } from '../../../src/lib/api/generated/board/board.zod';
 import { GetMeResponse } from '../../../src/lib/api/generated/session/session.zod';
@@ -37,7 +38,7 @@ test.describe('SHAPE the checker itself (a planted extra or missing field must b
     expect(unknownKeys(GetBoardResponse, day)).toEqual([]);
     expect(unknownKeys(GetBoardResponse, { ...day, jobs: [job(), { ...job(), secret: 1 }] })).toEqual(['$.jobs[1].secret']);
     expect(() => expectShape('planted extra', CreateJobResponse, { ...job(), org_id: 'x' })).toThrow();
-    const { version: _v, ...noVersion } = job();
+    const noVersion = omit(job(), ['version']);
     expect(() => expectShape('planted missing', CreateJobResponse, noVersion)).toThrow();
     expect(() => expectProblemShape('planted extra problem field', { type: 'about:blank', title: 't', status: 400, code: 'bad_request', trace: 'x' })).toThrow();
   });
