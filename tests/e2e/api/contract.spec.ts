@@ -502,8 +502,8 @@ test.describe('headers (SECURITY invariants 11, 12, 14)', () => {
   });
 
   test('SECURITY 3 problem+json errors never leak SQL or stack traces (malformed JSON and bad ids)', async () => {
-    const bad = await owner.post('/api/jobs', { data: '{not json', headers: { 'content-type': 'application/json' } });
-    expect([400, 422]).toContain(bad.status());
+    const bad = await owner.post('/api/jobs', { data: Buffer.from('{not json', 'utf8'), headers: { 'content-type': 'application/json' } });
+    expect(bad.status(), 'truly malformed JSON must be 400 bad_request').toBe(400);
     expect(await bad.text()).not.toMatch(/syntax error at|stack|\.ts:\d+|pg_|select .* from/i);
     const notUuid = await owner.put('/api/jobs/not-a-uuid/status', { data: { version: 1, status: 'done' } });
     expect([400, 404, 422]).toContain(notUuid.status());

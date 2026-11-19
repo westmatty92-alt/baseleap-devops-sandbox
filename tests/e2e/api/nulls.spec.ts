@@ -20,8 +20,10 @@ const OPTIONAL = ['customer_name', 'customer_phone', 'notes'] as const;
 const REQUIRED = ['client_request_id', 'title', 'assigned_member_id', 'job_date', 'start_time', 'address'] as const;
 
 const base = () => { const ids = loadIds(); return jobBody({ assigned_member_id: ids.techA.id, job_date: ids.today }); };
+// The body goes out as a Buffer: Playwright sends a string `data` with a JSON content-type as-is only if it parses as JSON;
+// otherwise it JSON.stringify()s the string, so "malformed JSON" would reach the server as a valid JSON string (QA6 finding).
 const raw = (ctx: APIRequestContext, method: 'post' | 'put', url: string, body: string | undefined, contentType = 'application/json') =>
-  ctx[method](url, { headers: { 'content-type': contentType }, data: body });
+  ctx[method](url, { headers: { 'content-type': contentType }, data: body === undefined ? undefined : Buffer.from(body, 'utf8') });
 
 /** The one assertion of this class: the server never answers 5xx. The message carries the request and the answer. */
 async function never5xx(res: APIResponse, what: string) {

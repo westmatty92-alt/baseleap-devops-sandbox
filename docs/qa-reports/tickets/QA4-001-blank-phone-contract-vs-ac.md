@@ -1,5 +1,6 @@
 # QA4-001: AC-003.5 says a blank phone is accepted; the contract rejects "" and whitespace-only
 
+- **Status: REOPENED, fix verified locally (run B), NOT closed.** The two regression tests are green on the first attempt against an uncommitted local change in `src/app/api/jobs/route.ts`. Open: the contract decision (below), and the fix is not committed or on staging. See "Re-test (QA6)" at the bottom.
 - **Severity:** Important (an AC fails at the API; the form may hide it)
 - **Class:** spec gap (story and contract disagree)
 - **Owner agent:** bl-architect (owns `docs/openapi.yaml`). Follow-up for bl-backend / bl-frontend depends on the decision.
@@ -23,3 +24,13 @@ Either (a) change the pattern to allow blank: `^$|^[0-9 +()-]{7,20}$` plus trimm
 
 ## Evidence
 `.baseleap/inputs/qa3-local-run.log` failures 2) and 3); traces `test-results/api-contract-create-job-va-815fb-*/trace.zip` (not committed).
+
+## Re-test (QA6)
+- **Run A** (before the fix, `--retries=1`): `contract.spec.ts` › `customer_phone ""` and `"   "` failed on the first attempt and on retry #1 (422, expected 201). Genuine failures, not flaky.
+- **Run B** (after the local fix): both tests passed on the **first attempt** (no retry line in the log). The `null` and valid-phone cases and the two UI tests (`jobs.spec.ts` AC-003.5, mobile and desktop) were green in both runs, first attempt.
+- **What the fix is:** `POST /api/jobs` turns a blank or whitespace-only `customer_phone` into `null` before validating. It works, but it is a working-tree change only, and `docs/openapi.yaml` and the generated zod still say the phone must match `^[0-9 +()-]{7,20}$` or be null, so the code now accepts what the contract forbids.
+- **Still open, before this can close:**
+  1. bl-architect decides (a) change the contract to allow blank, or (b) keep the contract and amend AC-003.5. If (b), the route change should be removed and the two tests retargeted to expect 422, which I will do only on that decision.
+  2. The route change is uncommitted and not on the staging preview. Evidence is local only; a close needs a run on staging.
+  3. AC-008.4 / edit (JobUpdate): the same blank-phone rule was not tested on the edit path in run B, and the fix touches only POST. Needs a test once PATCH is built.
+  4. The two tests stay unchanged until the decision.

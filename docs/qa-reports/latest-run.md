@@ -1,11 +1,28 @@
 # QA run report
 
-**Verdict: NOT RUN.** There is no verdict yet, and nothing in this file is evidence of a pass.
+**Verdict: FAIL** (run B, the latest). 179 passed, 2 failed, 1 flaky, 220 skipped/fixme (402 listed).
 
-- Step: QA3 (suite brought into the repo and adapted to the app as built)
-- Written: 2026-11-18
-- Target: none. The local run needs Supabase keys that QA cannot read; the commands are in `.baseleap/reports/QA3.md` for Claude to run.
-- What was checked without keys: the suite lists and compiles (`npx playwright test --list`: 334 test cases across projects; TypeScript clean on `playwright.config.ts` and `tests/e2e/**`), and the config refuses to start with `BASE_URL` unset.
-- Not run: `tests/api/e2e-guard.test.ts` (vitest was not approved in this session), `@smoke`, the API project, anything in a browser.
+- Step: QA6. Target: local stack (not staging), `--retries=1`. Evidence: `.baseleap/inputs/qa6/runB.{log,json}`. Commit SHA: working tree on top of the branch head, with an uncommitted local change in `src/app/api/jobs/route.ts` (the QA4-001 fix).
+- Crossed permission boundaries: none.
 
-When a run exists, this file is replaced by the run's results: counts per project, failures Critical first with trace paths, FLAKY listed separately, `fixme` listed with reasons, and the commit SHA and target of the run. The Playwright HTML and JSON reports are written to `docs/qa-reports/playwright/`.
+## Failed (both are test defects, fixed after this run, not yet re-run)
+| Test | Why |
+|---|---|
+| nulls › NULLS malformed JSON, wrong content types | The test's "truncated JSON" reached the server as a valid JSON string (Playwright JSON-stringifies unparsable string `data` under a JSON content type), so the app correctly said 422. Now sent as a Buffer. |
+| shapes › SHAPE problems | Same cause, same fix. |
+
+## Flaky (not a pass)
+| Test | Why |
+|---|---|
+| zz-drill-flake › board refresh returns the same job count twice | Failed attempt 1 (49 vs 50), passed on retry. The test touches no app code and uses a `/tmp` marker; it is no longer in the suite. See `.baseleap/reports/QA6.md`. |
+
+## Skipped / fixme
+220: the known unbuilt (P2, PATCH, cancel) and Vercel-only tests from QA4; nothing added or removed.
+
+## Compared with run A (before the QA4-001 fix)
+Run A: 177 passed, 4 failed, 1 flaky, 220 skipped, FAIL. The two AC-003.5 blank-phone API tests failed on both attempts in A and passed on the first attempt in B. QA4-001 is reopened, not closed: the contract decision is open and the fix is local only.
+
+## Cleanup
+`users deleted 3 (already gone 2, failed 0); orgs deleted 0, kept 2` (QA4-002 open).
+
+Details, triage and tickets: `.baseleap/reports/QA6.md`, `docs/qa-reports/tickets/`.

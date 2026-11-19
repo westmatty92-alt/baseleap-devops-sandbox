@@ -105,7 +105,7 @@ test.describe('SHAPE error bodies (application/problem+json)', () => {
       expectProblemShape(what, await res.json(), withJob ? CreateJobResponse : undefined);
     };
     await check('GET /api/health?check=nonsense (400)', await anon.get('/api/health?check=nonsense'), 400);
-    await check('POST /api/jobs malformed JSON (400)', await owner.post('/api/jobs', { headers: { 'content-type': 'application/json' }, data: '{"a":' }), 400);
+    await check('POST /api/jobs malformed JSON (400)', await owner.post('/api/jobs', { headers: { 'content-type': 'application/json' }, data: Buffer.from('{"a":', 'utf8') }), 400);
     await check('GET /api/me signed out (401)', await anon.get('/api/me'), 401);
     await check('GET /api/board signed out (401)', await anon.get('/api/board'), 401);
     await check('PUT status signed out (401)', await anon.put(`/api/jobs/${job.id}/status`, { data: { version: 1, status: 'done' } }), 401);
