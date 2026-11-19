@@ -1,6 +1,6 @@
 // US-002 and US-011 on screen (SCR-06 Team, SCR-08 Not allowed). API-level rules are in api/team-audit-events.spec.ts.
 // QA3: fixme. SCR-06 and SCR-08 are placeholders, there are no browser sessions yet, and /api/team is not built.
-import { test, expect } from './support/fixtures';
+import { test, expect, watchedContext } from './support/fixtures';
 import { addTechnician, apiAs } from './support/api';
 import { addTeamMember, dropWrites, restoreWrites } from './support/ui';
 import { chars, emailOfLength, uniqueEmail } from './support/data';
@@ -28,7 +28,7 @@ test.describe('owner', () => {
     await addTeamMember(page, 'Tech UI Signin', email);
     await expect(page.getByText(/added to the team/i)).toBeVisible();
     const { signInWithLink } = await import('./support/session');
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const ctx = await watchedContext(browser, { viewport: { width: 390, height: 844 } });
     const p2 = await ctx.newPage();
     await signInWithLink(p2, email);
     await expect(p2).toHaveURL(/\/board/);

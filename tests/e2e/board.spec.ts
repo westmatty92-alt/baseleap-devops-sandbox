@@ -1,7 +1,7 @@
 // US-004 (board), US-010 (other days), US-012 and US-013 (P2) on screen. Runs on mobile (390) and desktop (1280).
 // QA3: fixme. SCR-03 is a placeholder ("Day board · placeholder") and there are no browser sessions yet. The board's data
 // rules run against the API in api/contract.spec.ts.
-import { test, expect } from './support/fixtures';
+import { test, expect, watchedContext } from './support/fixtures';
 import { apiAs, createJob, board } from './support/api';
 import { card, gotoBoard } from './support/ui';
 import { addDays, chars, uniq } from './support/data';
@@ -51,7 +51,7 @@ test.describe('technician board', () => {
   });
 
   test('AC-004.8 with the phone clock on Pacific time at 22:00 the board still shows the Toronto date', async ({ browser, ids }) => {
-    const ctx = await browser.newContext({ storageState: 'tests/e2e/.auth/techA.json', timezoneId: 'America/Los_Angeles' });
+    const ctx = await watchedContext(browser, { storageState: 'tests/e2e/.auth/techA.json', timezoneId: 'America/Los_Angeles' });
     const page = await ctx.newPage();
     // 22:00 Pacific on the Toronto "today" is 01:00 the next day in Toronto: a client that trusts the phone shows the wrong day.
     const pacific = new Date(`${ids.today}T22:00:00-08:00`);

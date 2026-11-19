@@ -5,7 +5,7 @@
 // Each person signs in fresh by one-time link (decision 0004) in their own browser context, as on separate devices.
 // QA3: the browser loop needs the sign-in route and the real screens, so it is fixme. AC-006.4 (step names) and AC-006.6
 // (isolation) need neither and run.
-import { test, expect } from './support/fixtures';
+import { test, expect, watchedContext } from './support/fixtures';
 import { emailOf, signInWithLink } from './support/session';
 import { apiAs } from './support/api';
 import { card, fillJobForm, openNewJob, saveJob } from './support/ui';
@@ -16,7 +16,7 @@ import type { Browser } from '@playwright/test';
 
 async function theLoop(browser: Browser, ids: { techA: { name: string }; owner: { id: string } }, title: string) {
   await test.step('Step 1: the owner signs in, creates a job for today and assigns it to Tech A', async () => {
-    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const ctx = await watchedContext(browser, { viewport: { width: 1280, height: 800 } });
     const page = await ctx.newPage();
     await signInWithLink(page, emailOf('owner'));
     await openNewJob(page);
@@ -26,7 +26,7 @@ async function theLoop(browser: Browser, ids: { techA: { name: string }; owner: 
     await ctx.close();
   });
   await test.step('Step 2: Tech A signs in at 390px width and sees the job on today\'s board', async () => {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const ctx = await watchedContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();
     await signInWithLink(page, emailOf('techA'));
     await expect(card(page, title)).toBeVisible();
@@ -34,7 +34,7 @@ async function theLoop(browser: Browser, ids: { techA: { name: string }; owner: 
     await ctx.close();
   });
   await test.step('Step 3: Tech B signs in and sees the same job on the same board', async () => {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const ctx = await watchedContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();
     await signInWithLink(page, emailOf('techB'));
     await expect(card(page, title)).toBeVisible();

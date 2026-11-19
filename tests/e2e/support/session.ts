@@ -1,6 +1,7 @@
 import { expect, type BrowserContext, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { confirmPathFor } from './admin';
+import { watchContext } from './console';
 
 export const AUTH_DIR = 'tests/e2e/.auth';
 /** Browser storage state per role. Written by the setup project once the sign-in route (/auth/confirm) is built; not yet. */
@@ -40,5 +41,5 @@ export const emailOf = (role: Role): string => {
 };
 
 export async function newSignedInContext(browser: import('@playwright/test').Browser, role: Role, options: Parameters<import('@playwright/test').Browser['newContext']>[0] = {}): Promise<BrowserContext> {
-  return browser.newContext({ ...options, storageState: stateFile(role) });
+  return watchContext(await browser.newContext({ ...options, storageState: stateFile(role) }));
 }

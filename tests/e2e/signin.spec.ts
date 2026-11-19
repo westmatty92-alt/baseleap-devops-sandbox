@@ -8,7 +8,7 @@
 //
 // QA3: the whole file is fixme. src/app has no /auth/confirm, no sign-in form (src/app/(auth)/sign-in is a placeholder)
 // and no src/proxy.ts redirect, and POST /api/team (used to add the throwaway technicians) is not built.
-import { test, expect } from './support/fixtures';
+import { test, expect, watchedContext } from './support/fixtures';
 import { addTechnician, apiAs, loadIds } from './support/api';
 import { confirmPathFor, signInWithLink } from './support/session';
 import { eventsFor, signinRequestsSince } from './support/admin';
@@ -36,7 +36,7 @@ test('AC-001.1 owner signs in by emailed link and lands on today\'s board with t
 
 test('AC-001.2 Tech A signs in at 390px and lands on today\'s board with the Technician role',async ({ browser }) => {
   const { emailOf } = await import('./support/session');
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const ctx = await watchedContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await signInWithLink(page, emailOf('techA'));
   await expect(page.getByText(/signed in:.*technician/i)).toBeVisible();
@@ -96,12 +96,12 @@ test('AC-001.6 a link that was already used shows "This link has expired or was 
   const email = uniqueEmail('used');
   await addTechnician(owner, 'Tech Used', email);
   const path = await confirmPathFor(email);
-  const first = await browser.newContext();
+  const first = await watchedContext(browser);
   const p1 = await first.newPage();
   await p1.goto(path);
   await p1.getByRole('button', { name: /^sign in$/i }).click();
   await p1.waitForURL(/\/board/);
-  const second = await browser.newContext();
+  const second = await watchedContext(browser);
   const p2 = await second.newPage();
   await p2.goto(path);
   await p2.getByRole('button', { name: /^sign in$/i }).click();
@@ -117,9 +117,9 @@ test('AC-001.6 opening the link (GET) alone does not use it up: a scanner prefet
   const email = uniqueEmail('prefetch');
   await addTechnician(owner, 'Tech Prefetch', email);
   const path = await confirmPathFor(email);
-  const scanner = await browser.newContext();
+  const scanner = await watchedContext(browser);
   expect((await scanner.request.get(path)).status()).toBe(200); // GET only, like an email scanner
-  const person = await browser.newContext();
+  const person = await watchedContext(browser);
   const page = await person.newPage();
   await page.goto(path);
   await page.getByRole('button', { name: /^sign in$/i }).click();
@@ -141,7 +141,7 @@ test('AC-001.9 Sign out returns to sign-in and the board address then sends the 
   const owner = await apiAs('owner');
   const email = uniqueEmail('signout');
   await addTechnician(owner, 'Tech Signout', email); // own session so other tests\' sessions are not revoked
-  const ctx = await browser.newContext();
+  const ctx = await watchedContext(browser);
   const page = await ctx.newPage();
   await signInWithLink(page, email);
   await page.getByRole('button', { name: /sign out/i }).click();
@@ -155,7 +155,7 @@ test('AC-001.10 the session cookie is set to last about 30 days (proxy: cookie l
   const owner = await apiAs('owner');
   const email = uniqueEmail('persist');
   await addTechnician(owner, 'Tech Persist', email);
-  const ctx = await browser.newContext();
+  const ctx = await watchedContext(browser);
   const page = await ctx.newPage();
   await signInWithLink(page, email);
   const auth = (await ctx.cookies()).filter((c) => /^sb-.*-auth-token/.test(c.name));

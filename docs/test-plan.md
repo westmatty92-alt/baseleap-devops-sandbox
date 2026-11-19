@@ -219,6 +219,20 @@ Run the `POST /events` rate-limit test last and no more than once an hour: it sp
 
 `tests/fuzz/**` is not an owned file of this step. Boundary payload tables are already in `api/contract` (lengths at limit ±1, code points, phones, dates, times, unknown fields, malformed JSON) and the Data API probes in `api/permissions`. Phase 3: add `tests/fuzz/run.sh` driving a schema-based fuzzer from `docs/openapi.yaml` once per role (O, A, B), asserting no 5xx, no SQL or stack text in problem+json, and no response outside the matrix.
 
+### 7.1 Defect classes (QA5: the planted-bug drill)
+
+Five bugs were planted one at a time; the suite caught 1. Each class below now has tests that fail with a message naming what is wrong. They cover **every built endpoint** (`GET /health`, `GET /me`, `GET /board`, `POST /jobs`, `PUT /jobs/{id}/status`); the `fixme` groups for unbuilt endpoints stay as they are and each new endpoint must join these files when it is built (the guard tests below fail when a contract field has no round-trip case).
+
+| # | Class | Tests (run one class with `-g`) | Fails with |
+|---|---|---|---|
+| 1 | Tenant isolation (already caught) | `api/permissions` cross-organisation board test | unchanged |
+| 2 | Field accepted but not saved | `api/roundtrip.spec.ts` · `-g ROUNDTRIP`. Create with every writable field set to a distinct value (two full variants with different values, one with optionals omitted, each optional alone, the 200 replay) and PUT status through every status. Response **and** fresh board reads as owner, assigned technician and other technician must equal what was sent; version steps by 1; a status change alters no other field. Guard test: every property of the generated `CreateJobBody` appears in a variant. | `title: sent "…", a fresh read from the owner board returned null` |
+| 3 | `null` / empty / wrong type gives a 5xx | `api/nulls.spec.ts` · `-g NULLS`. `null` for each optional field (accepted, stored null) and each required field (422 naming it); wrong types per field; `{}`, non-object, empty and malformed bodies; unknown property; odd path ids; null/garbage query values and `Authorization` headers; technician and signed-out callers with null-laden bodies (403 / 401). Every answer is checked `< 500` first. | `5xx: POST /api/jobs with notes: null -> 500 …` |
+| 4 | Response carries a field the contract does not define | `api/shapes.spec.ts` · `-g SHAPE`, helper `support/shapes.ts`. Every 2xx body of the five endpoints (all roles, empty and full days, 201 and 200 replay, no-op status) is parsed with the generated zod schema **and** walked for unknown keys at any depth; every error body (400, 401, 403, 404, 409 with `current`, 422) is checked against `Problem` / `StaleProblem` the same way. A self-test plants extra and missing fields in a sample and requires them to be named. | `extra (not in the contract): $.jobs[0].org_id` |
+| 5 | Browser console error on load | Auto fixture `consoleGuard` in `support/fixtures.ts` (collector in `support/console.ts`): every browser test, `@smoke` included, collects `console.error` and uncaught page errors from every page of every context it uses, and fails after the body listing them. Specs that make their own contexts use `watchedContext(browser, …)` / `newSignedInContext`. `CONSOLE_ALLOWLIST` is empty and stays empty without a written reason (owner and ticket). | `the browser reported 1 console/page error(s) …  - console.error: … (https://…/board)` |
+
+Limits, stated honestly: the shape and round-trip checks run against what the five built endpoints return today; `GET /jobs/{id}` is read back through the board until it is built. The console guard sees only pages a test opens, so a screen that no test visits is not covered (the `fixme` screen tests will cover them as they are switched on). Next.js dev-only noise (HMR, React dev warnings) would fail the local-stack run; that is reported as a finding, not allow-listed (release evidence is the staging run).
+
 ## 8. Questions for the owners of the contract (raised, not decided)
 
 | # | Question | Owner |
@@ -252,5 +266,8 @@ Created per test through the API (`createJob`) with unique titles and `example.t
 | `permissions.spec` is no longer `serial` | In serial mode one failed probe skips the others; a crossed boundary must not hide more. |
 | Security-header check is skipped on the local stack | `vercel.json` headers are applied by Vercel only. |
 | New `smoke.spec.ts`, `@smoke` tags, `tests/api/e2e-guard.test.ts` | The staging job runs `--grep @smoke`; the guard needs a permanent test. |
+
+| QA5: `support/fixtures.ts` has an auto `consoleGuard`; the four specs that opened their own contexts call `watchedContext(browser, …)` instead of `browser.newContext(…)` | A console error must fail every browser test, including contexts the test makes itself. Same options, same behaviour otherwise. |
+| QA5: new `api/roundtrip`, `api/nulls`, `api/shapes` specs and `support/shapes.ts` | Close the drill gaps (section 7.1). Nothing existing was changed or loosened. |
 
 No test was weakened or deleted: each assertion that moved to `fixme` is unchanged and still in its file.
