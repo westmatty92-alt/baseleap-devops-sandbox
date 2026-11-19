@@ -93,21 +93,40 @@ export async function createE2eTenant(tag: string): Promise<E2eTenant> {
  * here). Jobs cannot be deleted through the app (NG-6); whether the service role can is the database's call, so the org delete
  * is best effort and its outcome is returned for the run report. Never touches an id that is not in the manifest.
  */
-export async function cleanupManifest(): Promise<{ usersDeleted: number; usersFailed: number; orgsDeleted: number; orgsKept: number }> {
+export type CleanupResult = {
+  usersDeleted: number; usersAlreadyGone: number; usersFailed: number; orgsDeleted: number; orgsKept: number;
+  /** One line per failure: "user <status> <code>: <message>" or "org <code>: <message>". Ids, emails and keys are never included. */
+  problems: string[];
+};
+
+// Error text from Supabase can echo an id or an email; keep it short and strip both before it reaches a log.
+const safeText = (s: unknown) =>
+  String(s ?? '')
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '<id>')
+    .replace(/[^\s@]+@[^\s@]+/g, '<email>')
+    .slice(0, 160);
+
+export async function cleanupManifest(): Promise<CleanupResult> {
   const a = admin();
   const m = readManifest();
-  let usersDeleted = 0, usersFailed = 0, orgsDeleted = 0, orgsKept = 0;
-  for (const id of m.userIds) {
-    const r = await a.auth.admin.deleteUser(id);
-    if (r.error) usersFailed++; else usersDeleted++;
+  const r: CleanupResult = { usersDeleted: 0, usersAlreadyGone: 0, usersFailed: 0, orgsDeleted: 0, orgsKept: 0, problems: [] };
+  // De-duplicated: dropForeignTenant may already have removed some users, and an id can only be deleted once.
+  for (const id of new Set(m.userIds)) {
+    const d = await a.auth.admin.deleteUser(id);
+    if (!d.error) { r.usersDeleted++; continue; }
+    const code = (d.error as { code?: string }).code, status = (d.error as { status?: number }).status;
+    if (code === 'user_not_found' || status === 404) { r.usersAlreadyGone++; continue; }
+    r.usersFailed++;
+    r.problems.push(`user ${status ?? '?'} ${code ?? '?'}: ${safeText(d.error.message)}`);
   }
-  for (const id of m.orgIds) {
+  for (const id of new Set(m.orgIds)) {
     const o = await a.from('organizations').select('id, name, is_test').eq('id', id).maybeSingle();
-    if (!o.data || !o.data.is_test || !String(o.data.name).startsWith('E2E ')) { orgsKept++; continue; }
+    if (!o.data) continue; // already gone
+    if (!o.data.is_test || !String(o.data.name).startsWith('E2E ')) { r.orgsKept++; r.problems.push('org not is_test or not named E2E: refused to delete'); continue; }
     const d = await a.from('organizations').delete().eq('id', id);
-    if (d.error) orgsKept++; else orgsDeleted++;
+    if (d.error) { r.orgsKept++; r.problems.push(`org ${d.error.code ?? '?'}: ${safeText(d.error.message)}`); } else r.orgsDeleted++;
   }
-  return { usersDeleted, usersFailed, orgsDeleted, orgsKept };
+  return r;
 }
 
 // ---------------------------------------------------------------------------------------------

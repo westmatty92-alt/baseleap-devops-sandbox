@@ -98,15 +98,19 @@ test.describe('session and board shape (US-004)', () => {
     test.setTimeout(120_000);
     const ids = loadIds();
     const date = addDays(ids.today, 42);
-    const made: string[] = [];
+    // 50 jobs over 24 hours: jobs 48 and 49 share a start time with jobs 0 and 1. The board lists by start time, then by
+    // creation (AC-004.6), so the expected order is that sort of the creation order, not the creation order itself.
+    const made: { id: string; start: string }[] = [];
     for (let i = 0; i < 50; i++) {
       const hh = String(Math.floor(i / 2) % 24).padStart(2, '0'), mm = i % 2 ? '30' : '00';
-      made.push((await createJob(owner, { assigned_member_id: i % 2 ? ids.techA.id : ids.techB.id, job_date: date, start_time: `${hh}:${mm}`, title: uniq(`bulk ${i}`) })).id);
+      const start = `${hh}:${mm}`;
+      made.push({ id: (await createJob(owner, { assigned_member_id: i % 2 ? ids.techA.id : ids.techB.id, job_date: date, start_time: start, title: uniq(`bulk ${i}`) })).id, start });
     }
+    const expected = made.map((m, created) => ({ ...m, created })).sort((x, y) => x.start.localeCompare(y.start) || x.created - y.created).map((m) => m.id);
     const b = await board(techB, date);
     expect(b.job_count).toBe(50);
     expect(b.truncated).toBe(false);
-    expect(b.jobs.map((j) => j.id)).toEqual(made);
+    expect(b.jobs.map((j) => j.id)).toEqual(expected);
   });
 
   test('AC-010.7 on 2027-03-14 (clocks move forward) 08:00 is listed before 09:00', async () => {

@@ -36,7 +36,7 @@ Because `GET /api/jobs/{id}` does not exist, `getJob()` in `support/api.ts` read
 ## 3. Rules that shape the suite
 
 - **Targets.** Remote (default): `BASE_URL` is an https `*.vercel.app` preview or `STAGING_HOST`, never a host in `PRODUCTION_HOSTS`. Local (`E2E_TARGET=local`): `BASE_URL` is exactly `http://localhost:3000` or `http://127.0.0.1:3000` and the Supabase URL is `http://127.0.0.1:554xx`. In both, `PRODUCTION_HOSTS` is required, and the config and an auto-fixture refuse otherwise. `--list` is the only exemption. A local run is a pre-staging check; **release evidence is a staging run.**
-- **Own tenant.** The `setup` project creates its own org `E2E <run id>` (`is_test = true`) with an owner, Tech A and Tech B on `example.test` addresses, using the service role, signs them in with a throwaway password (no email), and records ids and tokens in `tests/e2e/.auth/` (git-ignored). The `cleanup` project removes only what the manifest lists: auth users, and the org when the database allows (`is_test`, name `E2E …`, checked again). Jobs cannot be deleted through the app (NG-6); the report says whether the org was removed.
+- **Own tenant.** The `setup` project creates its own org `E2E <run id>` (`is_test = true`) with an owner, Tech A and Tech B on `example.test` addresses, using the service role, signs them in with a throwaway password (no email), and records ids and tokens in `tests/e2e/.auth/` (git-ignored). The `cleanup` project removes only what the manifest lists: auth users, and the org when the database allows (`is_test`, name `E2E …`, checked again). A user already removed counts as "already gone"; any other user error is logged (code and message, no ids or emails) and fails the cleanup test. Jobs cannot be deleted through the app (NG-6) and the audit log is append-only, so orgs are kept today and the report says so; ticket QA4-002 asks bl-backend for a service-role purge function.
 - **No seeded accounts.** `E2E_OWNER_EMAIL` and friends from QA1 are no longer needed.
 - **Unique data.** Every test makes its own uniquely titled data (`E2E <label> <run id>-<n>`) so a same-day rerun passes (AC-006.5).
 - **Throwaway users.** Tests that sign a user out or remove one use a throwaway technician, so the three fixed sessions are never revoked.
@@ -124,7 +124,7 @@ Also Critical, not tied to one AC (run with the probes): `SECURITY 8` cross-org 
 | AC-002.7 | FIXME | e2e | team › AC-002.7 | O | M, D |
 | AC-002.8 | FIXME | API (audit read) | team-audit-events › AC-002.8 | O | - |
 | AC-003.4 | PART | fuzz + e2e | contract › AC-003.4 (100/101, 100/101, 200/201, 2000/2001, code points) runs; jobs › AC-003.4 `fixme` | O | M, D |
-| AC-003.5 | PART | fuzz + e2e | contract › AC-003.5 (5 bad, 6 good phones) runs; jobs › AC-003.5 `fixme` | O | M, D |
+| AC-003.5 | PART | fuzz + e2e | contract › AC-003.5 (5 bad, 6 good phones) runs; jobs › AC-003.5 `fixme`. **Open spec gap QA4-001:** the blank `""` and `"   "` cases fail because the contract pattern rejects them; the tests are unchanged until the contract or AC is settled. | O | M, D |
 | AC-003.7 | PART | e2e + API | contract › AC-003.7 (00:01 accepted, listed in time order) runs; jobs › AC-003.7 `fixme` | O | M, D |
 | AC-003.12 | RUN | API (audit read) | team-audit-events › AC-003.12 (`job.created`, actor, time, no personal data) | O | - |
 | AC-004.5 | PART | e2e + API | contract › AC-004.5 / 010.5 (empty day → 200, `job_count` 0) runs; board › AC-004.5 `fixme` | A | M |

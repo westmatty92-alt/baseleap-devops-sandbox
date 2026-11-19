@@ -66,8 +66,11 @@ test.describe('tracking events on the built endpoints (docs/metrics-spec.md QA c
     const ids = loadIds();
     const since = new Date(Date.now() - 1000).toISOString();
     const body = { client_request_id: crypto.randomUUID(), title: uniq('ev create'), address: '45 Main St W, Hamilton', job_date: ids.today, start_time: '10:00', assigned_member_id: ids.techA.id, customer_name: 'Pat Example', notes: 'Key under mat' };
-    await Promise.all([owner.post('/api/jobs', { data: body }), owner.post('/api/jobs', { data: body })]);
-    const ev = (await eventsFor(ids.owner.id, 'job_created', since)).filter((e) => e.properties.assigned_tech_id === ids.techA.id);
+    const both = await Promise.all([owner.post('/api/jobs', { data: body }), owner.post('/api/jobs', { data: body })]);
+    const saved = await Promise.all(both.map(async (r) => (await r.json()) as Job));
+    expect(new Set(saved.map((j) => j.id)).size, 'both submits return the same job').toBe(1);
+    // Filter by this job's id: other specs create jobs for Tech A at the same time, so owner + tech + time is not unique.
+    const ev = (await eventsFor(ids.owner.id, 'job_created', since)).filter((e) => e.properties.job_id === saved[0].id);
     expect(ev).toHaveLength(1);
     expect(ev[0]).toMatchObject({ source: 'server', is_test: true });
     expect(ev[0].properties.lead_days).toBe(0);
