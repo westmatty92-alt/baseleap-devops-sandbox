@@ -3,13 +3,13 @@
   "project": "baseleap-devops-sandbox",
   "sandboxException": {
     "sharedSupabaseProject": true,
-    "reason": "Throwaway DevOps sandbox: there is ONE Supabase project, used for both staging and production.",
+    "scope": "Lane previews only (lane-frontend, lane-backend) still share the production project. Staging has had its own project since 2026-11-18.",
+    "reason": "Throwaway DevOps sandbox: lane previews were never given their own database.",
     "consequences": [
-      "Staging previews, lane previews and production read and write the same database.",
-      "The api-tests job is not run in CI: tests/helpers/auth.ts refuses a remote Supabase that matches SUPABASE_PROD_PROJECT_REF, and staging IS that project.",
-      "Migrations applied by release.yml take effect for staging too."
+      "Lane previews and production read and write the same database.",
+      "Staging is separate: the api-tests CI job can run against staging, because tests/helpers/auth.ts only refuses a remote that matches SUPABASE_PROD_PROJECT_REF (the production project)."
     ],
-    "rule": "SANDBOX ONLY. Real client projects never share a Supabase project between staging and production."
+    "rule": "SANDBOX ONLY. Real client projects never share a Supabase project between any preview and production."
   },
   "vercel": {
     "team": "baseleap",
@@ -29,8 +29,10 @@
     "staging": {
       "branch": "staging",
       "vercel": "preview",
-      "supabase": "lrwtbrycrjturxnyqdta",
-      "sandboxException": "shares the production Supabase project",
+      "supabase": "yrfrgyshriqqorfzgrxi",
+      "supabaseOrg": "baseleap-sandbox-free",
+      "supabaseRegion": "ca-central-1",
+      "migrations": "staging-migrations.yml applies supabase/migrations/** on every push to staging that changes them",
       "url": null,
       "urlPattern": "https://baseleap-devops-sandbox-git-staging-<team-slug>.vercel.app",
       "urlNote": "Matthew confirms the exact stable branch URL in Vercel > Deployments (see setup-for-matthew.md step 1.6). CI uses the exact deployment URL from the deployment event instead."
@@ -116,12 +118,13 @@
   "github": {
     "repository": {
       "secrets": [],
-      "variables": ["PRODUCTION_URL"],
-      "note": "PRODUCTION_URL is a repository variable (not environment-scoped) so the 15-minute uptime check can read it without waiting for production approval."
+      "variables": ["PRODUCTION_URL", "SUPABASE_PRODUCTION_REF_PUBLIC"],
+      "note": "PRODUCTION_URL is a repository variable (not environment-scoped) so the 15-minute uptime check can read it without waiting for production approval. SUPABASE_PRODUCTION_REF_PUBLIC (optional; a project ref is an identifier, not a secret) lets staging-migrations.yml refuse a staging ref equal to production."
     },
     "staging": {
-      "secrets": ["VERCEL_AUTOMATION_BYPASS_SECRET"],
-      "variables": ["PRODUCTION_HOSTS"],
+      "secrets": ["VERCEL_AUTOMATION_BYPASS_SECRET", "SUPABASE_ACCESS_TOKEN", "SUPABASE_STAGING_DB_PASSWORD"],
+      "variables": ["PRODUCTION_HOSTS", "SUPABASE_STAGING_REF"],
+      "supabaseTokenNote": "SUPABASE_ACCESS_TOKEN here must be a token limited to the staging org (baseleap-sandbox-free), a different token from the production one.",
       "requiredReviewers": [],
       "later": "SUPABASE_STAGING_URL, SUPABASE_STAGING_ANON_KEY, SUPABASE_STAGING_SERVICE_ROLE_KEY are added (as a setting request) only when QA's e2e suite lands and needs them. Not granted to CI before there is a consumer."
     },

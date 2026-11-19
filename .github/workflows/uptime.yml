@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: uptime
@@ -24,6 +23,9 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions: # issues: write is allowed for this job only (scripts/workflow-policy.mjs allow-list)
+      contents: read
+      issues: write
     env:
       PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
       GH_TOKEN: ${{ github.token }}

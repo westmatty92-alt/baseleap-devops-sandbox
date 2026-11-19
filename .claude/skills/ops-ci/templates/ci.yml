@@ -92,3 +92,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: scripts/install-scanners.sh "$RUNNER_TEMP/bin" actionlint && "$RUNNER_TEMP/bin/actionlint" -color
+      # Policy beyond actionlint (template: ops-ci/templates/workflow-policy.mjs → scripts/): forbids pull_request_target /
+      # workflow_run, permissions write-all or workflow-level write, job write scopes outside the allow-list,
+      # secrets: inherit, and untrusted github.event.* expressions inside run:. Verified in the DevOps sandbox (Nov 2026).
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Workflow policy
+        run: node scripts/workflow-policy.mjs
+      - name: Workflow policy tests
+        run: node --test tests/workflow-policy.test.mjs

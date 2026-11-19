@@ -14,7 +14,7 @@ Two failure modes, both expensive: asking about things you should just decide (M
 |---|---|---|---|
 | 1 · `scope_approval` | P0 verified (PRD, user stories, metrics spec pass `check-pm-docs`) | Is this the right thing to build? Stories, edge cases, what's out, team profile | ~1 minute |
 | 2 · `contract_lock` | design + architecture verified and build plan submitted | The blueprint: design specs, schema + RLS, API contract, build waves and verify commands. After this, changing them costs a gate | ~5–10 minutes |
-| 3 · `release_approval` | every step verified + ship gate run (new client builds: release and rollback drills passed, `docs/ops/pipeline-drills.md`) | Shipping: features done, test results, review and security findings, deferred minors, rollback path | ~2 minutes |
+| 3 · `release_approval` | every step verified + ship gate run (new client builds: release and rollback drills passed, `docs/ops/pipeline-drills.md`; every build: `docs/sops/changelog.md` from bl-docs, with any ⚠ unverified steps listed) | Shipping: features done, test results, review and security findings, deferred minors, rollback path | ~2 minutes |
 
 **Triggered gates** (whenever they apply):
 | Gate | Trigger |

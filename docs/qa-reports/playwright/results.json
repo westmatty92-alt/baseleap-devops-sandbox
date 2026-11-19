@@ -1,0 +1,838 @@
+{
+  "config": {
+    "argv": [
+      "/home/admin/.nvm/versions/node/v22.22.2/bin/node",
+      "/home/admin/baseleap/.dryrun/ops3/repo/node_modules/.bin/playwright",
+      "test",
+      "--list",
+      "--grep",
+      "@smoke"
+    ],
+    "configFile": "/home/admin/baseleap/.dryrun/ops3/repo/playwright.config.ts",
+    "rootDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/support\\/auth\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "cleanup",
+        "name": "cleanup",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/support\\/auth\\.teardown\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [
+          "/api\\//"
+        ],
+        "testMatch": [
+          "/.*\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [
+          "/api\\//",
+          "/signin\\.spec/",
+          "/pwa\\.spec/",
+          "/perf\\.spec/"
+        ],
+        "testMatch": [
+          "/.*\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "api",
+        "name": "api",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/api\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "name": "setup",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "snapshotDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": {},
+        "timeout": 30000,
+        "use": {
+          "extraHTTPHeaders": {},
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "video": "off",
+          "locale": "en-CA",
+          "timezoneId": "America/Toronto",
+          "acceptDownloads": false
+        },
+        "dependencies": [],
+        "teardown": "cleanup",
+        "ignoreSnapshots": false,
+        "__projectId": "setup"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "name": "cleanup",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "snapshotDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": {},
+        "timeout": 30000,
+        "use": {
+          "extraHTTPHeaders": {},
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "video": "off",
+          "locale": "en-CA",
+          "timezoneId": "America/Toronto",
+          "acceptDownloads": false
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "cleanup"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "name": "mobile",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "snapshotDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": {},
+        "testMatch": {},
+        "timeout": 30000,
+        "use": {
+          "extraHTTPHeaders": {},
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "video": "off",
+          "locale": "en-CA",
+          "timezoneId": "America/Toronto",
+          "acceptDownloads": false,
+          "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Mobile Safari/537.36",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "screen": {
+            "width": 412,
+            "height": 915
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": true,
+          "hasTouch": true,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [
+          "setup"
+        ],
+        "ignoreSnapshots": false,
+        "__projectId": "mobile"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "name": "desktop",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "snapshotDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "testMatch": {},
+        "timeout": 30000,
+        "use": {
+          "extraHTTPHeaders": {},
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "video": "off",
+          "locale": "en-CA",
+          "timezoneId": "America/Toronto",
+          "acceptDownloads": false,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [
+          "setup"
+        ],
+        "ignoreSnapshots": false,
+        "__projectId": "desktop"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/home/admin/baseleap/.dryrun/ops3/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "name": "api",
+        "testDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "snapshotDir": "/home/admin/baseleap/.dryrun/ops3/repo/tests/e2e",
+        "testIgnore": [],
+        "testMatch": {},
+        "timeout": 30000,
+        "use": {
+          "extraHTTPHeaders": {},
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "video": "off",
+          "locale": "en-CA",
+          "timezoneId": "America/Toronto",
+          "acceptDownloads": false
+        },
+        "dependencies": [
+          "setup"
+        ],
+        "ignoreSnapshots": false,
+        "__projectId": "api"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "docs/qa-reports/playwright",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/qa-reports/playwright/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "support/auth.setup.ts",
+      "file": "support/auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "setup @smoke: create the e2e tenant, sign in owner, Tech A and Tech B, record ids and the org date",
+          "ok": true,
+          "tags": [
+            "smoke:"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "fdb9a254c504a0f5b8c8-820a7e24d6171f88a66f",
+          "file": "support/auth.setup.ts",
+          "line": 14,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "support/auth.teardown.ts",
+      "file": "support/auth.teardown.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cleanup @smoke: remove the users and organisations this run created",
+          "ok": true,
+          "tags": [
+            "smoke:"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "cleanup",
+              "projectName": "cleanup",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "8fae19e34be451c86e24-2190ebecbadbfc153c2c",
+          "file": "support/auth.teardown.ts",
+          "line": 8,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "smoke.spec.ts",
+      "file": "smoke.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "smoke @smoke /sign-in is served and has a level-1 heading",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [],
+              "status": "skipped"
+            },
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "4219922fea2e2bd3c691-6fbd7c1fec4e33011349",
+          "file": "smoke.spec.ts",
+          "line": 7,
+          "column": 3
+        },
+        {
+          "title": "smoke @smoke /link-expired is served and has a level-1 heading",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [],
+              "status": "skipped"
+            },
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "4219922fea2e2bd3c691-bf20a349ce2d73274c2e",
+          "file": "smoke.spec.ts",
+          "line": 7,
+          "column": 3
+        },
+        {
+          "title": "smoke @smoke /offline is served and has a level-1 heading",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [],
+              "status": "skipped"
+            },
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "4219922fea2e2bd3c691-d40bfed9ecaa5a0cb809",
+          "file": "smoke.spec.ts",
+          "line": 7,
+          "column": 3
+        },
+        {
+          "title": "smoke @smoke the root address sends a signed-out visitor to a page, not an error",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile",
+              "projectName": "mobile",
+              "results": [],
+              "status": "skipped"
+            },
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "4219922fea2e2bd3c691-42d37712dd99077e8282",
+          "file": "smoke.spec.ts",
+          "line": 14,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "api/contract.spec.ts",
+      "file": "api/contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "health (US-006)",
+          "file": "api/contract.spec.ts",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-006.3 @smoke GET /api/health returns 200 {status, checks, version} with no session and no personal data",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-cc32e07c6d64930f2ece",
+              "file": "api/contract.spec.ts",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-ca11c15844191301fbae",
+              "file": "api/contract.spec.ts",
+              "line": 29,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "session and board shape (US-004)",
+          "file": "api/contract.spec.ts",
+          "line": 39,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-004.8 @smoke GET /me returns the org time zone America/Toronto and a YYYY-MM-DD today",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-6652fbbbb1de5ccaecf0",
+              "file": "api/contract.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "AC-004.1 @smoke board responses are no-store and match the BoardDay shape",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-ef0840808adebf9ad25d",
+              "file": "api/contract.spec.ts",
+              "line": 56,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "create-job validation and limits (US-003, FR-4)",
+          "file": "api/contract.spec.ts",
+          "line": 123,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-003.6 @smoke the same client_request_id twice creates exactly one job (second returns 200 with the same job)",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-64cf80ec642c03d8469d",
+              "file": "api/contract.spec.ts",
+              "line": 214,
+              "column": 3
+            },
+            {
+              "title": "AC-003.1 / FR-9 @smoke a new job starts Scheduled at version 1 with the assigned technician and permissions",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-b582b4748ffc88b3cc7a",
+              "file": "api/contract.spec.ts",
+              "line": 225,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "status rules and versions on the built endpoints (US-007 to US-010)",
+          "file": "api/contract.spec.ts",
+          "line": 234,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-007.1 / AC-007.6 @smoke technician sets In progress, Done, then back to In progress (any to any)",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "44e77b8085007be29762-fcf5515b30d95b230163",
+              "file": "api/contract.spec.ts",
+              "line": 240,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api/permissions.spec.ts",
+      "file": "api/permissions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "signed out (boundary: nothing is readable or writable without a session)",
+          "file": "api/permissions.spec.ts",
+          "line": 45,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-001.7 / FR-2 @smoke signed out GET /api/me -> 401, no data [CRITICAL if not]",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "972c0a8e489cfed9f031-957b58a480a4040f3481",
+              "file": "api/permissions.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "AC-001.7 / FR-2 @smoke signed out GET /api/board -> 401, no data [CRITICAL if not]",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "972c0a8e489cfed9f031-5eaef0a798d4bdf448a3",
+              "file": "api/permissions.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "AC-001.7 / FR-2 @smoke signed out POST /api/jobs -> 401, no data [CRITICAL if not]",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "972c0a8e489cfed9f031-b09cc12a6c1c44c0ae24",
+              "file": "api/permissions.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "AC-001.7 / FR-2 @smoke signed out PUT /api/jobs/{id}/status -> 401, no data [CRITICAL if not]",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "972c0a8e489cfed9f031-6895199163f0b389da35",
+              "file": "api/permissions.spec.ts",
+              "line": 52,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "technician (boundary: status and notes on own, non-cancelled jobs only)",
+          "file": "api/permissions.spec.ts",
+          "line": 95,
+          "column": 6,
+          "specs": [
+            {
+              "title": "AC-003.9 @smoke technician POST /jobs -> 403 not_allowed, no job created",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "972c0a8e489cfed9f031-33010170ab26bddeaba9",
+              "file": "api/permissions.spec.ts",
+              "line": 96,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-19T00:29:15.058Z",
+    "duration": 252.813,
+    "expected": 0,
+    "skipped": 22,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

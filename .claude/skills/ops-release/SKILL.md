@@ -32,7 +32,7 @@ Code and schema deploy separately, so every migration must work with **both** th
 | Change | Do it as |
 |---|---|
 | Add column/table | add nullable or with default — safe |
-| Rename column | add new → backfill → app writes both, reads new → (next release) drop old |
+| Rename column | add new → backfill → keep both in sync (trigger) and the app moves to new → (next release) move every function/trigger/view/policy that names the old column, then drop it (`be-data` §6) |
 | Drop column/table | release 1: app stops using it · release 2: drop it |
 | Make column NOT NULL | backfill first, add constraint `NOT VALID`, then `VALIDATE CONSTRAINT` |
 | Large index | `create index concurrently` (in its own migration, outside a transaction) |

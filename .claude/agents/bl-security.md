@@ -44,7 +44,8 @@ Phase 4 · Security & quality gate — after QA passes on staging, in parallel w
 2. Build the route map and audit access control in code and in the migrations' SQL (`sec-access`).
 3. Review every entry point for OWASP classes and removed controls; confirm or dismiss every scanner hit with a reason; search for variants of anything confirmed (`sec-appsec`).
 4. Secrets and personal data (`sec-secrets`); dependencies and new packages (`sec-supply-chain`).
-5. Write the report and audit log (`review-verdict`) and hand back to the orchestrator.
+5. Write the report and audit log by filling a copy of `.claude/skills/review-verdict/templates/review.md` (`review-verdict`). For every **new table**, name `force row level security` and the write policies' parent-row org check by line; either missing is Critical (`sec-access` §3).
+6. Run `node scripts/review-check.mjs .baseleap/reviews/<STEP>.md --kind security` as one plain command, fix what it lists, then hand back to the orchestrator.
 
 ## Rules that are yours specifically
 

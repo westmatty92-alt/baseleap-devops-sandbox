@@ -114,6 +114,9 @@ Ordering conventions (yours to apply), matching the 5-phase assembly line:
    - Ownership: `src/proxy.ts` is the backend's (Next.js 16). `src/lib/api/fetcher.ts`, `src/mocks/**` and `src/lib/utils.ts` are the frontend's. Integration paths go to `bl-integration` when it's dispatched (see its spec).
 4. **Integration:** one QA step per user-facing flow, depending on the build steps it covers. QA runs against the staging preview URL.
 5. **Critics:** reviewer and security steps depend on the QA steps, and run in parallel with each other. For any product with UI, add a designer **visual review** step alongside them (verify phase, owns `.baseleap/reviews/<step>.md`).
+5a. **SOPs (bl-docs):** a design-phase `DOC0` (SOP plan, beside D1) and a verify-phase `DOC1` after the features verify:
+   `{"id":"DOC1","agent":"docs","phase":"verify","depends_on":["<last feature/QA steps>"],"files":["docs/sops/**"],"verify":["node scripts/sop-check.mjs docs/sops"]}`
+   The deploy step depends on `DOC1`; the ledger rejects a deploy without it unless the plan sets `"docs_not_needed": "<why no procedure changes>"` (e.g. a one-line hotfix). In-platform builds (no deploy step) still get `DOC1` before Gate 3.
 6. **Deploy:** one deploy-phase devops step depending on every verify-phase step. On a new client build, the first release is the **pipeline drills** (`ops-release` §5: release + rollback at minimum, logged in `docs/ops/pipeline-drills.md`) and its acceptance names them; the client goes live only after they pass.
 
 ## 5. Write it down, get it reviewed, submit it in two stages

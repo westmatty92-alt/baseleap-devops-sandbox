@@ -353,6 +353,36 @@
       "git": "own lane/branch commits only",
       "database": "test database only; tokens via Supabase Vault (never printed); integration_events/sync_state/jobs/provider_health are the architect's migrations",
       "notes": "Contract first (docs/integration-contract.md). Takeover steps write only docs/integrations/**. Platform configuration inside GHL/Monday/HubSpot belongs to CRM Automation."
+    },
+    "bl-docs": {
+      "model": "sonnet",
+      "phases": "1 · design (SOP plan) · 3 · verify (SOPs from the verified build, required before deploy) · stand-alone documentation projects",
+      "tools": [
+        "Read",
+        "Glob",
+        "Grep",
+        "Write",
+        "Edit",
+        "Bash",
+        "mcp__Notion__notion-search",
+        "mcp__Notion__notion-fetch",
+        "mcp__Notion__notion-create-pages",
+        "mcp__Notion__notion-update-page",
+        "mcp__claude_ai_Notion__notion-search",
+        "mcp__claude_ai_Notion__notion-fetch",
+        "mcp__claude_ai_Notion__notion-create-pages",
+        "mcp__claude_ai_Notion__notion-update-page"
+      ],
+      "bash": "yes, narrow: node scripts/sop-check.mjs, node scripts/agent-index.mjs, read-only git (status/diff/log); no installs, no network",
+      "web": false,
+      "mcpServers": [
+        "Notion (search/fetch anywhere it's pointed; create/update only inside the 📚 Baseleap SOP Hub; never delete)"
+      ],
+      "write": [
+        "docs/sops/**",
+        ".baseleap/reports/**"
+      ],
+      "read": "everything in the checkout except .env files; the Notion pages it is pointed to"
     }
   },
   "mcpCatalog": {

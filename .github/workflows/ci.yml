@@ -145,3 +145,12 @@ jobs:
         run: |
           bash scripts/install-scanners.sh "$BIN_DIR" actionlint
           "$BIN_DIR/actionlint" -color
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      # Fails on pull_request_target/workflow_run, write-all, write scopes outside the allow-list,
+      # secrets: inherit and untrusted github.event.* expressions inside run: (see the header of the script).
+      - name: Workflow policy
+        run: node scripts/workflow-policy.mjs
+      - name: Workflow policy tests
+        run: node --test tests/workflow-policy.test.mjs
