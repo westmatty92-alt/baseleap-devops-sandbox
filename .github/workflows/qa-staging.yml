@@ -87,9 +87,37 @@ jobs:
         run: npm ci
       - if: steps.pw.outputs.present == 'true'
         run: npx playwright install --with-deps chromium
+      - name: Guard, the suite must talk to the staging database and never the production one
+        id: guard
+        if: steps.pw.outputs.present == 'true'
+        env:
+          SUPABASE_STAGING_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+          SUPABASE_STAGING_REF: ${{ vars.SUPABASE_STAGING_REF }}
+        run: |
+          prod_ref=$(jq -r '.environments.production.supabase // empty' infra/environments.json)
+          if [ -z "$prod_ref" ]; then echo "::error::environments.production.supabase is empty in infra/environments.json."; exit 1; fi
+          if [ -z "$SUPABASE_STAGING_URL" ]; then echo "::error::SUPABASE_STAGING_URL is not set in the staging environment."; exit 1; fi
+          if [ -z "$SUPABASE_STAGING_REF" ]; then echo "::error::SUPABASE_STAGING_REF is not set in the staging environment."; exit 1; fi
+          case "$SUPABASE_STAGING_URL" in
+            *"$SUPABASE_STAGING_REF"*) ;;
+            *) echo "::error::SUPABASE_STAGING_URL does not match SUPABASE_STAGING_REF."; exit 1 ;;
+          esac
+          case "$SUPABASE_STAGING_URL" in
+            *"$prod_ref"*) echo "::error::SUPABASE_STAGING_URL points at the production project."; exit 1 ;;
+          esac
+          if [ "$SUPABASE_STAGING_REF" = "$prod_ref" ]; then echo "::error::SUPABASE_STAGING_REF equals the production ref."; exit 1; fi
+          echo "prod_ref=$prod_ref" >> "$GITHUB_OUTPUT"
+          echo "Supabase guard passed: staging URL matches the staging ref and not production."
       - name: "@smoke suite (QA's config must send the x-vercel-protection-bypass header from VERCEL_AUTOMATION_BYPASS_SECRET)"
         if: steps.pw.outputs.present == 'true'
-        run: npx playwright test --grep @smoke
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
+          SUPABASE_PROD_PROJECT_REF: ${{ steps.guard.outputs.prod_ref }}
+        run: |
+          if [ -z "$SUPABASE_PROD_PROJECT_REF" ]; then echo "::error::SUPABASE_PROD_PROJECT_REF is empty."; exit 1; fi
+          npx playwright test --grep @smoke
       - if: always() && steps.pw.outputs.present == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
