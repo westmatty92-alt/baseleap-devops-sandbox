@@ -1,0 +1,487 @@
+local-env: ready (Supabase on a 554xx port, app expected on http://localhost:3000). No values printed.
+
+Running 334 tests using 1 worker
+
+[1/334] [setup] › tests/e2e/support/auth.setup.ts:14:1 › setup @smoke: create the e2e tenant, sign in owner, Tech A and Tech B, record ids and the org date
+[2/334] [mobile] › tests/e2e/board.spec.ts:15:3 › technician board › AC-004.1 / AC-004.2 / AC-004.3 Tech A sees all three jobs in time order, including Tech B's
+[3/334] [mobile] › tests/e2e/board.spec.ts:26:3 › technician board › AC-004.4 a job card shows title, time, address, customer name and phone, notes, technician and status
+[4/334] [mobile] › tests/e2e/board.spec.ts:34:3 › technician board › AC-004.4 a job without customer details or notes shows no empty labels for them
+[5/334] [mobile] › tests/e2e/board.spec.ts:42:3 › technician board › AC-004.5 an empty today shows "No jobs today" and no error (today's response emptied in the browser: the shared e2e org is rarely empty)
+[6/334] [mobile] › tests/e2e/board.spec.ts:53:3 › technician board › AC-004.8 with the phone clock on Pacific time at 22:00 the board still shows the Toronto date
+[7/334] [mobile] › tests/e2e/board.spec.ts:67:3 › technician board › AC-004.9 a job the owner creates appears on Tech A's open board after Refresh
+[8/334] [mobile] › tests/e2e/board.spec.ts:75:3 › technician board › AC-004.10 a 100-character title and 200-character address wrap: no sideways scrolling
+[9/334] [mobile] › tests/e2e/board.spec.ts:85:3 › technician board › AC-004.11 a failed board load shows "Can't load the board. Check your connection" with Retry; Retry then shows the board
+[10/334] [mobile] › tests/e2e/board.spec.ts:96:3 › technician board › AC-004.13 every tappable control is at least 44 by 44 CSS px and body text at least 16 px (board, job detail)
+[11/334] [mobile] › tests/e2e/board.spec.ts:126:3 › technician board › AC-010.1 the board opens on today with Previous day, Next day and a date picker; Next day shows the next date
+[12/334] [mobile] › tests/e2e/board.spec.ts:136:3 › technician board › AC-010.3 / AC-010.4 Tech A steps to yesterday: sees that day's jobs and notes, no New job; Today returns to today
+[13/334] [mobile] › tests/e2e/board.spec.ts:148:3 › technician board › AC-010.5 an empty other day shows "No jobs on" followed by the date
+[14/334] [mobile] › tests/e2e/board.spec.ts:153:3 › technician board › AC-010.8 a failed load of another day shows the Can't load message with Retry and keeps the selected date on screen
+[15/334] [mobile] › tests/e2e/board.spec.ts:167:5 › technician board › P2 (only if built) › AC-012.1 / AC-012.2 phone and address are links that open the dialer and maps (P2: only if built)
+[16/334] [mobile] › tests/e2e/board.spec.ts:179:5 › technician board › P2 (only if built) › AC-012.3 no phone link or empty label when the job has no customer phone (P2)
+[17/334] [mobile] › tests/e2e/board.spec.ts:185:5 › technician board › P2 (only if built) › AC-013.1 a job the owner creates for Tech A appears on the open board within 10 seconds, no reload (P2)
+[18/334] [mobile] › tests/e2e/board.spec.ts:191:5 › technician board › P2 (only if built) › AC-013.2 after the connection returns, an open board refreshes to current data within 10 seconds (P2)
+[19/334] [mobile] › tests/e2e/board.spec.ts:199:5 › technician board › P2 (only if built) › AC-013.3 when the live connection cannot be made a "Live updates paused" notice shows and Refresh still loads data (P2)
+[20/334] [mobile] › tests/e2e/board.spec.ts:214:3 › owner board › AC-004.3 the owner sees the same jobs in the same order as the technicians, with New job beside the count
+[21/334] [mobile] › tests/e2e/board.spec.ts:223:3 › owner board › AC-004.7 / FR-6 50 jobs on one day are all reachable by scrolling, none cut off, no page 2
+[22/334] [mobile] › tests/e2e/board.spec.ts:240:3 › owner board › AC-010.7 on 2027-03-14 (clocks go forward) the board shows 08:00 then 09:00
+[23/334] [mobile] › tests/e2e/jobs.spec.ts:16:3 › owner creates and edits (SCR-05) › AC-003.1 owner creates "Leaking kitchen faucet" at 15:30 for Tech A: it shows on today's board, Scheduled, with Tech A
+[24/334] [mobile] › tests/e2e/jobs.spec.ts:28:3 › owner creates and edits (SCR-05) › AC-003.2 customer name, phone and notes are all shown on the saved card
+[25/334] [mobile] › tests/e2e/jobs.spec.ts:39:3 › owner creates and edits (SCR-05) › AC-003.3 saving an empty form shows an error beside each missing field and creates nothing
+[26/334] [mobile] › tests/e2e/jobs.spec.ts:46:3 › owner creates and edits (SCR-05) › AC-003.4 over-long title, address and notes show length errors; values at the limit save
+[27/334] [mobile] › tests/e2e/jobs.spec.ts:59:3 › owner creates and edits (SCR-05) › AC-003.5 phone "call me" shows "Enter a valid phone number"; a blank phone is accepted
+[28/334] [mobile] › tests/e2e/jobs.spec.ts:69:3 › owner creates and edits (SCR-05) › AC-003.6 tapping Save twice within a second creates exactly one job
+[29/334] [mobile] › tests/e2e/jobs.spec.ts:80:3 › owner creates and edits (SCR-05) › AC-003.7 a job at 09:00 saved in the afternoon is accepted and shown in time order
+[30/334] [mobile] › tests/e2e/jobs.spec.ts:93:3 › owner creates and edits (SCR-05) › AC-003.8 notes with <script>, &, an emoji and line breaks show exactly as typed and nothing runs
+[31/334] [mobile] › tests/e2e/jobs.spec.ts:108:3 › owner creates and edits (SCR-05) › AC-003.10 the technician is removed after the form opened: save is refused with "That technician is no longer on the team", form kept
+[32/334] [mobile] › tests/e2e/jobs.spec.ts:125:3 › owner creates and edits (SCR-05) › AC-003.11 a dropped connection shows "Not saved. Try again", keeps every value, and saving again creates exactly one job
+[33/334] [mobile] › tests/e2e/jobs.spec.ts:141:3 › owner creates and edits (SCR-05) › AC-010.2 owner picks 2026-11-17 on the form: the job is on that day's board, not today's
+[34/334] [mobile] › tests/e2e/jobs.spec.ts:152:3 › owner creates and edits (SCR-05) › AC-010.6 a year outside 2020 to 2100, or a day that does not exist, shows "Enter a valid date"
+[35/334] [mobile] › tests/e2e/jobs.spec.ts:162:3 › owner creates and edits (SCR-05) › AC-008.1 owner edits the start time to 16:00; the board shows 16:00
+[36/334] [mobile] › tests/e2e/jobs.spec.ts:172:3 › owner creates and edits (SCR-05) › AC-008.2 owner reassigns to Tech B; the card shows Tech B
+[37/334] [mobile] › tests/e2e/jobs.spec.ts:182:3 › owner creates and edits (SCR-05) › AC-008.4 emptying a required field on edit shows the create-form errors and leaves the job unchanged
+[38/334] [mobile] › tests/e2e/jobs.spec.ts:194:3 › owner creates and edits (SCR-05) › AC-008.5 the reassign choices do not offer a removed technician
+[39/334] [mobile] › tests/e2e/jobs.spec.ts:206:3 › owner creates and edits (SCR-05) › AC-008.6 saving an edit from an old view shows "This job was updated by someone else. Review the latest version" and keeps the other change
+[40/334] [mobile] › tests/e2e/jobs.spec.ts:219:3 › owner creates and edits (SCR-05) › AC-008.7 a dropped connection on edit shows "Not saved. Try again", keeps the edited values, job unchanged
+[41/334] [mobile] › tests/e2e/jobs.spec.ts:232:3 › owner creates and edits (SCR-05) › AC-009.1 / AC-009.3 Cancel asks "Cancel this job?"; No leaves the job, Yes marks it Cancelled in place
+[42/334] [mobile] › tests/e2e/jobs.spec.ts:246:3 › owner creates and edits (SCR-05) › AC-009.2 no delete control on the board, the job detail or the edit form for the owner
+[43/334] [mobile] › tests/e2e/jobs.spec.ts:255:3 › owner creates and edits (SCR-05) › AC-009.4 the owner restores a cancelled job with a status; Tech A can change it again
+[44/334] [mobile] › tests/e2e/jobs.spec.ts:264:3 › owner creates and edits (SCR-05) › AC-009.6 a dropped connection after confirming Cancel shows "Not saved. Try again" and the job stays active
+[45/334] [mobile] › tests/e2e/jobs.spec.ts:280:3 › technician (SCR-03, SCR-04) › AC-003.9 Tech A sees no New job control and the create address says "Not allowed"
+[46/334] [mobile] › tests/e2e/jobs.spec.ts:288:3 › technician (SCR-03, SCR-04) › AC-007.1 Tech A taps In progress on own job: the badge changes and the owner sees it after a reload
+[47/334] [mobile] › tests/e2e/jobs.spec.ts:297:3 › technician (SCR-03, SCR-04) › AC-007.2 Tech A saves a note on the job detail; "Notes saved" shows and the note persists for others
+[48/334] [mobile] › tests/e2e/jobs.spec.ts:306:3 › technician (SCR-03, SCR-04) › AC-007.3 on Tech B's job Tech A has no status or notes controls and sees who can change it
+[49/334] [mobile] › tests/e2e/jobs.spec.ts:316:3 › technician (SCR-03, SCR-04) › AC-007.4 the job detail shows title, address, start time, customer and technician as plain text, nothing editable
+[50/334] [mobile] › tests/e2e/jobs.spec.ts:324:3 › technician (SCR-03, SCR-04) › AC-007.5 a cancelled job shows "This job was cancelled" and no controls to Tech A
+[51/334] [mobile] › tests/e2e/jobs.spec.ts:334:3 › technician (SCR-03, SCR-04) › AC-007.6 Done then In progress: the job shows In progress
+[52/334] [mobile] › tests/e2e/jobs.spec.ts:344:3 › technician (SCR-03, SCR-04) › AC-007.7 2001 characters of notes show "2001 / 2000" and an error and save nothing; 2000 saves
+[53/334] [mobile] › tests/e2e/jobs.spec.ts:358:3 › technician (SCR-03, SCR-04) › AC-007.8 a status tap from an old view shows "This job was updated by someone else. Review the latest version"; Show latest loads the new values
+[54/334] [mobile] › tests/e2e/jobs.spec.ts:370:3 › technician (SCR-03, SCR-04) › AC-007.9 a double tap on Done records one status change
+[55/334] [mobile] › tests/e2e/jobs.spec.ts:379:3 › technician (SCR-03, SCR-04) › AC-007.10 a dropped connection on a note save shows "Not saved. Try again" and keeps the typed note
+[56/334] [mobile] › tests/e2e/jobs.spec.ts:389:3 › technician (SCR-03, SCR-04) › AC-007.10 a dropped connection on a status tap shows "Not saved. Try again" and the control returns to the saved status
+[57/334] [mobile] › tests/e2e/loop.spec.ts:48:3 › the browser loop (needs sign-in and the real screens) › AC-006.1 the three-step loop passes: owner creates and assigns, Tech A sees it at 390px, Tech B sees it
+[58/334] [mobile] › tests/e2e/loop.spec.ts:52:3 › the browser loop (needs sign-in and the real screens) › AC-006.5 the loop passes again straight after, the same day, on the same environment
+[59/334] [mobile] › tests/e2e/loop.spec.ts:58:1 › AC-006.4 the loop's steps are named "Step 1/2/3" so a failing run names the failing step
+[60/334] [mobile] › tests/e2e/loop.spec.ts:66:1 › AC-006.6 jobs made by the suite live in an is_test organisation and their events are marked is_test (never Northside's board)
+[61/334] [mobile] › tests/e2e/perf.spec.ts:12:1 › AC-004.12 30 jobs are visible within 2 seconds on simulated 4G
+[62/334] [mobile] › tests/e2e/pwa.spec.ts:12:1 › AC-005.1 the manifest has a name, standalone display, a start address that opens today's board, and 192 and 512 px icons
+[63/334] [mobile] › tests/e2e/pwa.spec.ts:31:1 › AC-005.3 an Apple touch icon is provided and resolves
+[64/334] [mobile] › tests/e2e/pwa.spec.ts:40:1 › AC-005.1 the service worker registers and controls the page (installability prerequisite)
+[65/334] [mobile] › tests/e2e/pwa.spec.ts:49:1 › AC-005.5 with no connection the installed app shows the branded "You're offline" screen with Retry, not a browser error
+[66/334] [mobile] › tests/e2e/pwa.spec.ts:65:1 › SECURITY 12 / NG-9 the service worker caches no /api/ response and no page with job data
+[67/334] [mobile] › tests/e2e/pwa.spec.ts:81:1 › AC-005.2 the page declares standalone-capable metadata (theme colour, viewport); real full-screen launch is checked on a device
+[68/334] [mobile] › tests/e2e/signin.spec.ts:29:1 › AC-001.1 owner signs in by emailed link and lands on today's board with the Owner role
+[69/334] [mobile] › tests/e2e/signin.spec.ts:37:1 › AC-001.2 Tech A signs in at 390px and lands on today's board with the Technician role
+[70/334] [mobile] › tests/e2e/signin.spec.ts:47:1 › AC-001.3 an unlisted address gets the same message as a listed one, and the server records listed=false (no email)
+[71/334] [mobile] › tests/e2e/signin.spec.ts:56:1 › AC-001.4 " Tech.A@Example.test " (mixed case, spaces) matches the listed entry and a link is requested
+[72/334] [mobile] › tests/e2e/signin.spec.ts:67:1 › AC-001.5 a second link for the same address within a minute says "Wait a minute before asking for another link"
+[73/334] [mobile] › tests/e2e/signin.spec.ts:78:1 › AC-001.3 / SECURITY 4 the sent screen is identical for listed, unlisted, and malformed-but-valid addresses
+[74/334] [mobile] › tests/e2e/signin.spec.ts:94:1 › AC-001.6 a link that was already used shows "This link has expired or was already used" with a form for a new one
+[75/334] [mobile] › tests/e2e/signin.spec.ts:115:1 › AC-001.6 opening the link (GET) alone does not use it up: a scanner prefetch leaves it valid
+[76/334] [mobile] › tests/e2e/signin.spec.ts:130:1 › AC-001.7 a signed-out visit to the board goes to sign-in and shows no job data
+[77/334] [mobile] › tests/e2e/signin.spec.ts:140:1 › AC-001.9 Sign out returns to sign-in and the board address then sends the device to sign-in again
+[78/334] [mobile] › tests/e2e/signin.spec.ts:154:1 › AC-001.10 the session cookie is set to last about 30 days (proxy: cookie lifetime >= 29 days)
+[79/334] [mobile] › tests/e2e/signin.spec.ts:172:1 › SECURITY 3 every app page is auth-gated: signed-out /board, /team, /jobs/new, /jobs/{id} redirect to sign-in
+[80/334] [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /sign-in is served and has a level-1 heading
+[81/334] [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /link-expired is served and has a level-1 heading
+[82/334] [mobile] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /offline is served and has a level-1 heading
+[83/334] [mobile] › tests/e2e/smoke.spec.ts:14:1 › smoke @smoke the root address sends a signed-out visitor to a page, not an error
+[84/334] [mobile] › tests/e2e/team.spec.ts:16:3 › owner › AC-002.1 owner adds "Tech A" and it appears with the Technician role and in the technician choices
+[85/334] [mobile] › tests/e2e/team.spec.ts:26:3 › owner › AC-002.2 a technician the owner just added signs in by link and sees today's board
+[86/334] [mobile] › tests/e2e/team.spec.ts:39:3 › owner › AC-002.3 adding the same email in other case shows "That email is already on the team", one entry only
+[87/334] [mobile] › tests/e2e/team.spec.ts:48:3 › owner › AC-002.4 empty name and "tech.a@" show errors beside the fields and save nothing
+[88/334] [mobile] › tests/e2e/team.spec.ts:56:3 › owner › AC-002.5 name of 61 and email of 255 show length errors; 60 and 254 are accepted
+[89/334] [mobile] › tests/e2e/team.spec.ts:65:3 › owner › AC-002.7 a dropped connection shows "Not saved. Try again", keeps the typed values and creates no entry
+[90/334] [mobile] › tests/e2e/team.spec.ts:77:3 › owner › AC-011.4 the owner's own row has no Remove control
+[91/334] [mobile] › tests/e2e/team.spec.ts:83:3 › owner › AC-011.6 choosing "No, keep" in the Remove dialog leaves the technician active
+[92/334] [mobile] › tests/e2e/team.spec.ts:95:3 › owner › AC-011.1 confirming Remove moves the technician to "Removed"; AC-011.5 adding the email again brings them back, no duplicate
+[93/334] [mobile] › tests/e2e/team.spec.ts:107:3 › owner › AC-011.7 a dropped connection after confirming Remove shows "Not saved. Try again" and the technician stays active
+[94/334] [mobile] › tests/e2e/team.spec.ts:124:3 › technician › AC-002.6 Tech A opening the Team address sees "Not allowed" and no team data; the header has no Team link
+[95/334] [desktop] › tests/e2e/board.spec.ts:15:3 › technician board › AC-004.1 / AC-004.2 / AC-004.3 Tech A sees all three jobs in time order, including Tech B's
+[96/334] [desktop] › tests/e2e/board.spec.ts:26:3 › technician board › AC-004.4 a job card shows title, time, address, customer name and phone, notes, technician and status
+[97/334] [desktop] › tests/e2e/board.spec.ts:34:3 › technician board › AC-004.4 a job without customer details or notes shows no empty labels for them
+[98/334] [desktop] › tests/e2e/board.spec.ts:42:3 › technician board › AC-004.5 an empty today shows "No jobs today" and no error (today's response emptied in the browser: the shared e2e org is rarely empty)
+[99/334] [desktop] › tests/e2e/board.spec.ts:53:3 › technician board › AC-004.8 with the phone clock on Pacific time at 22:00 the board still shows the Toronto date
+[100/334] [desktop] › tests/e2e/board.spec.ts:67:3 › technician board › AC-004.9 a job the owner creates appears on Tech A's open board after Refresh
+[101/334] [desktop] › tests/e2e/board.spec.ts:75:3 › technician board › AC-004.10 a 100-character title and 200-character address wrap: no sideways scrolling
+[102/334] [desktop] › tests/e2e/board.spec.ts:85:3 › technician board › AC-004.11 a failed board load shows "Can't load the board. Check your connection" with Retry; Retry then shows the board
+[103/334] [desktop] › tests/e2e/board.spec.ts:96:3 › technician board › AC-004.13 every tappable control is at least 44 by 44 CSS px and body text at least 16 px (board, job detail)
+[104/334] [desktop] › tests/e2e/board.spec.ts:126:3 › technician board › AC-010.1 the board opens on today with Previous day, Next day and a date picker; Next day shows the next date
+[105/334] [desktop] › tests/e2e/board.spec.ts:136:3 › technician board › AC-010.3 / AC-010.4 Tech A steps to yesterday: sees that day's jobs and notes, no New job; Today returns to today
+[106/334] [desktop] › tests/e2e/board.spec.ts:148:3 › technician board › AC-010.5 an empty other day shows "No jobs on" followed by the date
+[107/334] [desktop] › tests/e2e/board.spec.ts:153:3 › technician board › AC-010.8 a failed load of another day shows the Can't load message with Retry and keeps the selected date on screen
+[108/334] [desktop] › tests/e2e/board.spec.ts:167:5 › technician board › P2 (only if built) › AC-012.1 / AC-012.2 phone and address are links that open the dialer and maps (P2: only if built)
+[109/334] [desktop] › tests/e2e/board.spec.ts:179:5 › technician board › P2 (only if built) › AC-012.3 no phone link or empty label when the job has no customer phone (P2)
+[110/334] [desktop] › tests/e2e/board.spec.ts:185:5 › technician board › P2 (only if built) › AC-013.1 a job the owner creates for Tech A appears on the open board within 10 seconds, no reload (P2)
+[111/334] [desktop] › tests/e2e/board.spec.ts:191:5 › technician board › P2 (only if built) › AC-013.2 after the connection returns, an open board refreshes to current data within 10 seconds (P2)
+[112/334] [desktop] › tests/e2e/board.spec.ts:199:5 › technician board › P2 (only if built) › AC-013.3 when the live connection cannot be made a "Live updates paused" notice shows and Refresh still loads data (P2)
+[113/334] [desktop] › tests/e2e/board.spec.ts:214:3 › owner board › AC-004.3 the owner sees the same jobs in the same order as the technicians, with New job beside the count
+[114/334] [desktop] › tests/e2e/board.spec.ts:223:3 › owner board › AC-004.7 / FR-6 50 jobs on one day are all reachable by scrolling, none cut off, no page 2
+[115/334] [desktop] › tests/e2e/board.spec.ts:240:3 › owner board › AC-010.7 on 2027-03-14 (clocks go forward) the board shows 08:00 then 09:00
+[116/334] [desktop] › tests/e2e/jobs.spec.ts:16:3 › owner creates and edits (SCR-05) › AC-003.1 owner creates "Leaking kitchen faucet" at 15:30 for Tech A: it shows on today's board, Scheduled, with Tech A
+[117/334] [desktop] › tests/e2e/jobs.spec.ts:28:3 › owner creates and edits (SCR-05) › AC-003.2 customer name, phone and notes are all shown on the saved card
+[118/334] [desktop] › tests/e2e/jobs.spec.ts:39:3 › owner creates and edits (SCR-05) › AC-003.3 saving an empty form shows an error beside each missing field and creates nothing
+[119/334] [desktop] › tests/e2e/jobs.spec.ts:46:3 › owner creates and edits (SCR-05) › AC-003.4 over-long title, address and notes show length errors; values at the limit save
+[120/334] [desktop] › tests/e2e/jobs.spec.ts:59:3 › owner creates and edits (SCR-05) › AC-003.5 phone "call me" shows "Enter a valid phone number"; a blank phone is accepted
+[121/334] [desktop] › tests/e2e/jobs.spec.ts:69:3 › owner creates and edits (SCR-05) › AC-003.6 tapping Save twice within a second creates exactly one job
+[122/334] [desktop] › tests/e2e/jobs.spec.ts:80:3 › owner creates and edits (SCR-05) › AC-003.7 a job at 09:00 saved in the afternoon is accepted and shown in time order
+[123/334] [desktop] › tests/e2e/jobs.spec.ts:93:3 › owner creates and edits (SCR-05) › AC-003.8 notes with <script>, &, an emoji and line breaks show exactly as typed and nothing runs
+[124/334] [desktop] › tests/e2e/jobs.spec.ts:108:3 › owner creates and edits (SCR-05) › AC-003.10 the technician is removed after the form opened: save is refused with "That technician is no longer on the team", form kept
+[125/334] [desktop] › tests/e2e/jobs.spec.ts:125:3 › owner creates and edits (SCR-05) › AC-003.11 a dropped connection shows "Not saved. Try again", keeps every value, and saving again creates exactly one job
+[126/334] [desktop] › tests/e2e/jobs.spec.ts:141:3 › owner creates and edits (SCR-05) › AC-010.2 owner picks 2026-11-17 on the form: the job is on that day's board, not today's
+[127/334] [desktop] › tests/e2e/jobs.spec.ts:152:3 › owner creates and edits (SCR-05) › AC-010.6 a year outside 2020 to 2100, or a day that does not exist, shows "Enter a valid date"
+[128/334] [desktop] › tests/e2e/jobs.spec.ts:162:3 › owner creates and edits (SCR-05) › AC-008.1 owner edits the start time to 16:00; the board shows 16:00
+[129/334] [desktop] › tests/e2e/jobs.spec.ts:172:3 › owner creates and edits (SCR-05) › AC-008.2 owner reassigns to Tech B; the card shows Tech B
+[130/334] [desktop] › tests/e2e/jobs.spec.ts:182:3 › owner creates and edits (SCR-05) › AC-008.4 emptying a required field on edit shows the create-form errors and leaves the job unchanged
+[131/334] [desktop] › tests/e2e/jobs.spec.ts:194:3 › owner creates and edits (SCR-05) › AC-008.5 the reassign choices do not offer a removed technician
+[132/334] [desktop] › tests/e2e/jobs.spec.ts:206:3 › owner creates and edits (SCR-05) › AC-008.6 saving an edit from an old view shows "This job was updated by someone else. Review the latest version" and keeps the other change
+[133/334] [desktop] › tests/e2e/jobs.spec.ts:219:3 › owner creates and edits (SCR-05) › AC-008.7 a dropped connection on edit shows "Not saved. Try again", keeps the edited values, job unchanged
+[134/334] [desktop] › tests/e2e/jobs.spec.ts:232:3 › owner creates and edits (SCR-05) › AC-009.1 / AC-009.3 Cancel asks "Cancel this job?"; No leaves the job, Yes marks it Cancelled in place
+[135/334] [desktop] › tests/e2e/jobs.spec.ts:246:3 › owner creates and edits (SCR-05) › AC-009.2 no delete control on the board, the job detail or the edit form for the owner
+[136/334] [desktop] › tests/e2e/jobs.spec.ts:255:3 › owner creates and edits (SCR-05) › AC-009.4 the owner restores a cancelled job with a status; Tech A can change it again
+[137/334] [desktop] › tests/e2e/jobs.spec.ts:264:3 › owner creates and edits (SCR-05) › AC-009.6 a dropped connection after confirming Cancel shows "Not saved. Try again" and the job stays active
+[138/334] [desktop] › tests/e2e/jobs.spec.ts:280:3 › technician (SCR-03, SCR-04) › AC-003.9 Tech A sees no New job control and the create address says "Not allowed"
+[139/334] [desktop] › tests/e2e/jobs.spec.ts:288:3 › technician (SCR-03, SCR-04) › AC-007.1 Tech A taps In progress on own job: the badge changes and the owner sees it after a reload
+[140/334] [desktop] › tests/e2e/jobs.spec.ts:297:3 › technician (SCR-03, SCR-04) › AC-007.2 Tech A saves a note on the job detail; "Notes saved" shows and the note persists for others
+[141/334] [desktop] › tests/e2e/jobs.spec.ts:306:3 › technician (SCR-03, SCR-04) › AC-007.3 on Tech B's job Tech A has no status or notes controls and sees who can change it
+[142/334] [desktop] › tests/e2e/jobs.spec.ts:316:3 › technician (SCR-03, SCR-04) › AC-007.4 the job detail shows title, address, start time, customer and technician as plain text, nothing editable
+[143/334] [desktop] › tests/e2e/jobs.spec.ts:324:3 › technician (SCR-03, SCR-04) › AC-007.5 a cancelled job shows "This job was cancelled" and no controls to Tech A
+[144/334] [desktop] › tests/e2e/jobs.spec.ts:334:3 › technician (SCR-03, SCR-04) › AC-007.6 Done then In progress: the job shows In progress
+[145/334] [desktop] › tests/e2e/jobs.spec.ts:344:3 › technician (SCR-03, SCR-04) › AC-007.7 2001 characters of notes show "2001 / 2000" and an error and save nothing; 2000 saves
+[146/334] [desktop] › tests/e2e/jobs.spec.ts:358:3 › technician (SCR-03, SCR-04) › AC-007.8 a status tap from an old view shows "This job was updated by someone else. Review the latest version"; Show latest loads the new values
+[147/334] [desktop] › tests/e2e/jobs.spec.ts:370:3 › technician (SCR-03, SCR-04) › AC-007.9 a double tap on Done records one status change
+[148/334] [desktop] › tests/e2e/jobs.spec.ts:379:3 › technician (SCR-03, SCR-04) › AC-007.10 a dropped connection on a note save shows "Not saved. Try again" and keeps the typed note
+[149/334] [desktop] › tests/e2e/jobs.spec.ts:389:3 › technician (SCR-03, SCR-04) › AC-007.10 a dropped connection on a status tap shows "Not saved. Try again" and the control returns to the saved status
+[150/334] [desktop] › tests/e2e/loop.spec.ts:48:3 › the browser loop (needs sign-in and the real screens) › AC-006.1 the three-step loop passes: owner creates and assigns, Tech A sees it at 390px, Tech B sees it
+[151/334] [desktop] › tests/e2e/loop.spec.ts:52:3 › the browser loop (needs sign-in and the real screens) › AC-006.5 the loop passes again straight after, the same day, on the same environment
+[152/334] [desktop] › tests/e2e/loop.spec.ts:58:1 › AC-006.4 the loop's steps are named "Step 1/2/3" so a failing run names the failing step
+[153/334] [desktop] › tests/e2e/loop.spec.ts:66:1 › AC-006.6 jobs made by the suite live in an is_test organisation and their events are marked is_test (never Northside's board)
+[154/334] [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /sign-in is served and has a level-1 heading
+[155/334] [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /link-expired is served and has a level-1 heading
+[156/334] [desktop] › tests/e2e/smoke.spec.ts:7:3 › smoke @smoke /offline is served and has a level-1 heading
+[157/334] [desktop] › tests/e2e/smoke.spec.ts:14:1 › smoke @smoke the root address sends a signed-out visitor to a page, not an error
+[158/334] [desktop] › tests/e2e/team.spec.ts:16:3 › owner › AC-002.1 owner adds "Tech A" and it appears with the Technician role and in the technician choices
+[159/334] [desktop] › tests/e2e/team.spec.ts:26:3 › owner › AC-002.2 a technician the owner just added signs in by link and sees today's board
+[160/334] [desktop] › tests/e2e/team.spec.ts:39:3 › owner › AC-002.3 adding the same email in other case shows "That email is already on the team", one entry only
+[161/334] [desktop] › tests/e2e/team.spec.ts:48:3 › owner › AC-002.4 empty name and "tech.a@" show errors beside the fields and save nothing
+[162/334] [desktop] › tests/e2e/team.spec.ts:56:3 › owner › AC-002.5 name of 61 and email of 255 show length errors; 60 and 254 are accepted
+[163/334] [desktop] › tests/e2e/team.spec.ts:65:3 › owner › AC-002.7 a dropped connection shows "Not saved. Try again", keeps the typed values and creates no entry
+[164/334] [desktop] › tests/e2e/team.spec.ts:77:3 › owner › AC-011.4 the owner's own row has no Remove control
+[165/334] [desktop] › tests/e2e/team.spec.ts:83:3 › owner › AC-011.6 choosing "No, keep" in the Remove dialog leaves the technician active
+[166/334] [desktop] › tests/e2e/team.spec.ts:95:3 › owner › AC-011.1 confirming Remove moves the technician to "Removed"; AC-011.5 adding the email again brings them back, no duplicate
+[167/334] [desktop] › tests/e2e/team.spec.ts:107:3 › owner › AC-011.7 a dropped connection after confirming Remove shows "Not saved. Try again" and the technician stays active
+[168/334] [desktop] › tests/e2e/team.spec.ts:124:3 › technician › AC-002.6 Tech A opening the Team address sees "Not allowed" and no team data; the header has no Team link
+[169/334] [api] › tests/e2e/api/contract.spec.ts:21:3 › health (US-006) › AC-006.3 @smoke GET /api/health returns 200 {status, checks, version} with no session and no personal data
+[170/334] [api] › tests/e2e/api/contract.spec.ts:29:3 › health (US-006) › AC-006.3 @smoke GET /api/health?check=db returns 200 with db ok
+[171/334] [api] › tests/e2e/api/contract.spec.ts:34:3 › health (US-006) › AC-006.3 GET /api/health?check=nonsense is a 400 problem, not a 500
+[172/334] [api] › tests/e2e/api/contract.spec.ts:40:3 › session and board shape (US-004) › AC-004.8 @smoke GET /me returns the org time zone America/Toronto and a YYYY-MM-DD today
+[173/334] [api] › tests/e2e/api/contract.spec.ts:48:3 › session and board shape (US-004) › AC-004.8 the board without ?date is the Toronto date, whatever the caller sends in headers
+[174/334] [api] › tests/e2e/api/contract.spec.ts:56:3 › session and board shape (US-004) › AC-004.1 @smoke board responses are no-store and match the BoardDay shape
+[175/334] [api] › tests/e2e/api/contract.spec.ts:64:3 › session and board shape (US-004) › AC-010.6 GET /board?date= with a bad or out-of-range date -> 422, not a 500
+[176/334] [api] › tests/e2e/api/contract.spec.ts:72:3 › session and board shape (US-004) › AC-004.5 / AC-010.5 an empty day is 200 with job_count 0, not an error
+[177/334] [api] › tests/e2e/api/contract.spec.ts:77:3 › session and board shape (US-004) › AC-004.1 / AC-004.2 / AC-004.3 owner, Tech A and Tech B see the same jobs in the same order
+[178/334] [api] › tests/e2e/api/contract.spec.ts:89:3 › session and board shape (US-004) › AC-004.6 two jobs at the same start time: the one created first is listed first
+[179/334] [api] › tests/e2e/api/contract.spec.ts:97:3 › session and board shape (US-004) › AC-004.7 / FR-6 50 jobs on one day are all returned in one response, none cut off
+  1) [api] › tests/e2e/api/contract.spec.ts:97:3 › session and board shape (US-004) › AC-004.7 / FR-6 50 jobs on one day are all returned in one response, none cut off 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+    @@ -1,8 +1,10 @@
+      Array [
+        "a603c3fe-1298-42a8-8260-d6b535a2f07f",
+    +   "a3d411ba-9369-46a4-a4b7-849a37aa3ab7",
+        "fdbf9471-c9c6-4f99-b78d-5506afb144fa",
+    +   "9e296dcb-48fb-4cfc-b2b2-2da64ba07113",
+        "806e4350-85e2-47d0-89f9-eb3bf643d9e0",
+        "fcd0ac62-891e-4846-9422-9fab9df8cf14",
+        "abf858ff-7bf5-4fe2-9bdf-e08bd4137d2f",
+        "f8f68a4f-a6dd-4c7e-8f56-fbce200baa5e",
+        "96d97ca5-347a-42e0-ae57-0405734eefe3",
+    @@ -45,8 +47,6 @@
+        "9d3ea80b-abb1-4d27-86d6-b6dc6d8ba2af",
+        "0322c3b4-c6e5-43b4-94a0-e18a07a0ea17",
+        "592651ea-9207-44f2-9d4b-030c2baa5e25",
+        "c5d5d690-13b7-4273-8763-63188d5b7d46",
+        "5ff8414b-8002-4103-8c82-f9343fc5da74",
+    -   "a3d411ba-9369-46a4-a4b7-849a37aa3ab7",
+    -   "9e296dcb-48fb-4cfc-b2b2-2da64ba07113",
+      ]
+
+      107 |     expect(b.job_count).toBe(50);
+      108 |     expect(b.truncated).toBe(false);
+    > 109 |     expect(b.jobs.map((j) => j.id)).toEqual(made);
+          |                                     ^
+      110 |   });
+      111 |
+      112 |   test('AC-010.7 on 2027-03-14 (clocks move forward) 08:00 is listed before 09:00', async () => {
+        at /home/admin/baseleap/.dryrun/ops3/repo/tests/e2e/api/contract.spec.ts:109:37
+
+    Error Context: test-results/api-contract-session-and-b-b01e2-n-one-response-none-cut-off-api/error-context.md
+
+    Error Context: test-results/api-contract-session-and-b-b01e2-n-one-response-none-cut-off-api/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-contract-session-and-b-b01e2-n-one-response-none-cut-off-api/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-contract-session-and-b-b01e2-n-one-response-none-cut-off-api/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[180/334] [api] › tests/e2e/api/contract.spec.ts:112:3 › session and board shape (US-004) › AC-010.7 on 2027-03-14 (clocks move forward) 08:00 is listed before 09:00
+[181/334] [api] › tests/e2e/api/contract.spec.ts:133:3 › create-job validation and limits (US-003, FR-4) › AC-003.3 each missing required field gets its own error and nothing is saved
+[182/334] [api] › tests/e2e/api/contract.spec.ts:148:5 › create-job validation and limits (US-003, FR-4) › AC-003.4 title: 100 characters accepted, 101 rejected with too_long
+[183/334] [api] › tests/e2e/api/contract.spec.ts:148:5 › create-job validation and limits (US-003, FR-4) › AC-003.4 customer_name: 100 characters accepted, 101 rejected with too_long
+[184/334] [api] › tests/e2e/api/contract.spec.ts:148:5 › create-job validation and limits (US-003, FR-4) › AC-003.4 address: 200 characters accepted, 201 rejected with too_long
+[185/334] [api] › tests/e2e/api/contract.spec.ts:148:5 › create-job validation and limits (US-003, FR-4) › AC-003.4 notes: 2000 characters accepted, 2001 rejected with too_long
+[186/334] [api] › tests/e2e/api/contract.spec.ts:157:3 › create-job validation and limits (US-003, FR-4) › AC-003.4 length counts Unicode code points, not UTF-16 units: 100 emoji title is accepted, 101 is not
+[187/334] [api] › tests/e2e/api/contract.spec.ts:163:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "call me" -> 422 invalid_format
+[188/334] [api] › tests/e2e/api/contract.spec.ts:163:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "123456" -> 422 invalid_format
+[189/334] [api] › tests/e2e/api/contract.spec.ts:163:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "111111111111111111111" -> 422 invalid_format
+[190/334] [api] › tests/e2e/api/contract.spec.ts:163:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "(905) 555-0123 ext 4" -> 422 invalid_format
+[191/334] [api] › tests/e2e/api/contract.spec.ts:163:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "+1 905 555 0123 <b>" -> 422 invalid_format
+[192/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "(905) 555-0123" is accepted (blank means not entered)
+[193/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "1234567" is accepted (blank means not entered)
+[194/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "11111111111111111111" is accepted (blank means not entered)
+[195/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone null is accepted (blank means not entered)
+[196/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "" is accepted (blank means not entered)
+  2) [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "" is accepted (blank means not entered) 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 422
+
+      169 |     test(`AC-003.5 customer_phone ${JSON.stringify(good)} is accepted (blank means not entered)`, async () => {
+      170 |       const res = await post({ customer_phone: good, client_request_id: uuid() });
+    > 171 |       expect(res.status()).toBe(201);
+          |                            ^
+      172 |       const j: Job = await res.json();
+      173 |       expect(j.customer_phone === null || j.customer_phone === good).toBe(true);
+      174 |       if (good === '' || good === '   ') expect(j.customer_phone).toBeNull();
+        at /home/admin/baseleap/.dryrun/ops3/repo/tests/e2e/api/contract.spec.ts:171:28
+
+    Error Context: test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/error-context.md
+
+    Error Context: test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[197/334] [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "   " is accepted (blank means not entered)
+  3) [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "   " is accepted (blank means not entered) 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 422
+
+      169 |     test(`AC-003.5 customer_phone ${JSON.stringify(good)} is accepted (blank means not entered)`, async () => {
+      170 |       const res = await post({ customer_phone: good, client_request_id: uuid() });
+    > 171 |       expect(res.status()).toBe(201);
+          |                            ^
+      172 |       const j: Job = await res.json();
+      173 |       expect(j.customer_phone === null || j.customer_phone === good).toBe(true);
+      174 |       if (good === '' || good === '   ') expect(j.customer_phone).toBeNull();
+        at /home/admin/baseleap/.dryrun/ops3/repo/tests/e2e/api/contract.spec.ts:171:28
+
+    Error Context: test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/error-context.md
+
+    Error Context: test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-contract-create-job-va-815fb-ed-blank-means-not-entered--api/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[198/334] [api] › tests/e2e/api/contract.spec.ts:179:5 › create-job validation and limits (US-003, FR-4) › AC-010.6 job_date 2026-02-30 -> 422 invalid_date
+[199/334] [api] › tests/e2e/api/contract.spec.ts:179:5 › create-job validation and limits (US-003, FR-4) › AC-010.6 job_date 2019-12-31 -> 422 invalid_date
+[200/334] [api] › tests/e2e/api/contract.spec.ts:179:5 › create-job validation and limits (US-003, FR-4) › AC-010.6 job_date 2101-01-01 -> 422 invalid_date
+[201/334] [api] › tests/e2e/api/contract.spec.ts:179:5 › create-job validation and limits (US-003, FR-4) › AC-010.6 job_date 12/11/2026 -> 422 invalid_date
+[202/334] [api] › tests/e2e/api/contract.spec.ts:179:5 › create-job validation and limits (US-003, FR-4) › AC-010.6 job_date not a date -> 422 invalid_date
+[203/334] [api] › tests/e2e/api/contract.spec.ts:185:5 › create-job validation and limits (US-003, FR-4) › AC-010.2 job_date 2020-01-01 (range edge) is accepted
+[204/334] [api] › tests/e2e/api/contract.spec.ts:185:5 › create-job validation and limits (US-003, FR-4) › AC-010.2 job_date 2100-12-31 (range edge) is accepted
+[205/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "24:00" -> rejected
+[206/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "9:00" -> rejected
+[207/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "09:60" -> rejected
+[208/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "" -> rejected
+[209/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "09:00:00" -> rejected
+[210/334] [api] › tests/e2e/api/contract.spec.ts:190:5 › create-job validation and limits (US-003, FR-4) › FR-4 start_time "noon" -> rejected
+[211/334] [api] › tests/e2e/api/contract.spec.ts:195:3 › create-job validation and limits (US-003, FR-4) › AC-003.7 a start time earlier than now on today's date is accepted and listed in time order
+[212/334] [api] › tests/e2e/api/contract.spec.ts:204:3 › create-job validation and limits (US-003, FR-4) › AC-003.8 text with markup, ampersand, emoji and line breaks is stored and returned exactly as typed
+[213/334] [api] › tests/e2e/api/contract.spec.ts:214:3 › create-job validation and limits (US-003, FR-4) › AC-003.6 @smoke the same client_request_id twice creates exactly one job (second returns 200 with the same job)
+[214/334] [api] › tests/e2e/api/contract.spec.ts:225:3 › create-job validation and limits (US-003, FR-4) › AC-003.1 / FR-9 @smoke a new job starts Scheduled at version 1 with the assigned technician and permissions
+[215/334] [api] › tests/e2e/api/contract.spec.ts:240:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-007.1 / AC-007.6 @smoke technician sets In progress, Done, then back to In progress (any to any)
+[216/334] [api] › tests/e2e/api/contract.spec.ts:251:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-007.8 (status-only variant) a status save from an old view -> 409 stale_version with the latest job; the other change is kept
+[217/334] [api] › tests/e2e/api/contract.spec.ts:264:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-007.9 two simultaneous Done taps -> status Done and exactly one version step
+[218/334] [api] › tests/e2e/api/contract.spec.ts:276:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-008.3 owner sets any status, including Done
+[219/334] [api] › tests/e2e/api/contract.spec.ts:283:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-009.1 (via PUT status) owner cancels: the job keeps its place on the board marked cancelled and still counts
+[220/334] [api] › tests/e2e/api/contract.spec.ts:297:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-009.4 (via PUT status) owner restores a cancelled job to Scheduled; the technician can change it again
+[221/334] [api] › tests/e2e/api/contract.spec.ts:308:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-010.2 owner creates a job for 2026-11-17: it is on that day's board and not on today's
+[222/334] [api] › tests/e2e/api/contract.spec.ts:316:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-010.3 a technician can read a past day's jobs with notes, but cannot create there
+[223/334] [api] › tests/e2e/api/contract.spec.ts:325:3 › status rules and versions on the built endpoints (US-007 to US-010) › AC-010.1 the board for a given date is returned with is_today false and today still reported
+[224/334] [api] › tests/e2e/api/contract.spec.ts:342:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-007.2 technician saves notes on own job; every user then sees them
+[225/334] [api] › tests/e2e/api/contract.spec.ts:350:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-007.7 notes: 2000 characters saved, 2001 rejected and the old notes kept
+[226/334] [api] › tests/e2e/api/contract.spec.ts:360:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-007.8 a status save from an old view after an owner edit -> 409 stale_version with the latest job; the other change is kept
+[227/334] [api] › tests/e2e/api/contract.spec.ts:372:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-008.6 an owner edit from an old view -> 409 stale_version; the technician's change is kept
+[228/334] [api] › tests/e2e/api/contract.spec.ts:380:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-008.1 owner changes the start time; the board re-orders by the new time
+[229/334] [api] › tests/e2e/api/contract.spec.ts:390:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-008.2 owner reassigns A to B: B can change it, A can no longer
+[230/334] [api] › tests/e2e/api/contract.spec.ts:401:3 › needs PATCH /api/jobs/{job_id} (not built) › AC-008.4 owner edit with an emptied required field, an over-long value or a bad phone -> 422, job unchanged
+[231/334] [api] › tests/e2e/api/contract.spec.ts:418:3 › needs POST /api/jobs/{job_id}/cancel (not built) › AC-009.1 owner cancels: the job keeps its place on the board marked cancelled
+[232/334] [api] › tests/e2e/api/contract.spec.ts:431:3 › needs POST /api/jobs/{job_id}/cancel (not built) › AC-009.4 owner restores a cancelled job to Scheduled; the technician can change it again
+[233/334] [api] › tests/e2e/api/contract.spec.ts:441:3 › needs POST /api/jobs/{job_id}/cancel (not built) › AC-009.5 cancelling an already-cancelled job from an old view -> 200, still cancelled, version unchanged
+[234/334] [api] › tests/e2e/api/contract.spec.ts:454:3 › needs GET /api/technicians (not built) › AC-008.5 / AC-011.3 GET /technicians lists active technicians only (no owner), names only
+[235/334] [api] › tests/e2e/api/contract.spec.ts:465:3 › headers (SECURITY invariants 11, 12, 14) › SECURITY 14 board and me responses carry Cache-Control: no-store
+[236/334] [api] › tests/e2e/api/contract.spec.ts:474:3 › headers (SECURITY invariants 11, 12, 14) › SECURITY 14 GET /api/jobs/{id} carries Cache-Control: no-store
+[237/334] [api] › tests/e2e/api/contract.spec.ts:481:3 › headers (SECURITY invariants 11, 12, 14) › SECURITY 14 pages are not frameable and carry the baseline security headers
+[238/334] [api] › tests/e2e/api/contract.spec.ts:491:3 › headers (SECURITY invariants 11, 12, 14) › SECURITY 12 service worker is served and its fetch handler never touches /api/ or board pages
+[239/334] [api] › tests/e2e/api/contract.spec.ts:500:3 › headers (SECURITY invariants 11, 12, 14) › SECURITY 3 problem+json errors never leak SQL or stack traces (malformed JSON and bad ids)
+[240/334] [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out GET /api/me -> 401, no data [CRITICAL if not]
+[241/334] [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out GET /api/board -> 401, no data [CRITICAL if not]
+[242/334] [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out POST /api/jobs -> 401, no data [CRITICAL if not]
+[243/334] [api] › tests/e2e/api/permissions.spec.ts:52:5 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 @smoke signed out PUT /api/jobs/{id}/status -> 401, no data [CRITICAL if not]
+[244/334] [api] › tests/e2e/api/permissions.spec.ts:59:3 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 / FR-2 a malformed or empty bearer token is a 401, never data
+[245/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out GET /api/jobs/{id} -> 401, no data [CRITICAL if not]
+[246/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out GET /api/technicians -> 401, no data [CRITICAL if not]
+[247/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out GET /api/team -> 401, no data [CRITICAL if not]
+[248/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out PATCH /api/jobs/{id} -> 401, no data [CRITICAL if not]
+[249/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out POST /api/jobs/{id}/cancel -> 401, no data [CRITICAL if not]
+[250/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out POST /api/team -> 401, no data [CRITICAL if not]
+[251/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out POST /api/team/{id}/remove -> 401, no data [CRITICAL if not]
+[252/334] [api] › tests/e2e/api/permissions.spec.ts:75:7 › signed out (boundary: nothing is readable or writable without a session) › endpoints not built yet › AC-001.7 / FR-2 signed out POST /api/events -> 401, no data [CRITICAL if not]
+[253/334] [api] › tests/e2e/api/permissions.spec.ts:83:3 › signed out (boundary: nothing is readable or writable without a session) › AC-001.7 signed-out board page is a redirect to sign-in with no job data in the response
+[254/334] [api] › tests/e2e/api/permissions.spec.ts:96:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-003.9 @smoke technician POST /jobs -> 403 not_allowed, no job created
+[255/334] [api] › tests/e2e/api/permissions.spec.ts:105:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-007.3 technician PUT status on ANOTHER technician's job -> 403, unchanged
+[256/334] [api] › tests/e2e/api/permissions.spec.ts:111:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-007.5 technician cannot set Cancelled with PUT status
+[257/334] [api] › tests/e2e/api/permissions.spec.ts:117:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-007.5 technician cannot change the status of a CANCELLED own job
+[258/334] [api] › tests/e2e/api/permissions.spec.ts:123:3 › technician (boundary: status and notes on own, non-cancelled jobs only) › AC-004.3 positive control: a technician reads every job on the board, including another technician's
+[259/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field title -> 403, job unchanged
+[260/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field address -> 403, job unchanged
+[261/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field start_time -> 403, job unchanged
+[262/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field job_date -> 403, job unchanged
+[263/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field customer_name -> 403, job unchanged
+[264/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field customer_phone -> 403, job unchanged
+[265/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field assigned_member_id -> 403, job unchanged
+[266/334] [api] › tests/e2e/api/permissions.spec.ts:141:7 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 technician PATCH own job field status -> 403, job unchanged
+[267/334] [api] › tests/e2e/api/permissions.spec.ts:150:5 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.4 mixed PATCH (notes plus title) is refused whole: notes are not applied either
+[268/334] [api] › tests/e2e/api/permissions.spec.ts:156:5 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.3 technician PATCH notes on ANOTHER technician's job -> 403, unchanged
+[269/334] [api] › tests/e2e/api/permissions.spec.ts:162:5 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-007.5 technician cannot set Cancelled with PATCH, nor edit notes of a CANCELLED own job
+[270/334] [api] › tests/e2e/api/permissions.spec.ts:171:5 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › AC-009.2 technician POST /jobs/{id}/cancel -> 403, job still active
+[271/334] [api] › tests/e2e/api/permissions.spec.ts:177:5 › technician (boundary: status and notes on own, non-cancelled jobs only) › needs endpoints that are not built › FR-2 / AC-002.6 technician on the team API: GET /team, GET /technicians, POST /team, remove -> 403, team unchanged
+[272/334] [api] › tests/e2e/api/permissions.spec.ts:192:3 › owner (boundary: no delete, no self-assignment, no removing the owner) › AC-009.2 DELETE on every resource -> 405 for owner and technician, rows still exist
+[273/334] [api] › tests/e2e/api/permissions.spec.ts:205:3 › owner (boundary: no delete, no self-assignment, no removing the owner) › OQ-8 owner cannot assign a job to themselves -> 422 technician_not_assignable
+[274/334] [api] › tests/e2e/api/permissions.spec.ts:215:3 › owner (boundary: no delete, no self-assignment, no removing the owner) › SECURITY invariant 3 strict bodies: unknown fields are rejected on POST /jobs, never silently applied (org_id, created_by)
+[275/334] [api] › tests/e2e/api/permissions.spec.ts:227:5 › owner (boundary: no delete, no self-assignment, no removing the owner) › needs endpoints that are not built › AC-011.4 owner cannot remove themselves -> 403 owner_cannot_be_removed
+[276/334] [api] › tests/e2e/api/permissions.spec.ts:233:5 › owner (boundary: no delete, no self-assignment, no removing the owner) › needs endpoints that are not built › SECURITY invariant 4/5 owner cannot add a second owner (no role field accepted on POST /team)
+[277/334] [api] › tests/e2e/api/permissions.spec.ts:238:5 › owner (boundary: no delete, no self-assignment, no removing the owner) › needs endpoints that are not built › SECURITY invariant 3 strict bodies: unknown fields are rejected on PATCH /jobs/{id}
+[278/334] [api] › tests/e2e/api/permissions.spec.ts:248:3 › cross-organisation (boundary: another org behaves as if it does not exist) › SECURITY invariant 8 owner: PUT status on a foreign job -> 404, DB row unchanged
+[279/334] [api] › tests/e2e/api/permissions.spec.ts:255:3 › cross-organisation (boundary: another org behaves as if it does not exist) › SECURITY invariant 8 technician: PUT status on a foreign job -> 404, DB row unchanged
+[280/334] [api] › tests/e2e/api/permissions.spec.ts:261:3 › cross-organisation (boundary: another org behaves as if it does not exist) › SECURITY invariant 8 owner: assigning a job to a foreign technician -> 422, no job created
+[281/334] [api] › tests/e2e/api/permissions.spec.ts:269:3 › cross-organisation (boundary: another org behaves as if it does not exist) › SECURITY invariant 8 the foreign job never appears on our board
+[282/334] [api] › tests/e2e/api/permissions.spec.ts:279:5 › cross-organisation (boundary: another org behaves as if it does not exist) › needs endpoints that are not built › SECURITY invariant 8 owner: GET/PATCH/cancel on a foreign job -> 404, DB row unchanged
+[283/334] [api] › tests/e2e/api/permissions.spec.ts:287:5 › cross-organisation (boundary: another org behaves as if it does not exist) › needs endpoints that are not built › SECURITY invariant 8 technician: GET/PATCH on a foreign job -> 404, DB row unchanged
+[284/334] [api] › tests/e2e/api/permissions.spec.ts:294:5 › cross-organisation (boundary: another org behaves as if it does not exist) › needs endpoints that are not built › SECURITY invariant 8 owner: remove a foreign member -> 404
+[285/334] [api] › tests/e2e/api/permissions.spec.ts:298:5 › cross-organisation (boundary: another org behaves as if it does not exist) › needs endpoints that are not built › SECURITY invariant 8 foreign members never appear on our team or technician lists
+[286/334] [api] › tests/e2e/api/permissions.spec.ts:305:5 › cross-organisation (boundary: another org behaves as if it does not exist) › needs endpoints that are not built › AC-002.3 an email that belongs to another org gets the same 409 duplicate_email (no cross-org enumeration)
+[287/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job title is refused or changes nothing [CRITICAL if applied]
+[288/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job address is refused or changes nothing [CRITICAL if applied]
+[289/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job assigned_member_id is refused or changes nothing [CRITICAL if applied]
+[290/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job start_time is refused or changes nothing [CRITICAL if applied]
+[291/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job status is refused or changes nothing [CRITICAL if applied]
+[292/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job version is refused or changes nothing [CRITICAL if applied]
+[293/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job org_id is refused or changes nothing [CRITICAL if applied]
+[294/334] [api] › tests/e2e/api/permissions.spec.ts:339:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of own job details is refused or changes nothing [CRITICAL if applied]
+[295/334] [api] › tests/e2e/api/permissions.spec.ts:356:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of another technician's job (notes, status) changes nothing [CRITICAL if applied]
+[296/334] [api] › tests/e2e/api/permissions.spec.ts:365:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct PATCH of a cancelled own job changes nothing
+[297/334] [api] › tests/e2e/api/permissions.spec.ts:372:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct INSERT of a job is refused
+[298/334] [api] › tests/e2e/api/permissions.spec.ts:381:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct DELETE of a job and of a team member is refused, rows remain [CRITICAL if deleted]
+[299/334] [api] › tests/e2e/api/permissions.spec.ts:391:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct write to team_members (role, is_active) is refused
+[300/334] [api] › tests/e2e/api/permissions.spec.ts:404:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct read of audit_log returns no rows (SECURITY matrix: nobody via the API)
+[301/334] [api] › tests/e2e/api/permissions.spec.ts:404:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct read of events returns no rows (SECURITY matrix: nobody via the API)
+[302/334] [api] › tests/e2e/api/permissions.spec.ts:404:5 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct read of rate_limits returns no rows (SECURITY matrix: nobody via the API)
+[303/334] [api] › tests/e2e/api/permissions.spec.ts:411:3 › Supabase Data API called directly by a signed-in technician (SECURITY invariant 6, 7) › direct read of another org's jobs returns nothing
+[304/334] [api] › tests/e2e/api/team-audit-events.spec.ts:24:3 › audit trail on the built endpoints (FR-18) › AC-003.12 creating a job records who created it and when
+[305/334] [api] › tests/e2e/api/team-audit-events.spec.ts:34:3 › audit trail on the built endpoints (FR-18) › AC-007.11 a technician status change records who, when, old and new status
+[306/334] [api] › tests/e2e/api/team-audit-events.spec.ts:47:3 › audit trail on the built endpoints (FR-18) › AC-007.9 a double Done records exactly one status change
+[307/334] [api] › tests/e2e/api/team-audit-events.spec.ts:54:3 › audit trail on the built endpoints (FR-18) › AC-009.5 (via PUT status) cancelling twice records one cancellation
+[308/334] [api] › tests/e2e/api/team-audit-events.spec.ts:65:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: job_created fires once per saved job (also on a double submit), lead_days 0, no PII, is_test true
+  4) [api] › tests/e2e/api/team-audit-events.spec.ts:65:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: job_created fires once per saved job (also on a double submit), lead_days 0, no PII, is_test true 
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 1
+    Received length: 5
+    Received array:  [{"is_test": true, "member_id": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "name": "job_created", "occurred_at": "2026-11-19T00:43:22.827251+00:00", "properties": {"assigned_tech_id": "92f2383c-4e06-47c9-9d13-a1b7b10419bc", "created_by": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "job_date": "2026-11-18", "job_id": "243525f5-b2b1-40b8-95c7-5f6ec535ccda", "lead_days": 0}, "source": "server"}, {"is_test": true, "member_id": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "name": "job_created", "occurred_at": "2026-11-19T00:43:22.882066+00:00", "properties": {"assigned_tech_id": "92f2383c-4e06-47c9-9d13-a1b7b10419bc", "created_by": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "job_date": "2026-11-18", "job_id": "ee6c4a70-f8c7-4b93-81b4-4e2592f14878", "lead_days": 0}, "source": "server"}, {"is_test": true, "member_id": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "name": "job_created", "occurred_at": "2026-11-19T00:43:22.987631+00:00", "properties": {"assigned_tech_id": "92f2383c-4e06-47c9-9d13-a1b7b10419bc", "created_by": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "job_date": "2026-11-18", "job_id": "9979c533-d8ba-4567-8c08-6574f088408f", "lead_days": 0}, "source": "server"}, {"is_test": true, "member_id": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "name": "job_created", "occurred_at": "2026-11-19T00:43:23.100457+00:00", "properties": {"assigned_tech_id": "92f2383c-4e06-47c9-9d13-a1b7b10419bc", "created_by": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "job_date": "2026-11-18", "job_id": "92aa8dd7-a02c-4e8d-9bd2-45bd5b1c109b", "lead_days": 0}, "source": "server"}, {"is_test": true, "member_id": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "name": "job_created", "occurred_at": "2026-11-19T00:43:23.205867+00:00", "properties": {"assigned_tech_id": "92f2383c-4e06-47c9-9d13-a1b7b10419bc", "created_by": "a0ffd94f-f95a-4749-a46e-f56bff3997bb", "job_date": "2026-11-18", "job_id": "f27f6ff6-da1b-4f40-9079-e9f14f1fd071", "lead_days": 0}, "source": "server"}]
+
+      69 |     await Promise.all([owner.post('/api/jobs', { data: body }), owner.post('/api/jobs', { data: body })]);
+      70 |     const ev = (await eventsFor(ids.owner.id, 'job_created', since)).filter((e) => e.properties.assigned_tech_id === ids.techA.id);
+    > 71 |     expect(ev).toHaveLength(1);
+         |                ^
+      72 |     expect(ev[0]).toMatchObject({ source: 'server', is_test: true });
+      73 |     expect(ev[0].properties.lead_days).toBe(0);
+      74 |     noPii(ev[0].properties);
+        at /home/admin/baseleap/.dryrun/ops3/repo/tests/e2e/api/team-audit-events.spec.ts:71:16
+
+    Error Context: test-results/api-team-audit-events-trac-f5cda--days-0-no-PII-is-test-true-api/error-context.md
+
+    Error Context: test-results/api-team-audit-events-trac-f5cda--days-0-no-PII-is-test-true-api/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/api-team-audit-events-trac-f5cda--days-0-no-PII-is-test-true-api/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/api-team-audit-events-trac-f5cda--days-0-no-PII-is-test-true-api/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[309/334] [api] › tests/e2e/api/team-audit-events.spec.ts:77:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: job_created for another date carries lead_days = job_date minus today
+[310/334] [api] › tests/e2e/api/team-audit-events.spec.ts:87:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: job_status_changed has from/to and the actor role; a repeated cancel records one
+[311/334] [api] › tests/e2e/api/team-audit-events.spec.ts:103:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: PII sweep of every event written by this run (no email, phone, address, title or notes in properties)
+[312/334] [api] › tests/e2e/api/team-audit-events.spec.ts:113:3 › signed-out writes are refused on the built endpoints › AC-001.7 signed-out PUT status is refused and changes nothing
+[313/334] [api] › tests/e2e/api/team-audit-events.spec.ts:126:3 › team list API (US-002, US-011) › AC-002.1 owner adds a technician: 201, role technician, listed, and offered by GET /technicians
+[314/334] [api] › tests/e2e/api/team-audit-events.spec.ts:139:3 › team list API (US-002, US-011) › AC-002.3 the same email in other case and spaces -> 409 duplicate_email, no second entry
+[315/334] [api] › tests/e2e/api/team-audit-events.spec.ts:148:3 › team list API (US-002, US-011) › AC-002.4 empty name, whitespace name, invalid emails -> 422 with a field error; nothing saved
+[316/334] [api] › tests/e2e/api/team-audit-events.spec.ts:155:3 › team list API (US-002, US-011) › AC-002.5 name 60 and email 254 accepted; name 61 and email 255 rejected
+[317/334] [api] › tests/e2e/api/team-audit-events.spec.ts:162:3 › team list API (US-002, US-011) › AC-011.1 removal: the removed technician gets 401 on the next request, within 60 seconds
+[318/334] [api] › tests/e2e/api/team-audit-events.spec.ts:179:3 › team list API (US-002, US-011) › AC-011.2 a removed technician's past jobs stay on their board with is_active false
+[319/334] [api] › tests/e2e/api/team-audit-events.spec.ts:189:3 › team list API (US-002, US-011) › AC-011.3 / AC-003.10 a removed technician cannot be assigned: 422 technician_not_assignable, no job created
+[320/334] [api] › tests/e2e/api/team-audit-events.spec.ts:203:3 › team list API (US-002, US-011) › AC-008.5 a removed technician is not a valid reassignment target
+[321/334] [api] › tests/e2e/api/team-audit-events.spec.ts:212:3 › team list API (US-002, US-011) › AC-011.5 adding a removed email again reactivates the same entry: 200 reactivated true, no duplicate
+[322/334] [api] › tests/e2e/api/team-audit-events.spec.ts:226:3 › team list API (US-002, US-011) › AC-011.1 removing someone already removed returns 200 unchanged
+[323/334] [api] › tests/e2e/api/team-audit-events.spec.ts:234:3 › team list API (US-002, US-011) › AC-002.2 / AC-011.1 GET /team lists owner first, then active by name, then removed
+[324/334] [api] › tests/e2e/api/team-audit-events.spec.ts:241:3 › team list API (US-002, US-011) › FR-3 adding a person sends no email: no sign-in-requested event is produced by POST /team
+[325/334] [api] › tests/e2e/api/team-audit-events.spec.ts:251:3 › audit trail that needs team, PATCH or cancel (FR-18) › AC-002.8 adding a team member records who and when
+[326/334] [api] › tests/e2e/api/team-audit-events.spec.ts:262:3 › audit trail that needs team, PATCH or cancel (FR-18) › AC-011.1 removal and re-adding are recorded (team_member.removed, team_member.reactivated)
+[327/334] [api] › tests/e2e/api/team-audit-events.spec.ts:271:3 › audit trail that needs team, PATCH or cancel (FR-18) › AC-008.8 an owner edit records which fields changed, never their values
+[328/334] [api] › tests/e2e/api/team-audit-events.spec.ts:285:3 › audit trail that needs team, PATCH or cancel (FR-18) › AC-008.2 reassignment is recorded as job.reassigned
+[329/334] [api] › tests/e2e/api/team-audit-events.spec.ts:292:3 › audit trail that needs team, PATCH or cancel (FR-18) › AC-009.5 cancelling twice with POST /cancel from an old view records one cancellation
+[330/334] [api] › tests/e2e/api/team-audit-events.spec.ts:305:3 › tracking events that need team or PATCH (docs/metrics-spec.md QA checklist) › metrics: job_reassigned and job_updated (field names only) and team_member_added / removed fire once each
+[331/334] [api] › tests/e2e/api/team-audit-events.spec.ts:329:3 › POST /events (US-004, rate limit) › metrics: board_viewed accepted (202) from a technician; body naming a person or free text is rejected
+[332/334] [api] › tests/e2e/api/team-audit-events.spec.ts:341:3 › POST /events (US-004, rate limit) › SECURITY rate limit: 120 events per member per hour, then 429 rate_limited with Retry-After
+[333/334] [api] › tests/e2e/api/team-audit-events.spec.ts:358:3 › POST /events (US-004, rate limit) › AC-001.7 signed-out POST /events is refused
+[334/334] [cleanup] › tests/e2e/support/auth.teardown.ts:8:1 › cleanup @smoke: remove the users and organisations this run created
+[cleanup] › tests/e2e/support/auth.teardown.ts:8:1 › cleanup @smoke: remove the users and organisations this run created
+cleanup: users deleted 3 (failed 2); orgs deleted 0, kept 2
+
+  4 failed
+    [api] › tests/e2e/api/contract.spec.ts:97:3 › session and board shape (US-004) › AC-004.7 / FR-6 50 jobs on one day are all returned in one response, none cut off 
+    [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "" is accepted (blank means not entered) 
+    [api] › tests/e2e/api/contract.spec.ts:169:5 › create-job validation and limits (US-003, FR-4) › AC-003.5 customer_phone "   " is accepted (blank means not entered) 
+    [api] › tests/e2e/api/team-audit-events.spec.ts:65:3 › tracking events on the built endpoints (docs/metrics-spec.md QA checklist) › metrics: job_created fires once per saved job (also on a double submit), lead_days 0, no PII, is_test true 
+  220 skipped
+  110 passed (20.8s)
+EXIT 1
