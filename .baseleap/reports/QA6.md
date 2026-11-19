@@ -58,6 +58,15 @@ Not an app defect.
 - **What it really is:** `zz-drill-flake.spec.ts` (the file is no longer in `tests/e2e/api/`). From the log's source excerpt, it contacts no app at all. It writes `/tmp/qa-flake-marker` on the first attempt and runs `expect(49).toBe(50)`; if the marker already exists it asserts nothing. So it fails exactly once per marker and "passes" on retry, whatever the app does. Its title claims a board check it does not make, and it is not tied to any AC. In run B it flaked again, so the marker was removed between runs.
 - **In a real run:** I would not retry it away or count it green. A real test with this signature (board job count 49 on one refresh, 50 on the next) points to a consistency or race problem with the board, potentially AC-004.7 (50 jobs, none cut off), so it would get a ticket: severity Important, owner bl-backend, suggested signature `board:job_count-unstable-on-refresh`, with traces from both attempts and `--repeat-each=20` to get a failure rate. The run verdict would carry the FLAKY line until it is fixed or explained. Here, since it is not an app test, the action is: take it out of the suite (done, it is not in my files) and tell the orchestrator that whoever added it should not leave `zz-*` drill files or `/tmp` marker state in a run that goes into a report. Both verdicts above still include it as flaky because the run files do.
 
+## 5. Run C (reopened run, QA7): **PASS locally, not release evidence**
+Source: `.baseleap/inputs/qa6/runC.{log,json}`. Local stack, `--retries=1`, 401 listed (the drill file is gone). passed 181 · failed 0 · flaky 0 · skipped/fixme 220. Counts come from the Playwright summary; I could not run a JSON summary here. The log has no failure, retry or flaky output.
+
+- **QA6 test fixes confirmed.** `NULLS malformed JSON…`, `SHAPE problems` and `SECURITY 3 problem+json…` ran with Buffer bodies and show no failure or retry. No test was changed for run C.
+- **QA4-001:** blank-phone tests green again, first attempt. The ticket stays reopened (contract decision, uncommitted fix, no staging run, edit path untested).
+- **Permissions:** no boundary crossed.
+- **What keeps it from being release evidence:** local stack, not staging; the code includes an uncommitted local change; 220 tests did not run (PATCH, cancel, P2, Vercel-only); cleanup still leaves 2 orgs (QA4-002, 23503 on `team_members_org_id_fkey`).
+- **Next:** bl-architect decides QA4-001, the fix is committed and deployed, then a full run on the staging preview before Gate 3.
+
 ## Files changed
 - `tests/e2e/api/nulls.spec.ts`, `tests/e2e/api/shapes.spec.ts`, `tests/e2e/api/contract.spec.ts` (Buffer bodies; one assertion tightened to 400)
 - `docs/qa-reports/tickets/QA4-001-blank-phone-contract-vs-ac.md` (status and re-test)

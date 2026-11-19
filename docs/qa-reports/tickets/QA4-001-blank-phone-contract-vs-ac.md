@@ -25,6 +25,10 @@ Either (a) change the pattern to allow blank: `^$|^[0-9 +()-]{7,20}$` plus trimm
 ## Evidence
 `.baseleap/inputs/qa3-local-run.log` failures 2) and 3); traces `test-results/api-contract-create-job-va-815fb-*/trace.zip` (not committed).
 
+## Re-test (QA7, run C)
+- Run C (`--retries=1`, local, same uncommitted fix, drill file gone): both blank-phone tests (`""`, `"   "`) and the `null`, valid and invalid-phone cases show no failure and no retry in `.baseleap/inputs/qa6/runC.log`. 181 passed, 0 failed, 0 flaky. Second green run in a row on the local fix.
+- Status unchanged: **REOPENED, not closed.** All four open points below still stand: no contract decision, the fix is uncommitted and not on staging, and the edit path (AC-008.4) is still untested. A green local run does not close it.
+
 ## Re-test (QA6)
 - **Run A** (before the fix, `--retries=1`): `contract.spec.ts` › `customer_phone ""` and `"   "` failed on the first attempt and on retry #1 (422, expected 201). Genuine failures, not flaky.
 - **Run B** (after the local fix): both tests passed on the **first attempt** (no retry line in the log). The `null` and valid-phone cases and the two UI tests (`jobs.spec.ts` AC-003.5, mobile and desktop) were green in both runs, first attempt.
